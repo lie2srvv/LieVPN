@@ -1,0 +1,388 @@
+import 'package:collection/collection.dart';
+import 'package:fl_clash/enum/enum.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import 'app.dart';
+import 'clash_config.dart';
+import 'common.dart';
+import 'config.dart';
+import 'core.dart';
+import 'profile.dart';
+
+part 'generated/state.freezed.dart';
+part 'generated/state.g.dart';
+
+@freezed
+abstract class SelectValue<T> with _$SelectValue<T> {
+  const factory SelectValue(T value) = _SelectValue;
+}
+
+@freezed
+abstract class ActivateState with _$ActivateState {
+  const factory ActivateState({required bool active}) = _ActivateState;
+}
+
+@freezed
+abstract class InitState with _$InitState {
+  const factory InitState({
+    required Config config,
+    required List<Profile> profiles,
+  }) = _InitState;
+}
+
+@freezed
+abstract class CommonMessage with _$CommonMessage {
+  const factory CommonMessage({
+    required String id,
+    required String text,
+    @Default(MessageLevel.info) MessageLevel level,
+    @Default(Duration(seconds: 3)) Duration duration,
+    MessageActionState? actionState,
+  }) = _CommonMessage;
+}
+
+@freezed
+abstract class MessageActionState with _$MessageActionState {
+  const factory MessageActionState({
+    required String actionText,
+    required VoidCallback action,
+  }) = _MessageActionState;
+}
+
+@freezed
+abstract class AppBarState with _$AppBarState {
+  const factory AppBarState({
+    @Default([]) List<Widget> actions,
+    AppBarSearchState? searchState,
+    AppBarEditState? editState,
+  }) = _AppBarState;
+}
+
+@freezed
+abstract class AppBarSearchState with _$AppBarSearchState {
+  const factory AppBarSearchState({
+    required Function(String) onSearch,
+    @Default(true) bool autoAddSearch,
+    @Default(null) String? query,
+  }) = _AppBarSearchState;
+}
+
+@freezed
+abstract class AppBarEditState with _$AppBarEditState {
+  const factory AppBarEditState({
+    @Default(0) int editCount,
+    required Function() onExit,
+  }) = _AppBarEditState;
+}
+
+@freezed
+abstract class StartButtonState with _$StartButtonState {
+  const factory StartButtonState({
+    required bool isPreload,
+    required bool hasProfile,
+  }) = _StartButtonState;
+}
+
+@freezed
+abstract class ProfilesState with _$ProfilesState {
+  const factory ProfilesState({
+    required List<Profile> profiles,
+    required int? currentProfileId,
+  }) = _ProfilesState;
+}
+
+@freezed
+abstract class NetworkDetectionState with _$NetworkDetectionState {
+  const factory NetworkDetectionState({
+    required bool isLoading,
+    required IpInfo? ipInfo,
+  }) = _NetworkDetectionState;
+}
+
+@freezed
+abstract class TrayState with _$TrayState {
+  const factory TrayState({
+    required Mode mode,
+    required int port,
+    required bool autoLaunch,
+    required bool systemProxy,
+    required bool tunEnable,
+    required bool isStart,
+    required List<Group> groups,
+    required Map<String, String> selectedMap,
+    required bool showTrayTitle,
+  }) = _TrayState;
+}
+
+@freezed
+abstract class TrayTitleState with _$TrayTitleState {
+  const factory TrayTitleState({
+    required Traffic traffic,
+    required bool showTrayTitle,
+  }) = _TrayTitleState;
+}
+
+@freezed
+abstract class NavigationState with _$NavigationState {
+  const factory NavigationState({
+    required PageLabel pageLabel,
+    required List<NavigationItem> navigationItems,
+    required ViewMode viewMode,
+    required String? locale,
+    required int currentIndex,
+  }) = _NavigationState;
+}
+
+@freezed
+abstract class GroupsState with _$GroupsState {
+  const factory GroupsState({required List<Group> value}) = _GroupsState;
+}
+
+@freezed
+abstract class NavigationItemsState with _$NavigationItemsState {
+  const factory NavigationItemsState({required List<NavigationItem> value}) =
+      _NavigationItemsState;
+}
+
+@freezed
+abstract class ProxiesListState with _$ProxiesListState {
+  const factory ProxiesListState({
+    required List<Group> groups,
+    required Set<String> currentUnfoldSet,
+    required ProxyCardType proxyCardType,
+  }) = _ProxiesListState;
+}
+
+@freezed
+abstract class ProxiesTabState with _$ProxiesTabState {
+  const factory ProxiesTabState({
+    required List<Group> groups,
+    required String? currentGroupName,
+    required ProxyCardType proxyCardType,
+  }) = _ProxiesTabState;
+}
+
+@freezed
+abstract class ProxiesTabControllerState with _$ProxiesTabControllerState {
+  const factory ProxiesTabControllerState({
+    required List<String> groupNames,
+    required String? currentGroupName,
+  }) = _ProxiesTabControllerState;
+}
+
+@freezed
+abstract class ProxyGroupSelectorState with _$ProxyGroupSelectorState {
+  const factory ProxyGroupSelectorState({
+    required String? testUrl,
+    required ProxiesSortType proxiesSortType,
+    required ProxyCardType proxyCardType,
+    required num sortNum,
+    required GroupType groupType,
+    required List<Proxy> proxies,
+  }) = _ProxyGroupSelectorState;
+}
+
+@freezed
+abstract class MoreToolsSelectorState with _$MoreToolsSelectorState {
+  const factory MoreToolsSelectorState({
+    required List<NavigationItem> navigationItems,
+  }) = _MoreToolsSelectorState;
+}
+
+@freezed
+abstract class PackageListSelectorState with _$PackageListSelectorState {
+  const factory PackageListSelectorState({
+    required List<Package> packages,
+    required AccessControlProps accessControlProps,
+  }) = _PackageListSelectorState;
+}
+
+extension PackageListSelectorStateExt on PackageListSelectorState {
+  List<Package> get list {
+    final isFilterSystemApp = accessControlProps.isFilterSystemApp;
+    final isFilterNonInternetApp = accessControlProps.isFilterNonInternetApp;
+    return packages
+        .where(
+          (item) =>
+              (isFilterSystemApp ? item.system == false : true) &&
+              (isFilterNonInternetApp ? item.internet == true : true),
+        )
+        .toList();
+  }
+
+  List<Package> getSortList(List<String> selectedList) {
+    final sort = accessControlProps.sort;
+
+    return list.sorted((a, b) {
+      final isSelectA = selectedList.contains(a.packageName);
+      final isSelectB = selectedList.contains(b.packageName);
+
+      if (isSelectA != isSelectB) {
+        return isSelectA ? -1 : 1;
+      }
+      return switch (sort) {
+        AccessSortType.none => 0,
+        AccessSortType.name => a.label.compareTo(b.label),
+        AccessSortType.time => b.lastUpdateTime.compareTo(a.lastUpdateTime),
+      };
+    });
+  }
+}
+
+@freezed
+abstract class ProxiesListHeaderSelectorState
+    with _$ProxiesListHeaderSelectorState {
+  const factory ProxiesListHeaderSelectorState({
+    required double offset,
+    required int currentIndex,
+  }) = _ProxiesListHeaderSelectorState;
+}
+
+@freezed
+abstract class ProxiesActionsState with _$ProxiesActionsState {
+  const factory ProxiesActionsState({
+    required PageLabel pageLabel,
+    required ProxiesType type,
+    required bool hasProviders,
+  }) = _ProxiesActionsState;
+}
+
+@freezed
+abstract class ProxyState with _$ProxyState {
+  const factory ProxyState({
+    required bool isStart,
+    required bool systemProxy,
+    required List<String> bassDomain,
+    required int port,
+  }) = _ProxyState;
+}
+
+@freezed
+abstract class ThemeColorsSelectorState with _$ThemeColorsSelectorState {
+  const factory ThemeColorsSelectorState({
+    required int? primaryColor,
+    required List<int> primaryColors,
+    required DynamicSchemeVariant schemeVariant,
+    required bool isDefault,
+  }) = _ThemeColorsSelectorState;
+}
+
+@freezed
+abstract class SystemProxySelectorState with _$SystemProxySelectorState {
+  const factory SystemProxySelectorState({
+    required bool systemProxy,
+    required List<String> bypassDomain,
+  }) = _SystemProxySelectorState;
+}
+
+@freezed
+abstract class CurrentProfileSelectorState with _$CurrentProfileSelectorState {
+  const factory CurrentProfileSelectorState({
+    required String label,
+    required Map<String, String> selectedMap,
+  }) = _CurrentProfileSelectorState;
+}
+
+@freezed
+abstract class DashboardState with _$DashboardState {
+  const factory DashboardState({
+    required List<DashboardWidget> dashboardWidgets,
+  }) = _DashboardState;
+}
+
+@freezed
+abstract class SelectedProxyState with _$SelectedProxyState {
+  const factory SelectedProxyState({
+    required String proxyName,
+    @Default(false) bool group,
+    String? testUrl,
+  }) = _SelectedProxyState;
+}
+
+@freezed
+abstract class VpnState with _$VpnState {
+  const factory VpnState({
+    required TunStack stack,
+    required VpnProps vpnProps,
+  }) = _VpnState;
+}
+
+@freezed
+abstract class SharedState with _$SharedState {
+  const factory SharedState({
+    SetupParams? setupParams,
+    VpnOptions? vpnOptions,
+    required String stopTip,
+    required String startTip,
+    required String currentProfileName,
+    required String stopText,
+    required bool onlyStatisticsProxy,
+    @Default(true) bool showStopAction,
+    required bool crashlytics,
+  }) = _SharedState;
+
+  factory SharedState.fromJson(Map<String, Object?> json) =>
+      _$SharedStateFromJson(json);
+}
+
+extension SharedStateExt on SharedState {
+  SharedState get needSyncSharedState => copyWith(setupParams: null);
+}
+
+@freezed
+abstract class ComputeGroupsState with _$ComputeGroupsState {
+  const factory ComputeGroupsState({
+    required ProxiesData proxiesData,
+    required ProxiesSortType sortType,
+    required DelayMap delayMap,
+    required Map<String, String> selectedMap,
+    required String defaultTestUrl,
+  }) = _ComputeGroupsState;
+}
+
+@freezed
+abstract class MakeRealProfileState with _$MakeRealProfileState {
+  const factory MakeRealProfileState({
+    required String profilesPath,
+    required int profileId,
+    required Map<String, dynamic> rawConfig,
+    required PatchClashConfig realPatchConfig,
+    required bool overrideDns,
+    required bool appendSystemDns,
+    required List<ProxyGroup> proxyGroups,
+    required List<Rule> rules,
+    required List<Rule> addedRules,
+    required String defaultUA,
+    @Default([]) List<String> authentication,
+    String? matchTarget,
+  }) = _MakeRealProfileState;
+}
+
+@freezed
+abstract class MigrationData with _$MigrationData {
+  const factory MigrationData({
+    Map<String, Object?>? configMap,
+    @Default([]) List<Rule> rules,
+    @Default([]) List<Script> scripts,
+    @Default([]) List<Profile> profiles,
+    @Default([]) List<ProfileRuleLink> links,
+    @Default([]) List<ProxyGroup> proxyGroups,
+  }) = _MigrationData;
+}
+
+@freezed
+abstract class SetupState with _$SetupState {
+  const factory SetupState({
+    required int? profileId,
+    required int? profileLastUpdateDate,
+    required OverwriteType overwriteType,
+    required List<Rule> rules,
+    required List<ProxyGroup> proxyGroups,
+    required List<Rule> addedRules,
+    required Script? script,
+    required bool overrideDns,
+    required Dns dns,
+    String? matchTarget,
+  }) = _SetupState;
+}
