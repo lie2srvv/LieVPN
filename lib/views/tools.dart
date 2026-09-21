@@ -56,6 +56,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.other,
       items: [
+        const _SupportItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
         const _InfoItem(),
       ],
@@ -306,6 +307,78 @@ class _DeveloperItem extends StatelessWidget {
       leading: const Icon(Icons.developer_board),
       title: Text(context.appLocalizations.developerMode),
       widget: const DeveloperView(),
+    );
+  }
+}
+
+class _SupportItem extends StatelessWidget {
+  const _SupportItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem(
+      leading: const Icon(Icons.support_agent_rounded),
+      title: const Text('Поддержка LieVPN'),
+      subtitle: const Text('Telegram, MAX, Почта'),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          showDragHandle: true,
+          builder: (sheetContext) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Служба поддержки LieVPN',
+                      style: Theme.of(sheetContext).textTheme.titleLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ListItem(
+                    leading: const Icon(Icons.send_rounded, color: Color(0xFF2AABEE)),
+                    title: const Text('Telegram'),
+                    subtitle: const Text('@lie2srvv'),
+                    trailing: const Icon(Icons.launch),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl('https://lie2srvv.t.me');
+                    },
+                  ),
+                  ListItem(
+                    leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
+                    title: const Text('Мессенджер MAX'),
+                    subtitle: const Text('Написать в MAX'),
+                    trailing: const Icon(Icons.launch),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl(
+                        'https://max.ru/u/f9LHodD0cOLnlsYicsq-a-hyW986_IxbXiaExg00IFhfKP9cJFw9tJk-H-A',
+                      );
+                    },
+                  ),
+                  ListItem(
+                    leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
+                    title: const Text('Электронная почта'),
+                    subtitle: const Text('vpn@lie2srvv.com'),
+                    trailing: const Icon(Icons.launch),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl('mailto:vpn@lie2srvv.com');
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

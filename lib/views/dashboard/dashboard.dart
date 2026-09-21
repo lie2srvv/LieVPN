@@ -97,21 +97,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             icon: const Icon(Icons.add_circle),
           ),
         ),
-      FadeRotationScaleBox(
-        child: isEdit
-            ? IconButton(
-                tooltip: context.appLocalizations.save,
-                key: const ValueKey(true),
-                icon: const Icon(Icons.save, key: ValueKey('save-icon')),
-                onPressed: _handleSaveAndExit,
-              )
-            : IconButton(
-                tooltip: context.appLocalizations.edit,
-                key: const ValueKey(false),
-                icon: const Icon(Icons.edit, key: ValueKey('edit-icon')),
-                onPressed: _handleEnterEdit,
-              ),
-      ),
+
     ];
   }
 
@@ -241,26 +227,19 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         <= _maxGridBreakpoint => _mediumCrossAxisCount,
                         _ => _maxCrossAxisCount,
                       };
-                      return isEdit
-                          ? BackLayerScope(
-                              onBack: _handleExitEdit,
-                              child: SuperGrid(
-                                key: key,
-                                crossAxisCount: columns,
-                                crossAxisSpacing: spacing,
-                                mainAxisSpacing: spacing,
-                                children: children,
-                                onUpdate: () {
-                                  _handleSave();
-                                },
-                              ),
-                            )
-                          : Grid(
-                              crossAxisCount: columns,
-                              crossAxisSpacing: spacing,
-                              mainAxisSpacing: spacing,
-                              children: children,
-                            );
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SubscriptionStatusCard(),
+                          SizedBox(height: spacing),
+                          Grid(
+                            crossAxisCount: columns,
+                            crossAxisSpacing: spacing,
+                            mainAxisSpacing: spacing,
+                            children: children,
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ),

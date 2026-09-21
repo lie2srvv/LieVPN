@@ -42,7 +42,6 @@ const List<DashboardWidget> defaultDashboardWidgets = [
   DashboardWidget.systemProxyButton,
   DashboardWidget.tunButton,
   DashboardWidget.networkDetection,
-  DashboardWidget.trafficUsage,
   DashboardWidget.intranetIp,
 ];
 
