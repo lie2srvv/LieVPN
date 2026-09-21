@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widget_registry.dart';
 import 'widgets/core_status_button.dart';
 import 'widgets/start_button.dart';
+import 'widgets/subscription_status_card.dart';
 
 typedef _IsEditWidgetBuilder = Widget Function(bool isEdit);
 
@@ -230,7 +231,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SubscriptionStatusCard(),
+                          SubscriptionStatusCard(),
                           SizedBox(height: spacing),
                           Grid(
                             crossAxisCount: columns,

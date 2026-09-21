@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/about.dart';
@@ -263,24 +262,6 @@ class _SettingItem extends StatelessWidget {
       title: Text(context.appLocalizations.application),
       subtitle: Text(context.appLocalizations.applicationDesc),
       widget: const ApplicationSettingView(),
-    );
-  }
-}
-
-class _DisclaimerItem extends ConsumerWidget {
-  const _DisclaimerItem();
-
-  @override
-  Widget build(BuildContext context, ref) {
-    return ListItem(
-      leading: const Icon(Icons.gavel),
-      title: Text(context.appLocalizations.disclaimer),
-      onTap: () async {
-        final isDisclaimerAccepted = await dialogs.showDisclaimer();
-        if (!isDisclaimerAccepted) {
-          await ref.read(systemActionProvider.notifier).handleExit();
-        }
-      },
     );
   }
 }

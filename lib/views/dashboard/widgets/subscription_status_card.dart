@@ -3,7 +3,6 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/profiles/profiles.dart';
 import 'package:fl_clash/widgets/widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -42,8 +41,8 @@ class SubscriptionStatusCard extends ConsumerWidget {
         ? '${used.traffic.show} / ${total.traffic.show}'
         : 'Трафик: без ограничений';
 
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
 
     return CommonCard(
       radius: AppCorner.lg,
@@ -90,14 +89,14 @@ class SubscriptionStatusCard extends ConsumerWidget {
                         currentProfile?.label.isNotEmpty == true
                             ? currentProfile!.label
                             : 'Подписка LieVPN',
-                        style: theme.textTheme.titleMedium?.toBold,
+                        style: textTheme.titleMedium?.toBold,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
                         expireText,
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        style: textTheme.bodyMedium?.copyWith(
                           color: isExpired
                               ? colorScheme.error
                               : colorScheme.primary,
@@ -111,7 +110,7 @@ class SubscriptionStatusCard extends ConsumerWidget {
                 ),
                 Icon(
                   Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  color: colorScheme.onSurfaceVariant.opacity50,
                 ),
               ],
             ),
@@ -122,11 +121,11 @@ class SubscriptionStatusCard extends ConsumerWidget {
                 children: [
                   Text(
                     'Трафик',
-                    style: theme.textTheme.bodySmall?.toLight,
+                    style: textTheme.bodySmall?.toLight,
                   ),
                   Text(
                     trafficText,
-                    style: theme.textTheme.bodySmall?.toSoftBold,
+                    style: textTheme.bodySmall?.toSoftBold,
                   ),
                 ],
               ),
@@ -136,7 +135,7 @@ class SubscriptionStatusCard extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 5,
-                  backgroundColor: colorScheme.primary.withOpacity(0.15),
+                  backgroundColor: colorScheme.primary.opacity15,
                 ),
               ),
             ],

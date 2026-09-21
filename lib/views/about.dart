@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/list.dart';
@@ -77,36 +76,25 @@ class AboutView extends ConsumerWidget {
       const SizedBox(height: 12),
       ...generateSection(
         separated: false,
-        title: 'Поддержка и связь',
+        title: 'О проекте',
         items: [
           ListItem(
-            leading: const Icon(Icons.send_rounded, color: Color(0xFF2AABEE)),
-            title: const Text('Telegram'),
-            subtitle: const Text('@lie2srvv'),
-            onTap: () {
-              dialogs.openUrl('https://lie2srvv.t.me');
-            },
+            leading: const Icon(Icons.fork_right_rounded),
+            title: const Text('Форк FlClash'),
+            subtitle: const Text('LieVPN основан на FlClash. Открыть оригинал'),
             trailing: const Icon(Icons.launch),
+            onTap: () {
+              dialogs.openUrl('https://github.com/chen08209/FlClash');
+            },
           ),
           ListItem(
-            leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
-            title: const Text('Мессенджер MAX'),
-            subtitle: const Text('Написать в MAX'),
-            onTap: () {
-              dialogs.openUrl(
-                'https://max.ru/u/f9LHodD0cOLnlsYicsq-a-hyW986_IxbXiaExg00IFhfKP9cJFw9tJk-H-A',
-              );
-            },
+            leading: const Icon(Icons.code_rounded),
+            title: const Text('Исходный код LieVPN'),
+            subtitle: const Text('GitHub репозиторий проекта'),
             trailing: const Icon(Icons.launch),
-          ),
-          ListItem(
-            leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
-            title: const Text('Электронная почта'),
-            subtitle: const Text('vpn@lie2srvv.com'),
             onTap: () {
-              dialogs.openUrl('mailto:vpn@lie2srvv.com');
+              dialogs.openUrl('https://github.com/lie2srvv/LieVPN');
             },
-            trailing: const Icon(Icons.launch),
           ),
         ],
       ),
