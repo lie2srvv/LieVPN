@@ -120,7 +120,7 @@ class _LocaleItem extends ConsumerWidget {
   const _LocaleItem();
 
   String _getLocaleString(BuildContext context, Locale? locale) {
-    if (locale == null) return context.appLocalizations.defaultText;
+    if (locale == null) return const Locale('ru').label;
     return locale.label;
   }
 
@@ -129,17 +129,17 @@ class _LocaleItem extends ConsumerWidget {
     final locale = ref.watch(
       appSettingProvider.select((state) => state.locale),
     );
-    final currentLocale = getLocaleForString(locale);
-    return ListItem<Locale?>.options(
+    final currentLocale = getLocaleForString(locale) ?? const Locale('ru');
+    return ListItem<Locale>.options(
       leading: const Icon(Icons.language_outlined),
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: [null, ...AppLocalizations.delegate.supportedLocales],
-      onChanged: (Locale? locale) {
+      options: const [Locale('ru'), Locale('en')],
+      onChanged: (Locale locale) {
         ref
             .read(appSettingProvider.notifier)
-            .update((state) => state.copyWith(locale: locale?.toString()));
+            .update((state) => state.copyWith(locale: locale.toString()));
       },
       textBuilder: (locale) => _getLocaleString(context, locale),
       value: currentLocale,

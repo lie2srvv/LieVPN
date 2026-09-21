@@ -93,6 +93,22 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class AppFpsManager extends StatefulWidget {
+  final Widget child;
+
+  const AppFpsManager({super.key, required this.child});
+
+  @override
+  State<AppFpsManager> createState() => _AppFpsManagerState();
+}
+
+class _AppFpsManagerState extends State<AppFpsManager> {
+  @override
+  Widget build(BuildContext context) {
     return Listener(
       onPointerHover: (_) {
         render?.resume();
@@ -109,22 +125,6 @@ class AppEnvManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      if (globalState.isPre) {
-        return Banner(
-          message: 'DEBUG',
-          location: BannerLocation.topEnd,
-          child: child,
-        );
-      }
-    }
-    if (globalState.isPre) {
-      return Banner(
-        message: globalState.appEnv.toUpperCase(),
-        location: BannerLocation.topEnd,
-        child: child,
-      );
-    }
     return child;
   }
 }

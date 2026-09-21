@@ -31,8 +31,6 @@ class EditProfileView extends ConsumerStatefulWidget {
 class _EditProfileViewState extends ConsumerState<EditProfileView> {
   late final TextEditingController _labelController;
   late final TextEditingController _urlController;
-  late final TextEditingController _autoUpdateDurationController;
-  late bool _autoUpdate;
   String? _rawText;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _fileInfoNotifier = ValueNotifier<FileInfo?>(null);
@@ -44,10 +42,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     super.initState();
     _labelController = TextEditingController(text: widget.profile.label);
     _urlController = TextEditingController(text: widget.profile.url);
-    _autoUpdate = widget.profile.autoUpdate;
-    _autoUpdateDurationController = TextEditingController(
-      text: widget.profile.autoUpdateDuration.inMinutes.toString(),
-    );
     _setupAction = ref.read(setupActionProvider.notifier);
     _updateFileInfo();
   }
@@ -66,24 +60,12 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     var profile = widget.profile.copyWith(
       url: _urlController.text,
       label: _labelController.text,
-      autoUpdate: _autoUpdate,
-      autoUpdateDuration: Duration(
-        minutes: int.parse(_autoUpdateDurationController.text),
-      ),
+      autoUpdate: true,
+      autoUpdateDuration: const Duration(hours: 1),
     );
     final profilesAction = ref.read(profilesActionProvider.notifier);
     final hasUpdate = widget.profile.url != profile.url;
     if (_fileData != null) {
-      if (profile.type == ProfileType.url && _autoUpdate) {
-        final appLocalizations = context.appLocalizations;
-        final res = await dialogs.showMessage(
-          title: appLocalizations.tip,
-          message: TextSpan(text: appLocalizations.profileHasUpdate),
-        );
-        if (res == true) {
-          profile = profile.copyWith(autoUpdate: false);
-        }
-      }
       final savedProfile = await globalState.safeRun(
         () => profile.saveFile(
           _fileData!,
@@ -110,13 +92,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     if (mounted) {
       Navigator.of(context).pop();
     }
-  }
-
-  void _setAutoUpdate(bool value) {
-    if (_autoUpdate == value) return;
-    setState(() {
-      _autoUpdate = value;
-    });
   }
 
   Future<void> _handleSaveEdit(BuildContext context, String data) async {
@@ -221,7 +196,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _labelController.dispose();
     _urlController.dispose();
     _fileInfoNotifier.dispose();
-    _autoUpdateDurationController.dispose();
     super.dispose();
     _setupAction.autoApplyProfile();
   }
@@ -231,21 +205,14 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     final appLocalizations = context.appLocalizations;
     final items = <Widget>[
       _ProfileNameField(controller: _labelController),
-      if (widget.profile.type == ProfileType.url) ...[
+      if (widget.profile.type == ProfileType.url)
         _ProfileUrlField(controller: _urlController),
-        ListItem.toggle(
-          title: Text(appLocalizations.autoUpdate),
-          value: _autoUpdate,
-          onChanged: _setAutoUpdate,
+      if (widget.profile.type == ProfileType.file)
+        _ProfileFileItem(
+          fileInfoNotifier: _fileInfoNotifier,
+          onEdit: _editProfileFile,
+          onUpload: _uploadProfileFile,
         ),
-        if (_autoUpdate)
-          _AutoUpdateIntervalField(controller: _autoUpdateDurationController),
-      ],
-      _ProfileFileItem(
-        fileInfoNotifier: _fileInfoNotifier,
-        onEdit: _editProfileFile,
-        onUpload: _uploadProfileFile,
-      ),
     ];
     return FocusTraversalGroup(
       policy: PageTraversalPolicy(),
@@ -349,39 +316,6 @@ class _ProfileUrlField extends StatelessWidget {
   }
 }
 
-class _AutoUpdateIntervalField extends StatelessWidget {
-  const _AutoUpdateIntervalField({required this.controller});
-
-  final TextEditingController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final appLocalizations = context.appLocalizations;
-    return ListItem(
-      title: TextFormField(
-        textInputAction: TextInputAction.next,
-        controller: controller,
-        inputFormatters: TextInputLimits.digitsOnly(TextInputLimits.interval),
-        decoration: InputDecoration(
-          labelText: appLocalizations.autoUpdateInterval,
-        ),
-        validator: (String? value) {
-          if (value == null || value.isEmpty) {
-            return appLocalizations.profileAutoUpdateIntervalNullValidationDesc;
-          }
-          try {
-            int.parse(value);
-          } catch (_) {
-            return appLocalizations
-                .profileAutoUpdateIntervalInvalidValidationDesc;
-          }
-          return null;
-        },
-      ),
-    );
-  }
-}
-
 class _ProfileFileItem extends StatelessWidget {
   const _ProfileFileItem({
     required this.fileInfoNotifier,
@@ -450,8 +384,14 @@ class _ProfileFileItem extends StatelessWidget {
                             CommonPopupMenu(items: _menuItems(context)),
                         targetBuilder: (open) {
                           return IconButton(
-                            tooltip: appLocalizations.more,
-                            onPressed: open,
+                            style: IconButton.styleFrom(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.standard,
+                            ),
+                            tooltip: context.appLocalizations.more,
+                            onPressed: () {
+                              open();
+                            },
                             icon: const Icon(Icons.more_vert),
                           );
                         },

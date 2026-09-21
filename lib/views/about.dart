@@ -30,10 +30,12 @@ class AboutView extends ConsumerWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(12),
-                        child: Image.asset(
-                          'assets/images/icon.png',
-                          width: 64,
-                          height: 64,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            width: 64,
+                            height: 64,
+                          ),
                         ),
                       ),
                       Column(
@@ -72,10 +74,32 @@ class AboutView extends ConsumerWidget {
         title: 'Telegram',
         items: [
           ListItem(
-            title: const Text('Telegram'),
+            title: const Text('Developer'),
+            subtitle: const Text('lie2srvv.t.me'),
+            onTap: () {
+              dialogs.openUrl('https://lie2srvv.t.me');
+            },
+            trailing: const Icon(Icons.launch),
+          ),
+          ListItem(
+            title: const Text('Channel'),
             subtitle: const Text('lievpn.t.me'),
             onTap: () {
               dialogs.openUrl('https://lievpn.t.me');
+            },
+            trailing: const Icon(Icons.launch),
+          ),
+        ],
+      ),
+      ...generateSection(
+        separated: false,
+        title: 'Feedback',
+        items: [
+          ListItem(
+            title: const Text('Email'),
+            subtitle: const Text('vpn@lie2srvv.com'),
+            onTap: () {
+              dialogs.openUrl('mailto:vpn@lie2srvv.com');
             },
             trailing: const Icon(Icons.launch),
           ),

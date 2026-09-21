@@ -50,7 +50,13 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
         .map((item) => item.widget)
         .toSet();
     _addedWidgetsNotifier.value = DashboardWidget.values
-        .where((item) => onThisPlatform(item) && !shown.contains(item.widget))
+        .where(
+          (item) =>
+              item != DashboardWidget.outboundMode &&
+              item != DashboardWidget.outboundModeV2 &&
+              onThisPlatform(item) &&
+              !shown.contains(item.widget),
+        )
         .map((item) => item.widget)
         .toList();
   }
@@ -205,7 +211,10 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     final children = [
       ...dashboardState.dashboardWidgets
           .where(
-            (item) => item.platforms.contains(SupportPlatform.currentPlatform),
+            (item) =>
+                item != DashboardWidget.outboundMode &&
+                item != DashboardWidget.outboundModeV2 &&
+                item.platforms.contains(SupportPlatform.currentPlatform),
           )
           .map((item) => item.widget),
     ];
