@@ -16,7 +16,7 @@ class AboutView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
-    final items = [
+    final items = <Widget>[
       ListTile(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +67,7 @@ class AboutView extends ConsumerWidget {
         ),
       ),
       const SizedBox(height: 12),
-      generateSection(
+      ...generateSection(
         separated: false,
         title: 'Telegram',
         items: [
@@ -122,8 +122,6 @@ class _DeveloperModeDetectorState extends State<_DeveloperModeDetector> {
 
   void _resetCounter() {
     _counter = 0;
-    _timer?.cancel();
-    _timer = null;
   }
 
   @override
@@ -134,6 +132,10 @@ class _DeveloperModeDetectorState extends State<_DeveloperModeDetector> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(onTap: _handleTap, child: widget.child);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _handleTap,
+      child: widget.child,
+    );
   }
 }
