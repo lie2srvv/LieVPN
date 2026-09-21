@@ -200,7 +200,7 @@ abstract class NetworkProps with _$NetworkProps {
     @Default(defaultAuthenticationProps) AuthenticationProps authentication,
   }) = _NetworkProps;
 
-  factory NetworkProps.fromJson(Map<String, Object?> json) =>
+  factory NetworkProps.fromJson(Map<String, Object?>? json) =>
       json == null ? const NetworkProps() : _$NetworkPropsFromJson(json);
 }
 
@@ -214,7 +214,7 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxyCardType.expand) ProxyCardType cardType,
   }) = _ProxiesStyleProps;
 
-  factory ProxiesStyleProps.fromJson(Map<String, Object?> json) => json == null
+  factory ProxiesStyleProps.fromJson(Map<String, Object?>? json) => json == null
       ? defaultProxiesStyleProps
       : _$ProxiesStylePropsFromJson(json);
 }

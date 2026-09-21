@@ -136,10 +136,12 @@ class _LocaleItem extends ConsumerWidget {
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
       options: const [Locale('ru'), Locale('en')],
-      onChanged: (Locale locale) {
-        ref
-            .read(appSettingProvider.notifier)
-            .update((state) => state.copyWith(locale: locale.toString()));
+      onChanged: (Locale? locale) {
+        if (locale != null) {
+          ref
+              .read(appSettingProvider.notifier)
+              .update((state) => state.copyWith(locale: locale.toString()));
+        }
       },
       textBuilder: (locale) => _getLocaleString(context, locale),
       value: currentLocale,

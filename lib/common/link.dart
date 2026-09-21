@@ -12,6 +12,8 @@ class LinkManager {
   static LinkManager? _instance;
   StreamSubscription? subscription;
   Uri? _pendingUri;
+  String? _lastHandledUrl;
+  DateTime? _lastHandledTime;
 
   LinkManager._internal();
 
@@ -22,7 +24,10 @@ class LinkManager {
   void seedInitialLink(List<String> args) {
     for (final arg in args) {
       final uri = Uri.tryParse(arg);
-      if (uri != null && protocolSchemes.contains(uri.scheme)) {
+      if (uri != null &&
+          (protocolSchemes.contains(uri.scheme) ||
+              uri.scheme == 'http' ||
+              uri.scheme == 'https')) {
         _pendingUri = uri;
         return;
       }
@@ -42,17 +47,41 @@ class LinkManager {
     if (pending != null) {
       _handle(pending, installConfigCallBack);
     }
+    try {
+      final initialUri = await AppLinks().getInitialLink();
+      if (initialUri != null) {
+        _handle(initialUri, installConfigCallBack);
+      }
+    } catch (_) {}
   }
 
   void _handle(Uri uri, Function(String url) installConfigCallBack) {
     commonPrint.log('onAppLink: $uri');
+    String? targetUrl;
     if (uri.host == 'install-config') {
-      final parameters = uri.queryParameters;
-      final url = parameters['url'];
-      if (url != null) {
-        installConfigCallBack(url);
-      }
+      targetUrl = uri.queryParameters['url'];
+    } else if ((uri.scheme == 'http' || uri.scheme == 'https') &&
+        (uri.host == 'vpn.lie2srvv.com' || uri.path.startsWith('/sub'))) {
+      targetUrl = uri.toString();
+    } else if (protocolSchemes.contains(uri.scheme)) {
+      targetUrl = uri.queryParameters['url'] ?? (uri.path.isNotEmpty ? uri.path : null);
     }
+
+    if (targetUrl == null || targetUrl.trim().isEmpty) {
+      return;
+    }
+
+    final trimmedUrl = targetUrl.trim();
+    final now = DateTime.now();
+    if (_lastHandledUrl == trimmedUrl &&
+        _lastHandledTime != null &&
+        now.difference(_lastHandledTime!) < const Duration(seconds: 2)) {
+      return;
+    }
+    _lastHandledUrl = trimmedUrl;
+    _lastHandledTime = now;
+
+    installConfigCallBack(trimmedUrl);
   }
 
   void destroy() {
