@@ -239,10 +239,14 @@ String _detectArch() {
 }
 
 Future<bool> _hasCommand(String cmd) async {
-  final which = Platform.isWindows ? 'where' : 'command';
-  final args = Platform.isWindows ? [cmd] : ['-v', cmd];
-  final result = await Process.run(which, args);
-  return result.exitCode == 0;
+  final which = Platform.isWindows ? 'where' : 'which';
+  final args = [cmd];
+  try {
+    final result = await Process.run(which, args);
+    return result.exitCode == 0;
+  } catch (_) {
+    return false;
+  }
 }
 
 Future<int> _ensureDependencies(String platform) async {
