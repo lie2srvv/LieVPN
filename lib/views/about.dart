@@ -70,30 +70,27 @@ class AboutView extends ConsumerWidget {
                 );
               },
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Приватный VPN для защиты данных и анонимности в сети на протоколе VLESS и Hysteria2.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
           ],
         ),
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 16),
       ...generateSection(
         separated: false,
-        title: 'О проекте',
         items: [
           ListItem(
             leading: const Icon(Icons.fork_right_rounded),
             title: const Text('Форк FlClash'),
-            subtitle: const Text('LieVPN основан на FlClash. Открыть оригинал'),
+            subtitle: const Text('Открыть оригинальный репозиторий FlClash'),
             trailing: const Icon(Icons.launch),
             onTap: () {
               dialogs.openUrl('https://github.com/chen08209/FlClash');
-            },
-          ),
-          ListItem(
-            leading: const Icon(Icons.code_rounded),
-            title: const Text('Исходный код LieVPN'),
-            subtitle: const Text('GitHub репозиторий проекта'),
-            trailing: const Icon(Icons.launch),
-            onTap: () {
-              dialogs.openUrl('https://github.com/lie2srvv/LieVPN');
             },
           ),
         ],
