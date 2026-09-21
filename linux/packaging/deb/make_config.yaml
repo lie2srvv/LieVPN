@@ -1,5 +1,5 @@
-display_name: FlClash
-package_name: FlClash
+display_name: LieVPN
+package_name: LieVPN
 maintainer:
   name: chen08209
   email: chen08209@gmail.com
@@ -28,12 +28,12 @@ supported_mime_type:
   - x-scheme-handler/flclash
 
 keywords:
-  - FlClash
+  - LieVPN
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: FlClash
+generic_name: LieVPN
 
 categories:
   - Network
