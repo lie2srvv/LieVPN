@@ -117,9 +117,14 @@ class SubscriptionStatusCard extends ConsumerWidget {
 
     return CommonCard(
       radius: AppCorner.lg,
-      onPressed: () {
+      onPressed: () async {
         // Opens PersonalAccountSheet modal
-        showPersonalAccountSheet(context, currentProfile);
+        final result = await showPersonalAccountSheet(context, currentProfile);
+        if (result == 'change' && context.mounted) {
+          await showAddSubscriptionFlow(context, ref, replaceOld: true);
+        } else if (result == 'add' && context.mounted) {
+          await handleSubscriptionTap(context, ref, replaceOld: true);
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

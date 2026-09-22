@@ -5,9 +5,12 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/pages/scan.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+enum AddSubscriptionChoice { qrcode, url }
 
 bool _isValidSubscriptionUrl(String url) {
   var target = url.trim();
@@ -55,13 +58,15 @@ String? extractLieVpnUrl(String text) {
   return null;
 }
 
-void showAddSubscriptionSheet(
+Future<void> showAddSubscriptionFlow(
   BuildContext context,
   WidgetRef ref, {
   bool replaceOld = false,
-}) {
-  showModalBottomSheet(
-    context: context,
+}) async {
+  final parentContext = globalState.navigatorKey.currentContext ?? context;
+
+  final choice = await showModalBottomSheet<AddSubscriptionChoice>(
+    context: parentContext,
     showDragHandle: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppCorner.xxl)),
@@ -103,23 +108,8 @@ void showAddSubscriptionSheet(
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(loc.qrcodeDesc),
-                onTap: () async {
-                  Navigator.of(sheetContext).pop();
-                  final profilesAction =
-                      ref.read(profilesActionProvider.notifier);
-                  if (system.isDesktop) {
-                    unawaited(
-                        profilesAction.addProfileFormQrCode(replaceOld: replaceOld));
-                    return;
-                  }
-                  final url =
-                      await BaseNavigator.push(context, const ScanPage());
-                  if (url != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      unawaited(profilesAction.addProfileFormURL(url,
-                          replaceOld: replaceOld));
-                    });
-                  }
+                onTap: () {
+                  Navigator.of(sheetContext).pop(AddSubscriptionChoice.qrcode);
                 },
               ),
               const SizedBox(height: 8),
@@ -144,49 +134,8 @@ void showAddSubscriptionSheet(
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(loc.urlDesc),
-                onTap: () async {
-                  Navigator.of(sheetContext).pop();
-                  final profilesAction =
-                      ref.read(profilesActionProvider.notifier);
-                  final enteredUrl = await dialogs.showCommonDialog<String>(
-                    child: InputDialog(
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-                      title: loc.importFromURL,
-                      labelText: loc.url,
-                      value: '',
-                      inputFormatters:
-                          TextInputLimits.limit(TextInputLimits.url),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return loc.emptyTip('').trim();
-                        }
-                        if (!value.isUrl) {
-                          return loc.urlTip('').trim();
-                        }
-                        var val = value.trim();
-                        if (!val.startsWith('http://') &&
-                            !val.startsWith('https://')) {
-                          val = 'https://$val';
-                        }
-                        final uri = Uri.tryParse(val);
-                        if (uri == null ||
-                            uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
-                          return loc.notLieVpnSubscription;
-                        }
-                        final path = uri.path.trim();
-                        if (path.isEmpty ||
-                            path == '/' ||
-                            path == '/index.html') {
-                          return loc.notLieVpnSubscription;
-                        }
-                        return null;
-                      },
-                    ),
-                  );
-                  if (enteredUrl != null) {
-                    unawaited(profilesAction.addProfileFormURL(enteredUrl,
-                        replaceOld: replaceOld));
-                  }
+                onTap: () {
+                  Navigator.of(sheetContext).pop(AddSubscriptionChoice.url);
                 },
               ),
             ],
@@ -195,6 +144,62 @@ void showAddSubscriptionSheet(
       );
     },
   );
+
+  if (choice == null) return;
+
+  final activeContext = globalState.navigatorKey.currentContext ?? context;
+  if (!activeContext.mounted) return;
+  final profilesAction = ref.read(profilesActionProvider.notifier);
+
+  if (choice == AddSubscriptionChoice.qrcode) {
+    if (system.isDesktop) {
+      unawaited(profilesAction.addProfileFormQrCode(replaceOld: replaceOld));
+      return;
+    }
+    final url =
+        await BaseNavigator.push<String>(activeContext, const ScanPage());
+    if (url != null) {
+      unawaited(profilesAction.addProfileFormURL(url, replaceOld: replaceOld));
+    }
+  } else if (choice == AddSubscriptionChoice.url) {
+    if (!activeContext.mounted) return;
+    final loc = activeContext.appLocalizations;
+    final enteredUrl = await dialogs.showCommonDialog<String>(
+      context: activeContext,
+      child: InputDialog(
+        autovalidateMode: AutovalidateMode.onUnfocus,
+        title: loc.importFromURL,
+        labelText: loc.url,
+        value: '',
+        inputFormatters: TextInputLimits.limit(TextInputLimits.url),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return loc.emptyTip('').trim();
+          }
+          if (!value.isUrl) {
+            return loc.urlTip('').trim();
+          }
+          var val = value.trim();
+          if (!val.startsWith('http://') && !val.startsWith('https://')) {
+            val = 'https://$val';
+          }
+          final uri = Uri.tryParse(val);
+          if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+            return loc.notLieVpnSubscription;
+          }
+          final path = uri.path.trim();
+          if (path.isEmpty || path == '/' || path == '/index.html') {
+            return loc.notLieVpnSubscription;
+          }
+          return null;
+        },
+      ),
+    );
+    if (enteredUrl != null && enteredUrl.isNotEmpty) {
+      unawaited(
+          profilesAction.addProfileFormURL(enteredUrl, replaceOld: replaceOld));
+    }
+  }
 }
 
 Future<void> handleSubscriptionTap(
@@ -223,13 +228,17 @@ Future<void> handleSubscriptionTap(
     }
   }
 
-  if (context.mounted) {
-    showAddSubscriptionSheet(context, ref, replaceOld: replaceOld);
+  final activeContext = globalState.navigatorKey.currentContext ?? context;
+  if (activeContext.mounted) {
+    await showAddSubscriptionFlow(activeContext, ref, replaceOld: replaceOld);
   }
 }
 
-void showPersonalAccountSheet(BuildContext context, Profile? profile) {
-  showModalBottomSheet(
+Future<String?> showPersonalAccountSheet(
+  BuildContext context,
+  Profile? profile,
+) {
+  return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
@@ -428,8 +437,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                 height: 48,
                 child: FilledButton.icon(
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    handleSubscriptionTap(context, ref, replaceOld: true);
+                    Navigator.of(context).pop('add');
                   },
                   icon: const Icon(Icons.content_paste_rounded),
                   label: Text(appLocalizations.tapToInsertSubscription),
@@ -625,8 +633,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                   height: 48,
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      showAddSubscriptionSheet(context, ref, replaceOld: true);
+                      Navigator.of(context).pop('change');
                     },
                     icon: const Icon(Icons.swap_horiz_rounded),
                     label: Text(appLocalizations.change),
