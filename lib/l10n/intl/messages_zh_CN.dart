@@ -116,6 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "addProxyProviders": MessageLookupByLibrary.simpleMessage("添加代理集"),
     "addRule": MessageLookupByLibrary.simpleMessage("添加规则"),
     "addSsid": MessageLookupByLibrary.simpleMessage("添加SSID"),
+    "addSubscription": MessageLookupByLibrary.simpleMessage("添加订阅"),
     "addWidget": MessageLookupByLibrary.simpleMessage("添加组件"),
     "addedRules": MessageLookupByLibrary.simpleMessage("附加规则"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage("附加参数"),
@@ -186,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "changeProxyFailedTip": MessageLookupByLibrary.simpleMessage(
       "切换代理失败，已恢复上一次的选择",
     ),
+    "changeSubscription": MessageLookupByLibrary.simpleMessage("更换订阅"),
     "changelogBreaking": MessageLookupByLibrary.simpleMessage("重大变更"),
     "changelogFeatures": MessageLookupByLibrary.simpleMessage("新功能"),
     "changelogFixes": MessageLookupByLibrary.simpleMessage("问题修复"),
@@ -512,6 +514,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noRecords": MessageLookupByLibrary.simpleMessage("暂无记录"),
     "noResolve": MessageLookupByLibrary.simpleMessage("不解析IP"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage("不解析主机名"),
+    "noSubscriptionFound": MessageLookupByLibrary.simpleMessage("未添加订阅"),
     "none": MessageLookupByLibrary.simpleMessage("无"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
       "这不是 LieVPN 订阅",
@@ -820,6 +823,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子规则不能为空"),
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
+    "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
+      "正在激活剪贴板中的订阅...",
+    ),
+    "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
+      "从剪贴板、链接或二维码导入",
+    ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("订阅信息"),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage("订阅无变化"),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage("订阅已更新"),
@@ -834,6 +843,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tabAnimation": MessageLookupByLibrary.simpleMessage("选项卡动画"),
     "tabAnimationDesc": MessageLookupByLibrary.simpleMessage("仅在移动视图中有效"),
     "tapToAuthorize": MessageLookupByLibrary.simpleMessage("点击授权"),
+    "tapToInsertSubscription": MessageLookupByLibrary.simpleMessage("点击粘贴订阅"),
     "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP并发"),
     "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage("开启后允许TCP并发"),
     "testInterval": MessageLookupByLibrary.simpleMessage("测试间隔"),

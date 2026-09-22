@@ -642,5 +642,11 @@
   "subExpiredNotice": "Your subscription has expired. If you have already renewed, please update your subscription.",
   "subExpiringTitle": "Subscription expiring soon",
   "subExpiredTitle": "Subscription expired",
-  "accountUsername": "USERNAME"
+  "accountUsername": "USERNAME",
+  "tapToInsertSubscription": "Tap to paste subscription",
+  "subscriptionFromClipboardHint": "From clipboard, URL or QR code",
+  "subscriptionActivating": "Activating subscription from clipboard...",
+  "addSubscription": "Add subscription",
+  "changeSubscription": "Change subscription",
+  "noSubscriptionFound": "No subscription added"
 }

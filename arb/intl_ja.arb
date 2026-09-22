@@ -642,5 +642,11 @@
   "subExpiredNotice": "サブスクリプションの有効期限が切れました。更新済みの場合はサブスクリプションを更新してください。",
   "subExpiringTitle": "サブスクリプションの期限が近づいています",
   "subExpiredTitle": "サブスクリプションが切れました",
-  "accountUsername": "ユーザー名"
+  "accountUsername": "ユーザー名",
+  "tapToInsertSubscription": "タップしてサブスクリプションを貼り付け",
+  "subscriptionFromClipboardHint": "クリップボード、URL、またはQRコードから",
+  "subscriptionActivating": "クリップボードからサブスクリプションを有効化しています...",
+  "addSubscription": "サブスクリプションを追加",
+  "changeSubscription": "サブスクリプションを変更",
+  "noSubscriptionFound": "サブスクリプションがありません"
 }

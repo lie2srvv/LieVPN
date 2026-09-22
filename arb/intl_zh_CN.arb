@@ -642,5 +642,11 @@
   "subExpiredNotice": "您的订阅已到期。如果您已续费，请更新订阅。",
   "subExpiringTitle": "订阅即将到期",
   "subExpiredTitle": "订阅已到期",
-  "accountUsername": "用户名"
+  "accountUsername": "用户名",
+  "tapToInsertSubscription": "点击粘贴订阅",
+  "subscriptionFromClipboardHint": "从剪贴板、链接或二维码导入",
+  "subscriptionActivating": "正在激活剪贴板中的订阅...",
+  "addSubscription": "添加订阅",
+  "changeSubscription": "更换订阅",
+  "noSubscriptionFound": "未添加订阅"
 }

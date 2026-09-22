@@ -12,8 +12,81 @@ class SubscriptionStatusCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentProfile = ref.watch(currentProfileProvider);
-    final subscriptionInfo = currentProfile?.subscriptionInfo;
+    final hasSubscription = isLieVpnSubscription(currentProfile);
     final appLocalizations = context.appLocalizations;
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+
+    if (!hasSubscription) {
+      return CommonCard(
+        radius: AppCorner.lg,
+        onPressed: () {
+          // Opens PersonalAccountSheet or paste flow
+          handleSubscriptionTap(context, ref);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                ),
+                child: const Icon(
+                  Icons.vpn_key_outlined,
+                  size: 24,
+                  color: Color(0xFF10B981),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      appLocalizations.personalAccount,
+                      style: textTheme.titleMedium?.toBold,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      appLocalizations.tapToInsertSubscription,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF10B981),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      appLocalizations.subscriptionFromClipboardHint,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.7),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.add_circle_outline_rounded,
+                color: Color(0xFF10B981),
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final subscriptionInfo = currentProfile?.subscriptionInfo;
 
     String expireText;
     bool isExpired = false;
@@ -36,14 +109,12 @@ class SubscriptionStatusCard extends ConsumerWidget {
     }
 
     final total = subscriptionInfo?.total ?? 0;
-    final used = (subscriptionInfo?.upload ?? 0) + (subscriptionInfo?.download ?? 0);
+    final used =
+        (subscriptionInfo?.upload ?? 0) + (subscriptionInfo?.download ?? 0);
     final double progress = total > 0 ? (used / total).clamp(0.0, 1.0) : 0.0;
     final trafficText = total > 0
         ? '${used.traffic.show} / ${total.traffic.show}'
         : '${appLocalizations.dataUsed}: ${used.traffic.show}';
-
-    final colorScheme = context.colorScheme;
-    final textTheme = context.textTheme;
 
     return CommonCard(
       radius: AppCorner.lg,

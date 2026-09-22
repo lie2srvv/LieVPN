@@ -134,6 +134,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Add rule"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
+    "addSubscription": MessageLookupByLibrary.simpleMessage("Add subscription"),
     "addWidget": MessageLookupByLibrary.simpleMessage("Add widget"),
     "addedRules": MessageLookupByLibrary.simpleMessage("Added rules"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
@@ -249,6 +250,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage("Deselect all"),
     "changeProxyFailedTip": MessageLookupByLibrary.simpleMessage(
       "Failed to switch proxy; the previous selection has been restored",
+    ),
+    "changeSubscription": MessageLookupByLibrary.simpleMessage(
+      "Change subscription",
     ),
     "changelogBreaking": MessageLookupByLibrary.simpleMessage(
       "Breaking changes",
@@ -718,6 +722,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "Don\'t resolve hostname",
     ),
+    "noSubscriptionFound": MessageLookupByLibrary.simpleMessage(
+      "No subscription added",
+    ),
     "none": MessageLookupByLibrary.simpleMessage("None"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
       "This is not a LieVPN subscription",
@@ -1134,6 +1141,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sub-rule cannot be empty",
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Submit"),
+    "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
+      "Activating subscription from clipboard...",
+    ),
+    "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
+      "From clipboard, URL or QR code",
+    ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Subscription info",
     ),
@@ -1158,6 +1171,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Only effective in mobile view",
     ),
     "tapToAuthorize": MessageLookupByLibrary.simpleMessage("Tap to authorize"),
+    "tapToInsertSubscription": MessageLookupByLibrary.simpleMessage(
+      "Tap to paste subscription",
+    ),
     "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP concurrent"),
     "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage(
       "Allow concurrent TCP connections",

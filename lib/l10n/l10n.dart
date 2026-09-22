@@ -5329,6 +5329,66 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Tap to paste subscription`
+  String get tapToInsertSubscription {
+    return Intl.message(
+      'Tap to paste subscription',
+      name: 'tapToInsertSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `From clipboard, URL or QR code`
+  String get subscriptionFromClipboardHint {
+    return Intl.message(
+      'From clipboard, URL or QR code',
+      name: 'subscriptionFromClipboardHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activating subscription from clipboard...`
+  String get subscriptionActivating {
+    return Intl.message(
+      'Activating subscription from clipboard...',
+      name: 'subscriptionActivating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add subscription`
+  String get addSubscription {
+    return Intl.message(
+      'Add subscription',
+      name: 'addSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change subscription`
+  String get changeSubscription {
+    return Intl.message(
+      'Change subscription',
+      name: 'changeSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No subscription added`
+  String get noSubscriptionFound {
+    return Intl.message(
+      'No subscription added',
+      name: 'noSubscriptionFound',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

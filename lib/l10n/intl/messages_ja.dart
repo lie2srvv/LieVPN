@@ -118,6 +118,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "addProxyProviders": MessageLookupByLibrary.simpleMessage("プロキシプロバイダーを追加"),
     "addRule": MessageLookupByLibrary.simpleMessage("ルールを追加"),
     "addSsid": MessageLookupByLibrary.simpleMessage("SSIDを追加"),
+    "addSubscription": MessageLookupByLibrary.simpleMessage("サブスクリプションを追加"),
     "addWidget": MessageLookupByLibrary.simpleMessage("ウィジェットを追加"),
     "addedRules": MessageLookupByLibrary.simpleMessage("追加ルール"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage("追加パラメータ"),
@@ -202,6 +203,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "changeProxyFailedTip": MessageLookupByLibrary.simpleMessage(
       "プロキシの切り替えに失敗したため、前回の選択に戻しました",
     ),
+    "changeSubscription": MessageLookupByLibrary.simpleMessage("サブスクリプションを変更"),
     "changelogBreaking": MessageLookupByLibrary.simpleMessage("破壊的変更"),
     "changelogFeatures": MessageLookupByLibrary.simpleMessage("新機能"),
     "changelogFixes": MessageLookupByLibrary.simpleMessage("不具合修正"),
@@ -588,6 +590,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noRecords": MessageLookupByLibrary.simpleMessage("記録がありません"),
     "noResolve": MessageLookupByLibrary.simpleMessage("IPを解決しない"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage("ホスト名を解決しない"),
+    "noSubscriptionFound": MessageLookupByLibrary.simpleMessage(
+      "サブスクリプションがありません",
+    ),
     "none": MessageLookupByLibrary.simpleMessage("なし"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
       "LieVPNのサブスクリプションではありません",
@@ -950,6 +955,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("サブルールが空です"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
+    "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
+      "クリップボードからサブスクリプションを有効化しています...",
+    ),
+    "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
+      "クリップボード、URL、またはQRコードから",
+    ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("サブスクリプション情報"),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage("変更はありません"),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
@@ -966,6 +977,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "tabAnimation": MessageLookupByLibrary.simpleMessage("タブアニメーション"),
     "tabAnimationDesc": MessageLookupByLibrary.simpleMessage("モバイル表示でのみ有効です"),
     "tapToAuthorize": MessageLookupByLibrary.simpleMessage("タップして許可"),
+    "tapToInsertSubscription": MessageLookupByLibrary.simpleMessage(
+      "タップしてサブスクリプションを貼り付け",
+    ),
     "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP同時接続"),
     "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage(
       "有効にすると、TCPの同時接続を許可します",

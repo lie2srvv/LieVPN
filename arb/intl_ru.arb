@@ -642,5 +642,11 @@
   "subExpiredNotice": "Срок действия вашей подписки истёк. Если вы уже продлили, то обновите подписку.",
   "subExpiringTitle": "Подписка скоро закончится",
   "subExpiredTitle": "Подписка закончилась",
-  "accountUsername": "ИМЯ ПОЛЬЗОВАТЕЛЯ"
+  "accountUsername": "ИМЯ ПОЛЬЗОВАТЕЛЯ",
+  "tapToInsertSubscription": "Нажмите, чтобы вставить подписку",
+  "subscriptionFromClipboardHint": "Из буфера обмена, по ссылке или QR-коду",
+  "subscriptionActivating": "Активация подписки из буфера обмена...",
+  "addSubscription": "Добавить подписку",
+  "changeSubscription": "Сменить подписку",
+  "noSubscriptionFound": "Подписка не добавлена"
 }

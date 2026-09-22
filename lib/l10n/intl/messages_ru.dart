@@ -136,6 +136,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Добавить правило"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Добавить SSID"),
+    "addSubscription": MessageLookupByLibrary.simpleMessage(
+      "Добавить подписку",
+    ),
     "addWidget": MessageLookupByLibrary.simpleMessage("Добавить виджет"),
     "addedRules": MessageLookupByLibrary.simpleMessage("Добавленные правила"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
@@ -255,6 +258,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage("Снять выделение"),
     "changeProxyFailedTip": MessageLookupByLibrary.simpleMessage(
       "Не удалось переключить прокси; восстановлен предыдущий выбор",
+    ),
+    "changeSubscription": MessageLookupByLibrary.simpleMessage(
+      "Сменить подписку",
     ),
     "changelogBreaking": MessageLookupByLibrary.simpleMessage(
       "Важные изменения",
@@ -738,6 +744,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "Не разрешать имя хоста",
     ),
+    "noSubscriptionFound": MessageLookupByLibrary.simpleMessage(
+      "Подписка не добавлена",
+    ),
     "none": MessageLookupByLibrary.simpleMessage("Нет"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
       "Это не подписка LieVPN",
@@ -1184,6 +1193,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Подправило не может быть пустым",
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Отправить"),
+    "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
+      "Активация подписки из буфера обмена...",
+    ),
+    "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
+      "Из буфера обмена, по ссылке или QR-коду",
+    ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о подписке",
     ),
@@ -1209,6 +1224,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "tapToAuthorize": MessageLookupByLibrary.simpleMessage(
       "Нажмите, чтобы разрешить",
+    ),
+    "tapToInsertSubscription": MessageLookupByLibrary.simpleMessage(
+      "Нажмите, чтобы вставить подписку",
     ),
     "tcpConcurrent": MessageLookupByLibrary.simpleMessage("Параллельный TCP"),
     "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage(
