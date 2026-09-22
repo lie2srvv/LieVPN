@@ -274,6 +274,14 @@ Future<int> _ensureMacosDependencies() async {
 }
 
 Future<int> _ensureLinuxDependencies() async {
+  if (!await _hasCommand('apt-get')) {
+    stdout.writeln('Non-Debian system detected, skipping apt dependency checks.');
+    if (await _hasCommand('appimagetool')) {
+      stdout.writeln('appimagetool is available.');
+      return 0;
+    }
+  }
+
   const pkgGroups = <List<String>>[
     ['ninja-build', 'libgtk-3-dev'],
     ['libayatana-appindicator3-dev'],
@@ -322,7 +330,7 @@ Future<int> _ensureLinuxDependencies() async {
   }
 
   const appimagetool = '/usr/local/bin/appimagetool';
-  if (File(appimagetool).existsSync()) {
+  if (File(appimagetool).existsSync() || await _hasCommand('appimagetool')) {
     stdout.writeln('appimagetool already installed, skipping.');
     return 0;
   }
