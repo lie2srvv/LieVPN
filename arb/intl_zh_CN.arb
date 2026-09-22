@@ -648,5 +648,6 @@
   "subscriptionActivating": "正在激活剪贴板中的订阅...",
   "addSubscription": "添加订阅",
   "changeSubscription": "更换订阅",
-  "noSubscriptionFound": "未添加订阅"
+  "noSubscriptionFound": "未添加订阅",
+  "change": "更换"
 }

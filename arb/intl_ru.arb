@@ -648,5 +648,6 @@
   "subscriptionActivating": "Активация подписки из буфера обмена...",
   "addSubscription": "Добавить подписку",
   "changeSubscription": "Сменить подписку",
-  "noSubscriptionFound": "Подписка не добавлена"
+  "noSubscriptionFound": "Подписка не добавлена",
+  "change": "Сменить"
 }

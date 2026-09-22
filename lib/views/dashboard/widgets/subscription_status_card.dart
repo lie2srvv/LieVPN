@@ -21,7 +21,7 @@ class SubscriptionStatusCard extends ConsumerWidget {
       return CommonCard(
         radius: AppCorner.lg,
         onPressed: () {
-          handleSubscriptionTap(context, ref);
+          handleSubscriptionTap(context, ref, replaceOld: true);
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

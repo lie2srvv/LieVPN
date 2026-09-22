@@ -119,7 +119,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<bool> addProfileFormURL(String url) async {
+  Future<bool> addProfileFormURL(String url, {bool replaceOld = false}) async {
     var trimmed = url.trim();
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
@@ -154,7 +154,16 @@ class ProfilesAction extends _$ProfilesAction {
       title: currentAppLocalizations.addProfile,
     );
     if (profile != null) {
-      putProfile(profile);
+      final oldProfiles = List<Profile>.from(ref.read(profilesProvider));
+      setProfileAndAutoApply(profile);
+      ref.read(currentProfileIdProvider.notifier).value = profile.id;
+      if (replaceOld) {
+        for (final old in oldProfiles) {
+          if (old.id != profile.id) {
+            await deleteProfile(old.id);
+          }
+        }
+      }
       return true;
     }
     return false;
@@ -167,10 +176,10 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormQrCode() async {
+  Future<void> addProfileFormQrCode({bool replaceOld = false}) async {
     final url = await globalState.safeRun(picker.pickerConfigQRCode);
     if (url == null) return;
-    unawaited(addProfileFormURL(url));
+    unawaited(addProfileFormURL(url, replaceOld: replaceOld));
   }
 
   void reorder(List<Profile> profiles) {

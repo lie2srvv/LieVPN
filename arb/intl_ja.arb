@@ -648,5 +648,6 @@
   "subscriptionActivating": "クリップボードからサブスクリプションを有効化しています...",
   "addSubscription": "サブスクリプションを追加",
   "changeSubscription": "サブスクリプションを変更",
-  "noSubscriptionFound": "サブスクリプションがありません"
+  "noSubscriptionFound": "サブスクリプションがありません",
+  "change": "変更"
 }

@@ -423,17 +423,7 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
               .copyWith(bottom: 32),
           children: [
-            Text(
-              appLocalizations.hallOfFameHeader,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF10B981),
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
+
             _buildTop1Card(top1),
             const SizedBox(height: 14),
             _buildRankCard(top2, isSilver: true),

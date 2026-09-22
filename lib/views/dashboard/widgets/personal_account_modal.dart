@@ -55,7 +55,11 @@ String? extractLieVpnUrl(String text) {
   return null;
 }
 
-void showAddSubscriptionSheet(BuildContext context, WidgetRef ref) {
+void showAddSubscriptionSheet(
+  BuildContext context,
+  WidgetRef ref, {
+  bool replaceOld = false,
+}) {
   showModalBottomSheet(
     context: context,
     showDragHandle: true,
@@ -104,14 +108,16 @@ void showAddSubscriptionSheet(BuildContext context, WidgetRef ref) {
                   final profilesAction =
                       ref.read(profilesActionProvider.notifier);
                   if (system.isDesktop) {
-                    unawaited(profilesAction.addProfileFormQrCode());
+                    unawaited(
+                        profilesAction.addProfileFormQrCode(replaceOld: replaceOld));
                     return;
                   }
                   final url =
                       await BaseNavigator.push(context, const ScanPage());
                   if (url != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      unawaited(profilesAction.addProfileFormURL(url));
+                      unawaited(profilesAction.addProfileFormURL(url,
+                          replaceOld: replaceOld));
                     });
                   }
                 },
@@ -178,7 +184,8 @@ void showAddSubscriptionSheet(BuildContext context, WidgetRef ref) {
                     ),
                   );
                   if (enteredUrl != null) {
-                    unawaited(profilesAction.addProfileFormURL(enteredUrl));
+                    unawaited(profilesAction.addProfileFormURL(enteredUrl,
+                        replaceOld: replaceOld));
                   }
                 },
               ),
@@ -190,7 +197,11 @@ void showAddSubscriptionSheet(BuildContext context, WidgetRef ref) {
   );
 }
 
-Future<void> handleSubscriptionTap(BuildContext context, WidgetRef ref) async {
+Future<void> handleSubscriptionTap(
+  BuildContext context,
+  WidgetRef ref, {
+  bool replaceOld = false,
+}) async {
   final appLocalizations = context.appLocalizations;
   String clipboardText = '';
   try {
@@ -206,14 +217,14 @@ Future<void> handleSubscriptionTap(BuildContext context, WidgetRef ref) async {
     );
     final success = await ref
         .read(profilesActionProvider.notifier)
-        .addProfileFormURL(detectedUrl);
+        .addProfileFormURL(detectedUrl, replaceOld: replaceOld);
     if (success) {
       return;
     }
   }
 
   if (context.mounted) {
-    showAddSubscriptionSheet(context, ref);
+    showAddSubscriptionSheet(context, ref, replaceOld: replaceOld);
   }
 }
 
@@ -418,7 +429,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                 child: FilledButton.icon(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    handleSubscriptionTap(context, ref);
+                    handleSubscriptionTap(context, ref, replaceOld: true);
                   },
                   icon: const Icon(Icons.content_paste_rounded),
                   label: Text(appLocalizations.tapToInsertSubscription),
@@ -600,7 +611,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.refresh_rounded),
-                      label: Text(appLocalizations.updateSubscription),
+                      label: Text(appLocalizations.update),
                       style: FilledButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppCorner.md),
@@ -615,10 +626,10 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      handleSubscriptionTap(context, ref);
+                      showAddSubscriptionSheet(context, ref, replaceOld: true);
                     },
                     icon: const Icon(Icons.swap_horiz_rounded),
-                    label: Text(appLocalizations.changeSubscription),
+                    label: Text(appLocalizations.change),
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppCorner.md),

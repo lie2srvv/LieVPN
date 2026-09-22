@@ -648,5 +648,6 @@
   "subscriptionActivating": "Activating subscription from clipboard...",
   "addSubscription": "Add subscription",
   "changeSubscription": "Change subscription",
-  "noSubscriptionFound": "No subscription added"
+  "noSubscriptionFound": "No subscription added",
+  "change": "Change"
 }
