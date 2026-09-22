@@ -1,8 +1,9 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/manager/app_manager.dart';
-import 'package:fl_clash/models/common.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/views/views.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,30 @@ class HomePage extends ConsumerWidget {
     if (!hasViewSize) {
       return const SizedBox.shrink();
     }
+
+    final hasActiveSub = ref.watch(hasActiveSubscriptionProvider);
+
+    ref.listen<Profile?>(activeSubscriptionProfileProvider, (prev, next) {
+      if (next != null && ref.read(currentProfileIdProvider) != next.id) {
+        ref.read(currentProfileIdProvider.notifier).value = next.id;
+      }
+    });
+
+    ref.listen<bool>(hasActiveSubscriptionProvider, (prev, hasActive) {
+      if (!hasActive) {
+        final coreStatus = ref.read(coreStatusProvider);
+        if (coreStatus != CoreStatus.disconnected) {
+          ref.read(setupActionProvider.notifier).setRunning(false);
+        }
+      }
+    });
+
+    if (!hasActiveSub) {
+      return const HomeBackScopeContainer(
+        child: SubscriptionLockView(),
+      );
+    }
+
     return HomeBackScopeContainer(
       child: AppSidebarContainer(
         child: _HomeShell(

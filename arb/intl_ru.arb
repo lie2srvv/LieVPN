@@ -649,5 +649,16 @@
   "addSubscription": "Добавить подписку",
   "changeSubscription": "Сменить подписку",
   "noSubscriptionFound": "Подписка не добавлена",
-  "change": "Сменить"
+  "change": "Сменить",
+  "subscriptionRequired": "Требуется подписка",
+  "subscriptionInactive": "Подписка не активна",
+  "subscriptionRequiredDesc": "Для использования приложения необходима активная подписка LieVPN. Активируйте доступ по ссылке или QR-коду.",
+  "subscriptionExpiredDesc": "Срок действия вашей подписки LieVPN истёк. Продлите её в Telegram-боте или активируйте новую.",
+  "insertSubscriptionUrl": "Вставить ссылку",
+  "scanQrCode": "Сканировать QR-код",
+  "buyInTelegram": "Купить в Telegram",
+  "checkUpdateStatus": "Проверить продление",
+  "subscriptionInvalidOrEmpty": "Подписка не содержит серверов или недействительна",
+  "subscriptionFoundInClipboard": "Найдена подписка в буфере обмена",
+  "enterSubscriptionUrl": "Введите ссылку на подписку LieVPN"
 }

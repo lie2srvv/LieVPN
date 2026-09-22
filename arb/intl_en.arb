@@ -649,5 +649,16 @@
   "addSubscription": "Add subscription",
   "changeSubscription": "Change subscription",
   "noSubscriptionFound": "No subscription added",
-  "change": "Change"
+  "change": "Change",
+  "subscriptionRequired": "Subscription Required",
+  "subscriptionInactive": "Subscription Inactive",
+  "subscriptionRequiredDesc": "An active LieVPN subscription is required to use the application. Activate access via URL or QR code.",
+  "subscriptionExpiredDesc": "Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.",
+  "insertSubscriptionUrl": "Paste URL",
+  "scanQrCode": "Scan QR Code",
+  "buyInTelegram": "Get via Telegram",
+  "checkUpdateStatus": "Check Renewal",
+  "subscriptionInvalidOrEmpty": "Subscription contains no servers or is invalid",
+  "subscriptionFoundInClipboard": "Subscription found in clipboard",
+  "enterSubscriptionUrl": "Enter LieVPN subscription URL"
 }

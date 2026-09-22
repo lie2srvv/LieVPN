@@ -247,6 +247,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "blockConnection": MessageLookupByLibrary.simpleMessage(
       "Заблокировать соединение",
     ),
+    "buyInTelegram": MessageLookupByLibrary.simpleMessage("Купить в Telegram"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Исключённые домены"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Действует только при включённом системном прокси",
@@ -281,6 +282,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdate": MessageLookupByLibrary.simpleMessage("Проверить обновления"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "У вас уже последняя версия",
+    ),
+    "checkUpdateStatus": MessageLookupByLibrary.simpleMessage(
+      "Проверить продление",
     ),
     "clearData": MessageLookupByLibrary.simpleMessage("Очистить данные"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("Очистить поиск"),
@@ -439,6 +443,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Изменить SSID"),
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("Английский"),
+    "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
+      "Введите ссылку на подписку LieVPN",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" записей"),
     "entriesCount": m8,
     "exclude": MessageLookupByLibrary.simpleMessage("Скрыть из недавних задач"),
@@ -581,6 +588,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Введите содержимое правила",
+    ),
+    "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
+      "Вставить ссылку",
     ),
     "installedAppsPermissionDeniedMessage":
         MessageLookupByLibrary.simpleMessage(
@@ -1092,6 +1102,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rulesCount": m26,
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("Сохранить изменения?"),
+    "scanQrCode": MessageLookupByLibrary.simpleMessage("Сканировать QR-код"),
     "script": MessageLookupByLibrary.simpleMessage("Скрипт"),
     "scriptModeDesc": MessageLookupByLibrary.simpleMessage(
       "Режим скрипта: использует внешние скрипты-расширения для переопределения конфигурации в один клик",
@@ -1197,14 +1208,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
       "Активация подписки из буфера обмена...",
     ),
+    "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
+      "Срок действия вашей подписки LieVPN истёк. Продлите её в Telegram-боте или активируйте новую.",
+    ),
+    "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
+      "Найдена подписка в буфере обмена",
+    ),
     "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
       "Из буфера обмена, по ссылке или QR-коду",
+    ),
+    "subscriptionInactive": MessageLookupByLibrary.simpleMessage(
+      "Подписка не активна",
     ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о подписке",
     ),
+    "subscriptionInvalidOrEmpty": MessageLookupByLibrary.simpleMessage(
+      "Подписка не содержит серверов или недействительна",
+    ),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage(
       "Подписка не изменилась",
+    ),
+    "subscriptionRequired": MessageLookupByLibrary.simpleMessage(
+      "Требуется подписка",
+    ),
+    "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
+      "Для использования приложения необходима активная подписка LieVPN. Активируйте доступ по ссылке или QR-коду.",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Подписка обновлена",

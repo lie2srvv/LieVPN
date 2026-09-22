@@ -649,5 +649,16 @@
   "addSubscription": "サブスクリプションを追加",
   "changeSubscription": "サブスクリプションを変更",
   "noSubscriptionFound": "サブスクリプションがありません",
-  "change": "変更"
+  "change": "変更",
+  "subscriptionRequired": "サブスクリプションが必要です",
+  "subscriptionInactive": "サブスクリプションが無効です",
+  "subscriptionRequiredDesc": "LieVPN を使用するには有効なサブスクリプションが必要です。リンクまたはQRコードからアクセスを有効化してください。",
+  "subscriptionExpiredDesc": "LieVPN サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
+  "insertSubscriptionUrl": "URLを貼り付け",
+  "scanQrCode": "QRコードをスキャン",
+  "buyInTelegram": "Telegramで購入",
+  "checkUpdateStatus": "更新を確認",
+  "subscriptionInvalidOrEmpty": "サブスクリプションにサーバーが含まれていないか、無効です",
+  "subscriptionFoundInClipboard": "クリップボードにサブスクリプションが見つかりました",
+  "enterSubscriptionUrl": "LieVPN サブスクリプション URL を入力"
 }

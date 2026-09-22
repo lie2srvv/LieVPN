@@ -23,11 +23,13 @@ abstract interface class DesktopCoreLauncherResolver {
 
 final class DirectCoreLauncher implements CoreProcessLauncher {
   final CoreProcessStarter _startProcess;
-  final String corePath;
+  final String? _corePath;
 
   DirectCoreLauncher({CoreProcessStarter? startProcess, String? corePath})
     : _startProcess = startProcess ?? Process.start,
-      corePath = corePath ?? appPath.corePath;
+      _corePath = corePath;
+
+  String get corePath => _corePath ?? appPath.corePath;
 
   @override
   Future<CoreProcessLease> start({

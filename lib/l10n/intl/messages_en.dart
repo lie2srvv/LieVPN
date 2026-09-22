@@ -239,6 +239,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bind": MessageLookupByLibrary.simpleMessage("Bind"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("Blacklist mode"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("Block connection"),
+    "buyInTelegram": MessageLookupByLibrary.simpleMessage("Get via Telegram"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Bypass domains"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Only takes effect while the system proxy is enabled",
@@ -272,6 +273,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The app is already up to date",
     ),
+    "checkUpdateStatus": MessageLookupByLibrary.simpleMessage("Check Renewal"),
     "clearData": MessageLookupByLibrary.simpleMessage("Clear data"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("Clear search"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage(
@@ -425,6 +427,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Edit SSID"),
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("English"),
+    "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
+      "Enter LieVPN subscription URL",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" entries"),
     "entriesCount": m8,
     "exclude": MessageLookupByLibrary.simpleMessage("Hide from recent tasks"),
@@ -566,6 +571,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Enter the rule content",
     ),
+    "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage("Paste URL"),
     "installedAppsPermissionDeniedMessage":
         MessageLookupByLibrary.simpleMessage(
           "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
@@ -1044,6 +1050,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rulesCount": m26,
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("Save the changes?"),
+    "scanQrCode": MessageLookupByLibrary.simpleMessage("Scan QR Code"),
     "script": MessageLookupByLibrary.simpleMessage("Script"),
     "scriptModeDesc": MessageLookupByLibrary.simpleMessage(
       "Script mode: uses external extension scripts to override the configuration in one click",
@@ -1145,14 +1152,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
       "Activating subscription from clipboard...",
     ),
+    "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
+      "Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.",
+    ),
+    "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
+      "Subscription found in clipboard",
+    ),
     "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
       "From clipboard, URL or QR code",
+    ),
+    "subscriptionInactive": MessageLookupByLibrary.simpleMessage(
+      "Subscription Inactive",
     ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Subscription info",
     ),
+    "subscriptionInvalidOrEmpty": MessageLookupByLibrary.simpleMessage(
+      "Subscription contains no servers or is invalid",
+    ),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage(
       "Subscription is up to date",
+    ),
+    "subscriptionRequired": MessageLookupByLibrary.simpleMessage(
+      "Subscription Required",
+    ),
+    "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
+      "An active LieVPN subscription is required to use the application. Activate access via URL or QR code.",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Subscription updated",

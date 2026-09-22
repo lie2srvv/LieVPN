@@ -649,5 +649,16 @@
   "addSubscription": "添加订阅",
   "changeSubscription": "更换订阅",
   "noSubscriptionFound": "未添加订阅",
-  "change": "更换"
+  "change": "更换",
+  "subscriptionRequired": "需要订阅",
+  "subscriptionInactive": "订阅未激活",
+  "subscriptionRequiredDesc": "使用 LieVPN 应用需要有效订阅。通过链接或二维码激活访问。",
+  "subscriptionExpiredDesc": "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
+  "insertSubscriptionUrl": "粘贴链接",
+  "scanQrCode": "扫描二维码",
+  "buyInTelegram": "在 Telegram 购买",
+  "checkUpdateStatus": "检查续订",
+  "subscriptionInvalidOrEmpty": "订阅不包含服务器或无效",
+  "subscriptionFoundInClipboard": "在剪贴板中找到订阅",
+  "enterSubscriptionUrl": "输入 LieVPN 订阅链接"
 }

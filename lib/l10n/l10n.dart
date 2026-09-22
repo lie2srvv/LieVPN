@@ -5394,6 +5394,111 @@ class AppLocalizations {
   String get change {
     return Intl.message('Change', name: 'change', desc: '', args: []);
   }
+
+  /// `Subscription Required`
+  String get subscriptionRequired {
+    return Intl.message(
+      'Subscription Required',
+      name: 'subscriptionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription Inactive`
+  String get subscriptionInactive {
+    return Intl.message(
+      'Subscription Inactive',
+      name: 'subscriptionInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An active LieVPN subscription is required to use the application. Activate access via URL or QR code.`
+  String get subscriptionRequiredDesc {
+    return Intl.message(
+      'An active LieVPN subscription is required to use the application. Activate access via URL or QR code.',
+      name: 'subscriptionRequiredDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.`
+  String get subscriptionExpiredDesc {
+    return Intl.message(
+      'Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.',
+      name: 'subscriptionExpiredDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste URL`
+  String get insertSubscriptionUrl {
+    return Intl.message(
+      'Paste URL',
+      name: 'insertSubscriptionUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan QR Code`
+  String get scanQrCode {
+    return Intl.message('Scan QR Code', name: 'scanQrCode', desc: '', args: []);
+  }
+
+  /// `Get via Telegram`
+  String get buyInTelegram {
+    return Intl.message(
+      'Get via Telegram',
+      name: 'buyInTelegram',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check Renewal`
+  String get checkUpdateStatus {
+    return Intl.message(
+      'Check Renewal',
+      name: 'checkUpdateStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription contains no servers or is invalid`
+  String get subscriptionInvalidOrEmpty {
+    return Intl.message(
+      'Subscription contains no servers or is invalid',
+      name: 'subscriptionInvalidOrEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription found in clipboard`
+  String get subscriptionFoundInClipboard {
+    return Intl.message(
+      'Subscription found in clipboard',
+      name: 'subscriptionFoundInClipboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter LieVPN subscription URL`
+  String get enterSubscriptionUrl {
+    return Intl.message(
+      'Enter LieVPN subscription URL',
+      name: 'enterSubscriptionUrl',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -224,6 +224,9 @@ extension ProfileExtension on Profile {
     if (message.isNotEmpty) {
       throw MessageException(message);
     }
+    if (type == ProfileType.url && !checkHasProxies(bytes)) {
+      throw MessageException(currentAppLocalizations.subscriptionInvalidOrEmpty);
+    }
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();

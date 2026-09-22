@@ -124,16 +124,7 @@ class ProfilesAction extends _$ProfilesAction {
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
     }
-    final uri = Uri.tryParse(trimmed);
-    if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
-      dialogs.showNotifier(
-        currentAppLocalizations.notLieVpnSubscription,
-        level: MessageLevel.error,
-      );
-      return false;
-    }
-    final path = uri.path.trim();
-    if (path.isEmpty || path == '/' || path == '/index.html') {
+    if (!isValidLieVpnSubscriptionUrl(trimmed)) {
       dialogs.showNotifier(
         currentAppLocalizations.notLieVpnSubscription,
         level: MessageLevel.error,
@@ -148,12 +139,18 @@ class ProfilesAction extends _$ProfilesAction {
       tag: LoadingTag.profiles,
       () async {
         return Profile.normal(
-          url: url,
+          url: trimmed,
         ).update(validate: (path) => _core.validateConfig(path));
       },
       title: currentAppLocalizations.addProfile,
     );
     if (profile != null) {
+      if (isSubscriptionExpired(profile)) {
+        dialogs.showNotifier(
+          currentAppLocalizations.subExpiredNotice,
+          level: MessageLevel.warning,
+        );
+      }
       final oldProfiles = List<Profile>.from(ref.read(profilesProvider));
       setProfileAndAutoApply(profile);
       ref.read(currentProfileIdProvider.notifier).value = profile.id;
@@ -176,10 +173,10 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormQrCode({bool replaceOld = false}) async {
+  Future<bool> addProfileFormQrCode({bool replaceOld = false}) async {
     final url = await globalState.safeRun(picker.pickerConfigQRCode);
-    if (url == null) return;
-    unawaited(addProfileFormURL(url, replaceOld: replaceOld));
+    if (url == null) return false;
+    return addProfileFormURL(url, replaceOld: replaceOld);
   }
 
   void reorder(List<Profile> profiles) {

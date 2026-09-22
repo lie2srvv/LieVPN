@@ -57,8 +57,19 @@ class AppPath {
     return dirname(currentExecutablePath);
   }
 
-  String get corePath {
+  String get bundledCorePath {
     return join(executableDirPath, 'FlClashCore$executableExtension');
+  }
+
+  static const String linuxExternalCorePath = '/opt/flclash/FlClashCore';
+
+  String get corePath {
+    if (system.isLinux && system.isAppImage) {
+      if (File(linuxExternalCorePath).existsSync()) {
+        return linuxExternalCorePath;
+      }
+    }
+    return bundledCorePath;
   }
 
   String get helperPath {

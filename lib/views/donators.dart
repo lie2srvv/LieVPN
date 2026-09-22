@@ -55,14 +55,14 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
     ),
     DonatorItem(
       rank: 2,
-      name: '@lllirap',
-      amount: '907₽',
+      name: '@Ite_ph_ps',
+      amount: '1250₽',
       avatarUrl: 'https://vpn.lie2srvv.com/top2.png',
     ),
     DonatorItem(
       rank: 3,
-      name: '@Lana_590',
-      amount: '800₽',
+      name: '@Lllirap',
+      amount: '907₽',
       avatarUrl: 'https://vpn.lie2srvv.com/top3.png',
     ),
   ];
@@ -79,7 +79,6 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
   Future<void> _loadCacheAndCheck() async {
     final sp = await preferences.sharedPreferencesCompleter.future;
     final cachedJson = sp?.getString('donators_cache_json');
-    final lastTime = sp?.getInt('donators_cache_time') ?? 0;
 
     if (cachedJson != null && cachedJson.isNotEmpty) {
       try {
@@ -95,18 +94,17 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       }
     }
 
-    final now = DateTime.now().millisecondsSinceEpoch;
-    const dayMs = 24 * 60 * 60 * 1000;
-    if (now - lastTime > dayMs || _donators.isEmpty) {
-      await _fetchDonators();
-    }
+    // Always fetch fresh data on screen open
+    await _fetchDonators();
   }
 
   Future<void> _fetchDonators() async {
     if (_isLoading) return;
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       final response = await request.dio.get<String>(
@@ -143,62 +141,102 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
 
   List<DonatorItem> _parseDonatorsHtml(String html) {
     try {
-      final hofIndex = html.indexOf('id="hall-of-fame"');
-      if (hofIndex == -1) return [];
-      final hofSection = html.substring(hofIndex, (hofIndex + 4000).clamp(0, html.length));
+      final hofRegex = RegExp(
+        r'id=["\x27]hall-of-fame["\x27]|Зал\s+[Сс]лавы',
+        caseSensitive: false,
+      );
+      final hofMatch = hofRegex.firstMatch(html);
+      if (hofMatch == null) return [];
+
+      final startIndex = hofMatch.start;
+      final sectionEnd = html.indexOf('</section>', startIndex);
+      final hofSection = sectionEnd != -1
+          ? html.substring(startIndex, sectionEnd)
+          : html.substring(startIndex, (startIndex + 25000).clamp(0, html.length));
 
       final items = <DonatorItem>[];
 
-      // Top 1 (Throne)
-      final top1Match = RegExp(
-        r'throne-avatar.*?<span[^>]*>(.*?)<\/span>.*?<span[^>]*class="[^"]*font-bold[^"]*"[^>]*>(@\w+)<\/span>.*?<span[^>]*>(\d+₽)<\/span>',
-        dotAll: true,
-      ).firstMatch(hofSection);
+      // 1. Top 1 (Throne)
+      final throneIndex = hofSection.indexOf('throne-card');
+      if (throneIndex != -1) {
+        final throneEnd = hofSection.indexOf('grid', throneIndex);
+        final throneHtml = throneEnd != -1
+            ? hofSection.substring(throneIndex, throneEnd)
+            : hofSection.substring(throneIndex);
 
-      if (top1Match != null) {
-        items.add(DonatorItem(
-          rank: 1,
-          title: top1Match.group(1)?.trim() ?? 'Царь Доната',
-          name: top1Match.group(2)?.trim() ?? '@glebpozdner',
-          amount: top1Match.group(3)?.trim() ?? '2360₽',
-          avatarUrl: 'https://vpn.lie2srvv.com/top1.png',
-        ));
-      } else {
+        final titleMatch = RegExp(r'<span[^>]*uppercase[^>]*>([^<]+)</span>').firstMatch(throneHtml);
+        final title = titleMatch?.group(1)?.trim() ?? 'Царь Доната';
+
+        final nameMatch = RegExp(r'<span[^>]*font-bold[^>]*>([^<]+)</span>').firstMatch(throneHtml) ??
+            RegExp(r'>\s*(@[^\s<]+)\s*<').firstMatch(throneHtml);
+        final name = nameMatch?.group(1)?.trim();
+
+        final amtMatch = RegExp(r'>\s*(\d[\d\s]*[₽\w]+)\s*<').firstMatch(throneHtml);
+        final amt = amtMatch?.group(1)?.trim();
+
+        final avMatch = RegExp(r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]').firstMatch(throneHtml);
+        var av = avMatch?.group(1)?.trim() ?? 'top1.png';
+        if (!av.startsWith('http')) {
+          av = 'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
+        }
+
+        if (name != null && amt != null) {
+          items.add(DonatorItem(
+            rank: 1,
+            title: title,
+            name: name,
+            amount: amt,
+            avatarUrl: av,
+          ));
+        }
+      }
+
+      if (items.isEmpty) {
         items.add(_defaultDonators[0]);
       }
 
-      // Top 2
-      final top2Match = RegExp(
-        r'src="top2\.png".*?<span[^>]*class="[^"]*font-semibold[^"]*"[^>]*>(@\w+)<\/span>.*?<span[^>]*>(\d+₽)<\/span>',
-        dotAll: true,
-      ).firstMatch(hofSection);
-      if (top2Match != null) {
-        items.add(DonatorItem(
-          rank: 2,
-          name: top2Match.group(1)?.trim() ?? '@lllirap',
-          amount: top2Match.group(2)?.trim() ?? '907₽',
-          avatarUrl: 'https://vpn.lie2srvv.com/top2.png',
-        ));
-      } else {
-        items.add(_defaultDonators[1]);
+      // 2. Liquid glass cards (Top 2, 3, etc.)
+      final cardChunks = hofSection.split(RegExp(r'<div[^>]*class=["\x27][^"\x27]*liquid-glass'));
+      if (cardChunks.length > 1) {
+        for (var i = 1; i < cardChunks.length; i++) {
+          final chunk = cardChunks[i];
+
+          final rankMatch = RegExp(r'rank-badge[^>]*>(\d+)</span>').firstMatch(chunk);
+          final rank = rankMatch != null ? int.tryParse(rankMatch.group(1) ?? '') ?? (i + 1) : (i + 1);
+
+          final nameMatch = RegExp(r'<span[^>]*font-semibold[^>]*>([^<]+)</span>').firstMatch(chunk) ??
+              RegExp(r'>\s*(@[^\s<]+)\s*<').firstMatch(chunk);
+          final name = nameMatch?.group(1)?.trim();
+
+          final amtMatch = RegExp(r'<span[^>]*font-mono[^>]*>([^<]+)</span>').firstMatch(chunk) ??
+              RegExp(r'>\s*(\d[\d\s]*[₽\w]+)\s*<').firstMatch(chunk);
+          final amt = amtMatch?.group(1)?.trim();
+
+          final avMatch = RegExp(r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]').firstMatch(chunk);
+          var av = avMatch?.group(1)?.trim() ?? 'top$rank.png';
+          if (!av.startsWith('http')) {
+            av = 'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
+          }
+
+          if (name != null && amt != null) {
+            items.add(DonatorItem(
+              rank: rank,
+              name: name,
+              amount: amt,
+              avatarUrl: av,
+            ));
+          }
+        }
       }
 
-      // Top 3
-      final top3Match = RegExp(
-        r'src="top3\.png".*?<span[^>]*class="[^"]*font-semibold[^"]*"[^>]*>(@\w+)<\/span>.*?<span[^>]*>(\d+₽)<\/span>',
-        dotAll: true,
-      ).firstMatch(hofSection);
-      if (top3Match != null) {
-        items.add(DonatorItem(
-          rank: 3,
-          name: top3Match.group(1)?.trim() ?? '@Lana_590',
-          amount: top3Match.group(2)?.trim() ?? '800₽',
-          avatarUrl: 'https://vpn.lie2srvv.com/top3.png',
-        ));
-      } else {
+      if (!items.any((e) => e.rank == 2)) {
+        items.add(_defaultDonators[1]);
+      }
+      if (!items.any((e) => e.rank == 3)) {
         items.add(_defaultDonators[2]);
       }
 
+      items.sort((a, b) => a.rank.compareTo(b.rank));
       return items;
     } catch (e) {
       commonPrint.log('Error parsing donators html: $e');
@@ -275,6 +313,7 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
                 child: ClipOval(
                   child: Image.network(
                     item.avatarUrl,
+                    key: ValueKey('${item.avatarUrl}_${item.name}'),
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => const Icon(
                       Icons.person,
@@ -341,6 +380,7 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
             child: ClipOval(
               child: Image.network(
                 item.avatarUrl,
+                key: ValueKey('${item.avatarUrl}_${item.name}'),
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => Icon(
                   Icons.person,
@@ -406,14 +446,8 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       (e) => e.rank == 1,
       orElse: () => _defaultDonators[0],
     );
-    final top2 = _donators.firstWhere(
-      (e) => e.rank == 2,
-      orElse: () => _defaultDonators[1],
-    );
-    final top3 = _donators.firstWhere(
-      (e) => e.rank == 3,
-      orElse: () => _defaultDonators[2],
-    );
+    final otherDonators = _donators.where((e) => e.rank > 1).toList()
+      ..sort((a, b) => a.rank.compareTo(b.rank));
 
     return CommonScaffold(
       title: appLocalizations.donators,
@@ -423,13 +457,13 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
               .copyWith(bottom: 32),
           children: [
-
             _buildTop1Card(top1),
             const SizedBox(height: 14),
-            _buildRankCard(top2, isSilver: true),
-            const SizedBox(height: 10),
-            _buildRankCard(top3, isSilver: false),
-            const SizedBox(height: 28),
+            ...otherDonators.map((item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _buildRankCard(item, isSilver: item.rank == 2),
+                )),
+            const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
               height: 48,

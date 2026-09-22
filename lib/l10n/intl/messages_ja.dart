@@ -191,6 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bind": MessageLookupByLibrary.simpleMessage("連携"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("ブラックリストモード"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("接続をブロック"),
+    "buyInTelegram": MessageLookupByLibrary.simpleMessage("Telegramで購入"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("除外ドメイン"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "システムプロキシが有効な場合のみ適用されます",
@@ -216,6 +217,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "checkUpdate": MessageLookupByLibrary.simpleMessage("更新を確認"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("すでに最新バージョンです"),
+    "checkUpdateStatus": MessageLookupByLibrary.simpleMessage("更新を確認"),
     "clearData": MessageLookupByLibrary.simpleMessage("データを消去"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("検索をクリア"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("クリップボードへエクスポート"),
@@ -345,6 +347,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("SSIDを編集"),
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
+    "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
+      "LieVPN サブスクリプション URL を入力",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" 件"),
     "entriesCount": m8,
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから隠す"),
@@ -462,6 +467,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "プロキシグループ名を入力してください",
     ),
     "inputRuleContent": MessageLookupByLibrary.simpleMessage("ルールの内容を入力してください"),
+    "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage("URLを貼り付け"),
     "installedAppsPermissionDeniedMessage":
         MessageLookupByLibrary.simpleMessage(
           "アプリ一覧の権限が拒否されたため、インストール済みアプリを取得できません。システム設定から手動で許可してください。",
@@ -872,6 +878,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rulesCount": m26,
     "save": MessageLookupByLibrary.simpleMessage("保存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("変更を保存しますか？"),
+    "scanQrCode": MessageLookupByLibrary.simpleMessage("QRコードをスキャン"),
     "script": MessageLookupByLibrary.simpleMessage("スクリプト"),
     "scriptModeDesc": MessageLookupByLibrary.simpleMessage(
       "スクリプトモード：外部の拡張スクリプトを使用し、ワンクリックで設定を上書きします",
@@ -959,11 +966,29 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
       "クリップボードからサブスクリプションを有効化しています...",
     ),
+    "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
+      "LieVPN サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
+    ),
+    "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
+      "クリップボードにサブスクリプションが見つかりました",
+    ),
     "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
       "クリップボード、URL、またはQRコードから",
     ),
+    "subscriptionInactive": MessageLookupByLibrary.simpleMessage(
+      "サブスクリプションが無効です",
+    ),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("サブスクリプション情報"),
+    "subscriptionInvalidOrEmpty": MessageLookupByLibrary.simpleMessage(
+      "サブスクリプションにサーバーが含まれていないか、無効です",
+    ),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage("変更はありません"),
+    "subscriptionRequired": MessageLookupByLibrary.simpleMessage(
+      "サブスクリプションが必要です",
+    ),
+    "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
+      "LieVPN を使用するには有効なサブスクリプションが必要です。リンクまたはQRコードからアクセスを有効化してください。",
+    ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションを更新しました",
     ),

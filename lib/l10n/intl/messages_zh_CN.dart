@@ -179,6 +179,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bind": MessageLookupByLibrary.simpleMessage("绑定"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("黑名单模式"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("阻止连接"),
+    "buyInTelegram": MessageLookupByLibrary.simpleMessage("在 Telegram 购买"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("排除域名"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage("仅在系统代理启用时生效"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage("缓存已损坏，是否清空？"),
@@ -200,6 +201,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "checkUpdate": MessageLookupByLibrary.simpleMessage("检查更新"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("当前应用已经是最新版了"),
+    "checkUpdateStatus": MessageLookupByLibrary.simpleMessage("检查续订"),
     "clearData": MessageLookupByLibrary.simpleMessage("清除数据"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("清除搜索"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("导出剪贴板"),
@@ -307,6 +309,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("编辑SSID"),
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("英语"),
+    "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
+      "输入 LieVPN 订阅链接",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m8,
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
@@ -404,6 +409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage("请输入正确的快捷键"),
     "inputProxyGroupName": MessageLookupByLibrary.simpleMessage("输入策略组名称"),
     "inputRuleContent": MessageLookupByLibrary.simpleMessage("输入规则内容"),
+    "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage("粘贴链接"),
     "installedAppsPermissionDeniedMessage":
         MessageLookupByLibrary.simpleMessage(
           "读取应用列表权限已被拒绝，无法获取已安装的应用。请前往系统设置手动开启。",
@@ -748,6 +754,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rulesCount": m26,
     "save": MessageLookupByLibrary.simpleMessage("保存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("是否保存更改？"),
+    "scanQrCode": MessageLookupByLibrary.simpleMessage("扫描二维码"),
     "script": MessageLookupByLibrary.simpleMessage("脚本"),
     "scriptModeDesc": MessageLookupByLibrary.simpleMessage(
       "脚本模式，使用外部扩展脚本，提供一键覆写配置的能力",
@@ -827,11 +834,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionActivating": MessageLookupByLibrary.simpleMessage(
       "正在激活剪贴板中的订阅...",
     ),
+    "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
+      "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
+    ),
+    "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
+      "在剪贴板中找到订阅",
+    ),
     "subscriptionFromClipboardHint": MessageLookupByLibrary.simpleMessage(
       "从剪贴板、链接或二维码导入",
     ),
+    "subscriptionInactive": MessageLookupByLibrary.simpleMessage("订阅未激活"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("订阅信息"),
+    "subscriptionInvalidOrEmpty": MessageLookupByLibrary.simpleMessage(
+      "订阅不包含服务器或无效",
+    ),
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage("订阅无变化"),
+    "subscriptionRequired": MessageLookupByLibrary.simpleMessage("需要订阅"),
+    "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
+      "使用 LieVPN 应用需要有效订阅。通过链接或二维码激活访问。",
+    ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage("订阅已更新"),
     "supportProject": MessageLookupByLibrary.simpleMessage("支持项目"),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),

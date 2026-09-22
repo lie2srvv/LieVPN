@@ -76,3 +76,22 @@ Future<SetupState> setupState(Ref ref, int? profileId) async {
         : null,
   );
 }
+
+final activeSubscriptionProfileProvider = Provider<Profile?>((ref) {
+  final currentProfile = ref.watch(currentProfileProvider);
+  if (hasActiveLieVpnSubscription(currentProfile)) {
+    return currentProfile;
+  }
+  final profiles = ref.watch(profilesProvider);
+  for (final profile in profiles) {
+    if (hasActiveLieVpnSubscription(profile)) {
+      return profile;
+    }
+  }
+  return null;
+});
+
+final hasActiveSubscriptionProvider = Provider<bool>((ref) {
+  final activeProfile = ref.watch(activeSubscriptionProfileProvider);
+  return activeProfile != null;
+});
