@@ -400,10 +400,8 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
     }
 
     final info = currentProfile?.subscriptionInfo;
-    final isExpired = info != null &&
-        info.expire > 0 &&
-        DateTime.fromMillisecondsSinceEpoch(info.expire * 1000)
-            .isBefore(DateTime.now());
+    final expiryStatus = getSubscriptionExpiryStatus(currentProfile);
+    final isExpired = expiryStatus.isExpired;
 
     final userName = (currentProfile?.label.isNotEmpty == true)
         ? currentProfile!.label
@@ -547,13 +545,86 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            if (expiryStatus.isExpiringSoon || expiryStatus.isExpired) ...[
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isExpired
+                      ? Theme.of(context)
+                          .colorScheme
+                          .errorContainer
+                          .withValues(alpha: 0.3)
+                      : Colors.amber.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                  border: Border.all(
+                    color: isExpired
+                        ? Theme.of(context)
+                            .colorScheme
+                            .error
+                            .withValues(alpha: 0.3)
+                        : Colors.amber.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isExpired
+                          ? Icons.warning_amber_rounded
+                          : Icons.access_time_rounded,
+                      size: 20,
+                      color: isExpired
+                          ? Theme.of(context).colorScheme.error
+                          : Colors.amber.shade700,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        expiryStatus.dynamicWarningText,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: isExpired
+                                  ? Theme.of(context).colorScheme.error
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.amber.shade300
+                                      : Colors.amber.shade900),
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: FilledButton.icon(
+                onPressed: () => dialogs.openUrl('https://t.me/liesubbot'),
+                icon: const Icon(Icons.bolt_rounded),
+                label: const Text(
+                  'Продлить подписку',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppCorner.md),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: SizedBox(
                     height: 48,
-                    child: FilledButton.icon(
+                    child: OutlinedButton.icon(
                       onPressed: _isUpdating
                           ? null
                           : () => _handleUpdate(currentProfile),
@@ -565,7 +636,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                             )
                           : const Icon(Icons.refresh_rounded),
                       label: Text(appLocalizations.update),
-                      style: FilledButton.styleFrom(
+                      style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppCorner.md),
                         ),

@@ -180,14 +180,6 @@ class System {
     if (hasHelperService) {
       return await linux?.registerService() ?? AuthorizeCode.error;
     }
-    if (isAppImage) {
-      commonPrint.log(
-        'TUN cannot be authorized inside an AppImage: '
-        'the bundled Core is on a read-only nosuid mount',
-        logLevel: LogLevel.error,
-      );
-      return AuthorizeCode.error;
-    }
     final isAdmin = await checkIsAdmin();
     if (isAdmin) {
       return AuthorizeCode.none;
@@ -206,13 +198,23 @@ class System {
       }
       return AuthorizeCode.success;
     } else if (system.isLinux) {
-      final escapedCorePath = _shellEscape(appPath.corePath);
+      final targetPath =
+          isAppImage ? AppPath.linuxExternalCorePath : appPath.corePath;
+      final sourcePath =
+          isAppImage ? appPath.bundledCorePath : appPath.corePath;
+      final escapedTarget = _shellEscape(targetPath);
+      final escapedSource = _shellEscape(sourcePath);
+      final copyCommand = isAppImage
+          ? 'mkdir -p /opt/flclash && cp -f $escapedSource $escapedTarget && '
+          : '';
+      final shellCommand =
+          '$copyCommand chown root:root $escapedTarget && chmod 4755 $escapedTarget';
       final ProcessResult result;
       try {
         result = await runProcess('pkexec', [
           '/bin/sh',
           '-c',
-          'chown root:root $escapedCorePath && chmod +sx $escapedCorePath',
+          shellCommand,
         ]);
       } on ProcessException catch (error) {
         commonPrint.log(

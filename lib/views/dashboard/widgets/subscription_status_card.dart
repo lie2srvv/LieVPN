@@ -86,17 +86,17 @@ class SubscriptionStatusCard extends ConsumerWidget {
     }
 
     final subscriptionInfo = currentProfile?.subscriptionInfo;
+    final expiryStatus = getSubscriptionExpiryStatus(currentProfile);
+    final isExpired = expiryStatus.isExpired;
 
     final hasExpire = subscriptionInfo != null && subscriptionInfo.expire > 0;
     String expireText = '';
-    bool isExpired = false;
     if (hasExpire) {
       final expireDate =
           DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000);
       final diff = expireDate.difference(DateTime.now());
       if (diff.isNegative) {
         expireText = '${appLocalizations.statusExpired} (${expireDate.show})';
-        isExpired = true;
       } else if (diff.inDays > 0) {
         expireText = '${expireDate.show} (${diff.inDays} d.)';
       } else if (diff.inHours > 0) {
@@ -120,7 +120,6 @@ class SubscriptionStatusCard extends ConsumerWidget {
     return CommonCard(
       radius: AppCorner.lg,
       onPressed: () async {
-        // Opens PersonalAccountSheet modal
         final result = await showPersonalAccountSheet(context, currentProfile);
         if (result == 'change' && context.mounted) {
           await showAddSubscriptionFlow(context, ref, replaceOld: true);
@@ -185,6 +184,74 @@ class SubscriptionStatusCard extends ConsumerWidget {
                 ),
               ],
             ),
+            if (expiryStatus.isExpiringSoon || isExpired) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isExpired
+                      ? colorScheme.errorContainer.withValues(alpha: 0.35)
+                      : Colors.amber.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                  border: Border.all(
+                    color: isExpired
+                        ? colorScheme.error.withValues(alpha: 0.3)
+                        : Colors.amber.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isExpired
+                          ? Icons.warning_amber_rounded
+                          : Icons.access_time_rounded,
+                      size: 16,
+                      color: isExpired
+                          ? colorScheme.error
+                          : Colors.amber.shade700,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        expiryStatus.dynamicWarningText,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: isExpired
+                              ? colorScheme.error
+                              : (Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.amber.shade300
+                                  : Colors.amber.shade900),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () =>
+                          dialogs.openUrl('https://t.me/liesubbot'),
+                      borderRadius: BorderRadius.circular(AppCorner.sm),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        child: Text(
+                          'Продлить',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: isExpired
+                                ? colorScheme.error
+                                : const Color(0xFF10B981),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (total > 0) ...[
               const SizedBox(height: 12),
               ClipRRect(

@@ -6,6 +6,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/window.dart';
 import 'package:fl_clash/bootstrap.dart';
 import 'package:fl_clash/common/system_dns.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
@@ -126,6 +127,27 @@ class ApplicationState extends ConsumerState<Application> {
       ref.read(checkIpNumProvider.notifier).add();
     }
     _preHasVpn = hasVpn;
+
+    final isRunning = ref.read(isStartProvider);
+    final hasInternet = results.any((r) =>
+        r == ConnectivityResult.wifi ||
+        r == ConnectivityResult.mobile ||
+        r == ConnectivityResult.ethernet);
+    if (isRunning && hasInternet) {
+      debouncer.call(
+        FunctionTag.vpnTip,
+        () async {
+          if (!ref.read(isStartProvider)) return;
+          commonPrint.log(
+            'Network interface change detected, resetting connections...',
+          );
+          try {
+            await ref.read(coreHandlerProvider).resetConnections();
+          } catch (_) {}
+        },
+        duration: const Duration(milliseconds: 1500),
+      );
+    }
   }
 
   @override
@@ -176,7 +198,7 @@ class ApplicationState extends ConsumerState<Application> {
               brightness: Brightness.dark,
             ).toPureBlack(themeProps.pureBlack),
           ).withAppShapes,
-          home: child!,
+          home: ConnectionHealthManager(child: child!),
         );
       },
       child: const HomePage(),

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/subscription.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,45 +8,47 @@ void main() {
   group('LieVPN Subscription URL validation', () {
     test('accepts valid LieVPN URLs', () {
       expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/token_abc123'),
+        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/sub/abcdef123'),
         isTrue,
       );
       expect(
-        isValidLieVpnSubscriptionUrl('http://vpn.lie2srvv.com/user_profile'),
+        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/token123'),
         isTrue,
       );
       expect(
-        isValidLieVpnSubscriptionUrl('vpn.lie2srvv.com/key_987'),
+        isValidLieVpnSubscriptionUrl('http://vpn.lie2srvv.com/user/config'),
         isTrue,
       );
     });
 
     test('rejects invalid, external, or root URLs', () {
-      expect(isValidLieVpnSubscriptionUrl(''), isFalse);
-      expect(isValidLieVpnSubscriptionUrl('not a url'), isFalse);
-      expect(isValidLieVpnSubscriptionUrl('https://other.com/token'), isFalse);
       expect(isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com'), isFalse);
-      expect(isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/'), isFalse);
       expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/index.html'),
+        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/'),
         isFalse,
       );
+      expect(
+        isValidLieVpnSubscriptionUrl('https://google.com/test'),
+        isFalse,
+      );
+      expect(isValidLieVpnSubscriptionUrl('not a url'), isFalse);
+      expect(isValidLieVpnSubscriptionUrl(''), isFalse);
     });
   });
 
   group('Extract LieVPN URL from text/clipboard', () {
     test('finds url in mixed text', () {
-      final text =
-          'Привет, твоя подписка: https://vpn.lie2srvv.com/sub_token_123 приятного пользования';
+      const text =
+          'Here is your subscription: https://vpn.lie2srvv.com/mytoken please enjoy';
       expect(
         extractLieVpnUrl(text),
-        equals('https://vpn.lie2srvv.com/sub_token_123'),
+        'https://vpn.lie2srvv.com/mytoken',
       );
     });
 
     test('returns null for text without LieVPN url', () {
-      expect(extractLieVpnUrl('Some random text without links'), isNull);
-      expect(extractLieVpnUrl('https://google.com/test'), isNull);
+      expect(extractLieVpnUrl('hello world 123'), isNull);
+      expect(extractLieVpnUrl('https://other-vpn.com/sub'), isNull);
     });
   });
 
@@ -61,6 +63,10 @@ void main() {
       );
       expect(isSubscriptionExpired(profile), isTrue);
       expect(hasActiveLieVpnSubscription(profile), isFalse);
+
+      final status = getSubscriptionExpiryStatus(profile);
+      expect(status.isExpired, isTrue);
+      expect(status.dynamicWarningText, contains('истек'));
     });
 
     test('detects active profile', () {
@@ -73,6 +79,38 @@ void main() {
       );
       expect(isSubscriptionExpired(profile), isFalse);
       expect(hasActiveLieVpnSubscription(profile), isTrue);
+
+      final status = getSubscriptionExpiryStatus(profile);
+      expect(status.isExpired, isFalse);
+      expect(status.isExpiringSoon, isFalse);
+    });
+
+    test('computes smart dynamic warning text for expiring subscription', () {
+      // 2 days remaining
+      final twoDaysTimestamp =
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 2 + 3600;
+      final profile2Days = Profile.normal(
+        url: 'https://vpn.lie2srvv.com/sub123',
+      ).copyWith(
+        subscriptionInfo: SubscriptionInfo(expire: twoDaysTimestamp),
+      );
+      final status2Days = getSubscriptionExpiryStatus(profile2Days);
+      expect(status2Days.isExpiringSoon, isTrue);
+      expect(status2Days.remainingDays, 2);
+      expect(status2Days.dynamicWarningText, contains('через 2 дня'));
+
+      // 1 day remaining
+      final oneDayTimestamp =
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 1 + 3600;
+      final profile1Day = Profile.normal(
+        url: 'https://vpn.lie2srvv.com/sub123',
+      ).copyWith(
+        subscriptionInfo: SubscriptionInfo(expire: oneDayTimestamp),
+      );
+      final status1Day = getSubscriptionExpiryStatus(profile1Day);
+      expect(status1Day.isExpiringSoon, isTrue);
+      expect(status1Day.remainingDays, 1);
+      expect(status1Day.dynamicWarningText, contains('через 1 день'));
     });
   });
 

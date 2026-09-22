@@ -66,6 +66,88 @@ bool isSubscriptionExpired(Profile? profile) {
   return expireDate.isBefore(DateTime.now());
 }
 
+/// Representation of subscription expiry information with dynamic days/hours count.
+class SubscriptionExpiryStatus {
+  final bool hasExpire;
+  final bool isExpired;
+  final bool isExpiringSoon;
+  final int remainingDays;
+  final int remainingHours;
+  final String dynamicWarningText;
+
+  const SubscriptionExpiryStatus({
+    required this.hasExpire,
+    required this.isExpired,
+    required this.isExpiringSoon,
+    required this.remainingDays,
+    required this.remainingHours,
+    required this.dynamicWarningText,
+  });
+}
+
+/// Computes dynamic subscription expiration status and formatted Russian warning message.
+SubscriptionExpiryStatus getSubscriptionExpiryStatus(Profile? profile) {
+  final expire = profile?.subscriptionInfo?.expire;
+  if (expire == null || expire <= 0) {
+    return const SubscriptionExpiryStatus(
+      hasExpire: false,
+      isExpired: false,
+      isExpiringSoon: false,
+      remainingDays: 0,
+      remainingHours: 0,
+      dynamicWarningText: '',
+    );
+  }
+
+  final expireDate = DateTime.fromMillisecondsSinceEpoch(expire * 1000);
+  final now = DateTime.now();
+  final diff = expireDate.difference(now);
+
+  if (diff.isNegative) {
+    return const SubscriptionExpiryStatus(
+      hasExpire: true,
+      isExpired: true,
+      isExpiringSoon: false,
+      remainingDays: 0,
+      remainingHours: 0,
+      dynamicWarningText: 'Срок действия подписки истек',
+    );
+  }
+
+  final days = diff.inDays;
+  final hours = diff.inHours;
+  final minutes = diff.inMinutes;
+  final isExpiringSoon = diff.inSeconds <= 3 * 86400; // <= 3 days
+
+  String timeText;
+  if (days >= 1) {
+    final daySuffix = (days == 1) ? 'день' : 'дня';
+    timeText = '$days $daySuffix';
+  } else if (hours >= 1) {
+    final mod10 = hours % 10;
+    final mod100 = hours % 100;
+    final hourSuffix = (mod10 == 1 && mod100 != 11)
+        ? 'час'
+        : ([2, 3, 4].contains(mod10) && ![12, 13, 14].contains(mod100))
+            ? 'часа'
+            : 'часов';
+    timeText = '$hours $hourSuffix';
+  } else if (minutes > 0) {
+    timeText = '$minutes мин.';
+  } else {
+    timeText = 'менее минуты';
+  }
+
+  return SubscriptionExpiryStatus(
+    hasExpire: true,
+    isExpired: false,
+    isExpiringSoon: isExpiringSoon,
+    remainingDays: days,
+    remainingHours: hours,
+    dynamicWarningText: 'Подписка заканчивается через $timeText',
+  );
+}
+
 /// Checks if Clash YAML config bytes contain at least one valid proxy or proxy-provider.
 bool checkHasProxies(Uint8List bytes) {
   try {

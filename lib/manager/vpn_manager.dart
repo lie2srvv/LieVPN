@@ -22,32 +22,32 @@ class _VpnContainerState extends ConsumerState<VpnManager> {
     super.initState();
     ref.listenManual(vpnStateProvider, (prev, next) {
       if (prev != next) {
-        showTip(next);
+        _handleVpnStateChange(next);
       }
     });
   }
 
-  void showTip(VpnState state) {
+  void _handleVpnStateChange(VpnState state) {
     throttler.call(
       FunctionTag.vpnTip,
-      () {
+      () async {
         if (!ref.read(isStartProvider) || state == globalState.lastVpnState) {
           return;
         }
-        dialogs.showNotifier(
-          currentAppLocalizations.vpnConfigChangeDetected,
-          level: MessageLevel.warning,
-          actionState: MessageActionState(
-            actionText: currentAppLocalizations.restart,
-            action: () async {
-              final setupAction = ref.read(setupActionProvider.notifier);
-              await setupAction.setRunning(false);
-              await setupAction.setRunning(true);
-            },
-          ),
-        );
+        globalState.lastVpnState = state;
+        commonPrint.log('VPN network state change detected, auto-reconnecting...');
+        try {
+          final setupAction = ref.read(setupActionProvider.notifier);
+          await setupAction.setRunning(false);
+          await Future.delayed(const Duration(milliseconds: 600));
+          if (mounted && ref.read(isStartProvider) == false) {
+            await setupAction.setRunning(true);
+          }
+        } catch (e) {
+          commonPrint.log('VPN auto-reconnect error: $e', logLevel: LogLevel.warning);
+        }
       },
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 4),
       fire: true,
     );
   }
