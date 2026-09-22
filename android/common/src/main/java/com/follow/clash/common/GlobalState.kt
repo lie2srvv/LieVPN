@@ -38,10 +38,7 @@ object GlobalState : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatch
 
     fun setCrashlytics(enable: Boolean) {
         FirebaseApp.initializeApp(application)
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enable
-        if (enable) {
-            log("Crashlytics enabled")
-        }
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = false
     }
 
     fun didCrashOnPreviousExecution(): Boolean {

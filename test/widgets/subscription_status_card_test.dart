@@ -83,6 +83,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Личный кабинет'), findsOneWidget);
     expect(find.textContaining('LieVPN User'), findsOneWidget);
-    expect(find.text('Статистика трафика'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
   });
 }

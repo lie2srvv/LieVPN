@@ -159,7 +159,6 @@ class Bootstrap {
     }
     await _handleFailedPreference();
     await _showCrashRecoveryTip();
-    await _showCrashlyticsTip();
     await _container.read(coreActionProvider.notifier).startCore();
     if (!_bootDecision.isDegraded) {
       await _container.read(setupActionProvider.notifier).initStatus();
@@ -215,22 +214,7 @@ class Bootstrap {
     await _container.read(systemActionProvider.notifier).handleExit(false);
   }
 
-  Future<void> _showCrashlyticsTip() async {
-    if (!system.isAndroid) return;
-    if (_container.read(
-      appSettingProvider.select((state) => state.crashlyticsTip),
-    )) {
-      return;
-    }
-    await dialogs.showMessage(
-      title: currentAppLocalizations.dataCollectionTip,
-      cancelable: false,
-      message: TextSpan(text: currentAppLocalizations.dataCollectionContent),
-    );
-    _container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(crashlyticsTip: true));
-  }
+
 
   Future<void> _handlerDisclaimer() async {
     if (_container.read(

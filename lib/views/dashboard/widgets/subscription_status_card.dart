@@ -87,9 +87,10 @@ class SubscriptionStatusCard extends ConsumerWidget {
 
     final subscriptionInfo = currentProfile?.subscriptionInfo;
 
-    String expireText;
+    final hasExpire = subscriptionInfo != null && subscriptionInfo.expire > 0;
+    String expireText = '';
     bool isExpired = false;
-    if (subscriptionInfo != null && subscriptionInfo.expire > 0) {
+    if (hasExpire) {
       final expireDate =
           DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000);
       final diff = expireDate.difference(DateTime.now());
@@ -103,17 +104,18 @@ class SubscriptionStatusCard extends ConsumerWidget {
       } else {
         expireText = '< 1 h.';
       }
-    } else {
-      expireText = appLocalizations.noExpiration;
     }
 
     final total = subscriptionInfo?.total ?? 0;
     final used =
         (subscriptionInfo?.upload ?? 0) + (subscriptionInfo?.download ?? 0);
     final double progress = total > 0 ? (used / total).clamp(0.0, 1.0) : 0.0;
-    final trafficText = total > 0
-        ? '${used.traffic.show} / ${total.traffic.show}'
-        : '${appLocalizations.dataUsed}: ${used.traffic.show}';
+
+    final subtitleText = currentProfile?.label.isNotEmpty == true
+        ? (hasExpire
+            ? '${currentProfile!.label} • $expireText'
+            : currentProfile!.label)
+        : (hasExpire ? expireText : 'LieVPN');
 
     return CommonCard(
       radius: AppCorner.lg,
@@ -164,9 +166,7 @@ class SubscriptionStatusCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        currentProfile?.label.isNotEmpty == true
-                            ? '${currentProfile!.label} • $expireText'
-                            : expireText,
+                        subtitleText,
                         style: textTheme.bodyMedium?.copyWith(
                           color: isExpired
                               ? colorScheme.error
@@ -185,22 +185,8 @@ class SubscriptionStatusCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  appLocalizations.trafficUsage,
-                  style: textTheme.bodySmall?.toLight,
-                ),
-                Text(
-                  trafficText,
-                  style: textTheme.bodySmall?.toSoftBold,
-                ),
-              ],
-            ),
             if (total > 0) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppCorner.xs),
                 child: LinearProgressIndicator(
@@ -209,6 +195,29 @@ class SubscriptionStatusCard extends ConsumerWidget {
                   backgroundColor: colorScheme.primary.opacity15,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     isExpired ? colorScheme.error : const Color(0xFF10B981),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '${used.traffic.show} / ${total.traffic.show}',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ] else if (used > 0) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  used.traffic.show,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

@@ -55,7 +55,7 @@ class Navigation implements NavigationPort {
         label: PageLabel.resources,
         builder: (_) =>
             const ResourcesView(key: GlobalObjectKey(PageLabel.resources)),
-        modes: [NavigationItemMode.more],
+        modes: [],
       ),
       NavigationItem(
         icon: const Icon(Icons.adb),

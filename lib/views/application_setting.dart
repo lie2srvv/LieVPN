@@ -92,19 +92,7 @@ class ApplicationSettingView extends StatelessWidget {
           update: (state, value) =>
               state.copyWith(showNotificationStopAction: value),
         ),
-      if (system.isAndroid)
-        _appSettingToggle(
-          title: (l) => l.crashlytics,
-          subtitle: (l) => l.crashlyticsTip,
-          select: (state) => state.crashlytics,
-          update: (state, value) => state.copyWith(crashlytics: value),
-        ),
-      _appSettingToggle(
-        title: (l) => l.autoCheckUpdate,
-        subtitle: (l) => l.autoCheckUpdateDesc,
-        select: (state) => state.autoCheckUpdate,
-        update: (state, value) => state.copyWith(autoCheckUpdate: value),
-      ),
+
       _appSettingToggle(
         title: (l) => l.checkCertificate,
         subtitle: (l) => l.checkCertificateDesc,

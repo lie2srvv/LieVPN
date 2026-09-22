@@ -69,28 +69,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 2),
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: IconButton(
-                      tooltip: appLocalizations.tip,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        dialogs.showMessage(
-                          title: appLocalizations.tip,
-                          message: TextSpan(
-                            text: appLocalizations.detectionTip,
-                          ),
-                          cancelable: false,
-                        );
-                      },
-                      icon: Icon(
-                        size: 16.ap,
-                        Icons.info_outline,
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             ),
