@@ -122,16 +122,8 @@ extension ProfilesExt on List<Profile> {
 
   String _getLabel(String label, int id) {
     final realLabel = label.takeFirstValid([id.toString()]);
-    final hasDup =
-        indexWhere(
-          (element) => element.label == realLabel && element.id != id,
-        ) !=
-        -1;
-    if (hasDup) {
-      return _getLabel(getOverwriteLabel(realLabel), id);
-    } else {
-      return realLabel;
-    }
+    final clean = realLabel.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+    return clean.isNotEmpty ? clean : 'LieVPN';
   }
 
   Profile optimizeLabel(Profile profile) {
@@ -203,11 +195,14 @@ extension ProfileExtension on Profile {
       return (copyWith(lastUpdateDate: DateTime.now()), false);
     }
 
+    final rawLabel = label.takeFirstValid([
+      getFileNameForDisposition(disposition),
+      id.toString(),
+    ]);
+    final cleanLabel = rawLabel.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+
     final updated = await copyWith(
-      label: label.takeFirstValid([
-        getFileNameForDisposition(disposition),
-        id.toString(),
-      ]),
+      label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
       subscriptionInfo: newSubscriptionInfo,
     ).saveFile(bytes, validate: validate);
     return (updated, true);

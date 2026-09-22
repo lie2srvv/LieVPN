@@ -15,7 +15,7 @@ enum AddSubscriptionChoice { qrcode, url }
 Future<void> showAddSubscriptionFlow(
   BuildContext context,
   WidgetRef ref, {
-  bool replaceOld = false,
+  bool replaceOld = true,
 }) async {
   final parentContext = globalState.navigatorKey.currentContext ?? context;
 
@@ -150,7 +150,7 @@ Future<void> showAddSubscriptionFlow(
 Future<void> handleSubscriptionTap(
   BuildContext context,
   WidgetRef ref, {
-  bool replaceOld = false,
+  bool replaceOld = true,
 }) async {
   final appLocalizations = context.appLocalizations;
   String clipboardText = '';

@@ -122,7 +122,35 @@ class Bootstrap {
           darkSeed: dynamicColor.darkSeed,
           accentColor: dynamicColor.accentColor,
         );
-    final profiles = await database.profilesDao.query().get();
+    final rawProfiles = await database.profilesDao.query().get();
+    List<Profile> profiles = [];
+    if (rawProfiles.length > 1) {
+      final sorted = List<Profile>.from(rawProfiles)
+        ..sort((a, b) => (b.lastUpdateDate ?? DateTime.fromMillisecondsSinceEpoch(0))
+            .compareTo(a.lastUpdateDate ?? DateTime.fromMillisecondsSinceEpoch(0)));
+      final keep = sorted.first;
+      final cleanLabel =
+          keep.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final clean =
+          keep.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+      profiles = [clean];
+      for (final p in rawProfiles) {
+        if (p.id != keep.id) {
+          unawaited(database.profiles.remove((t) => t.id.equals(p.id)));
+        }
+      }
+      unawaited(database.profiles.put(clean.toCompanion()));
+    } else if (rawProfiles.isNotEmpty) {
+      final p = rawProfiles.first;
+      final cleanLabel =
+          p.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final clean =
+          p.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+      profiles = [clean];
+      if (clean.label != p.label) {
+        unawaited(database.profiles.put(clean.toCompanion()));
+      }
+    }
     container.read(profilesProvider.notifier).setAndReorder(profiles);
     await AppLocalizations.load(
       getLocaleForString(config.appSettingProps.locale) ?? const Locale('ru'),
@@ -212,23 +240,6 @@ class Bootstrap {
     }
     // Saving here would rewrite the preferences file the user just chose to delete.
     await _container.read(systemActionProvider.notifier).handleExit(false);
-  }
-
-
-
-  Future<void> _handlerDisclaimer() async {
-    if (_container.read(
-      appSettingProvider.select((state) => state.disclaimerAccepted),
-    )) {
-      return;
-    }
-    final isDisclaimerAccepted = await dialogs.showDisclaimer();
-    if (!isDisclaimerAccepted) {
-      await _container.read(systemActionProvider.notifier).handleExit();
-    }
-    _container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(disclaimerAccepted: true));
   }
 }
 

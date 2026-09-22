@@ -119,7 +119,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<bool> addProfileFormURL(String url, {bool replaceOld = false}) async {
+  Future<bool> addProfileFormURL(String url, {bool replaceOld = true}) async {
     var trimmed = url.trim();
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
@@ -152,8 +152,6 @@ class ProfilesAction extends _$ProfilesAction {
         );
       }
       final oldProfiles = List<Profile>.from(ref.read(profilesProvider));
-      setProfileAndAutoApply(profile);
-      ref.read(currentProfileIdProvider.notifier).value = profile.id;
       if (replaceOld) {
         for (final old in oldProfiles) {
           if (old.id != profile.id) {
@@ -161,6 +159,13 @@ class ProfilesAction extends _$ProfilesAction {
           }
         }
       }
+      final cleanLabel =
+          profile.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final cleanProfile = profile.copyWith(
+        label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
+      );
+      setProfileAndAutoApply(cleanProfile);
+      ref.read(currentProfileIdProvider.notifier).value = cleanProfile.id;
       return true;
     }
     return false;
@@ -173,7 +178,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<bool> addProfileFormQrCode({bool replaceOld = false}) async {
+  Future<bool> addProfileFormQrCode({bool replaceOld = true}) async {
     final url = await globalState.safeRun(picker.pickerConfigQRCode);
     if (url == null) return false;
     return addProfileFormURL(url, replaceOld: replaceOld);
