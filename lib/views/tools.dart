@@ -404,7 +404,6 @@ class _DonatorsItem extends StatelessWidget {
     return ListItem.open(
       leading: const Icon(Icons.workspace_premium_outlined),
       title: Text(context.appLocalizations.donators),
-      subtitle: const Text('// Зал Славы'),
       widget: const DonatorsView(),
       maxWidth: 400,
       forceFull: false,
