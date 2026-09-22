@@ -260,13 +260,13 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (valueColor ?? colorScheme.primary).withValues(alpha: 0.12),
+              color: const Color(0xFF10B981).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppCorner.md),
             ),
             child: Icon(
               icon,
               size: 20,
-              color: valueColor ?? colorScheme.primary,
+              color: const Color(0xFF10B981),
             ),
           ),
         ],
@@ -274,175 +274,319 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
     );
   }
 
+  Future<void> _handleUpdate(Profile? profile) async {
+    if (profile == null || _isUpdating) return;
+    setState(() {
+      _isUpdating = true;
+    });
+    try {
+      final isChanged = await ref
+          .read(profilesActionProvider.notifier)
+          .updateProfile(profile, showLoading: true, force: true);
+      if (mounted) {
+        final loc = context.appLocalizations;
+        dialogs.showNotifier(
+          isChanged ? loc.subscriptionUpdated : loc.subscriptionNoChanges,
+          level: MessageLevel.info,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        dialogs.showNotifier(e.toString(), level: MessageLevel.error);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdating = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final profile = widget.profile;
+    final currentProfile = ref.watch(currentProfileProvider) ?? widget.profile;
+    final hasSub = isLieVpnSubscription(currentProfile);
     final appLocalizations = context.appLocalizations;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    final sub = profile?.subscriptionInfo;
-    final total = sub?.total ?? 0;
-    final used = (sub?.upload ?? 0) + (sub?.download ?? 0);
-    final hasExpire = sub != null && sub.expire > 0;
-    final isExpired = isSubscriptionExpired(profile);
-
-    String expireText = appLocalizations.noExpiration;
-    if (hasExpire) {
-      final date = DateTime.fromMillisecondsSinceEpoch(sub.expire * 1000);
-      expireText = date.show;
+    if (!hasSub) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)
+              .copyWith(bottom: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                appLocalizations.userProfileHeader,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF10B981),
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(AppCorner.xl),
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.vpn_key_outlined,
+                        size: 36,
+                        color: Color(0xFF10B981),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      appLocalizations.noSubscriptionFound,
+                      style: Theme.of(context).textTheme.titleMedium?.toBold,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      appLocalizations.subscriptionFromClipboardHint,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop('add');
+                  },
+                  icon: const Icon(Icons.content_paste_rounded),
+                  label: Text(appLocalizations.tapToInsertSubscription),
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
-    final totalStr = total > 0 ? total.traffic.show : appLocalizations.unlimited;
-    final usedStr = used.traffic.show;
+    final info = currentProfile?.subscriptionInfo;
+    final isExpired = info != null &&
+        info.expire > 0 &&
+        DateTime.fromMillisecondsSinceEpoch(info.expire * 1000)
+            .isBefore(DateTime.now());
+
+    final userName = (currentProfile?.label.isNotEmpty == true)
+        ? currentProfile!.label
+        : 'LieVPN';
+
+    final total = info?.total ?? 0;
+    final used = (info?.upload ?? 0) + (info?.download ?? 0);
+    final limitText =
+        total > 0 ? total.traffic.show : appLocalizations.unlimited;
+    final usedText = used.traffic.show;
+
+    final expireText = (info != null && info.expire > 0)
+        ? DateTime.fromMillisecondsSinceEpoch(info.expire * 1000).show
+        : appLocalizations.noExpiration;
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8)
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)
             .copyWith(bottom: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations.personalAccount,
-                      style: textTheme.titleLarge?.toBold,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      appLocalizations.userProfileHeader,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant.opacity50,
-                        letterSpacing: 1.2,
-                        fontFamily: 'monospace',
+            Text(
+              appLocalizations.userProfileHeader,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF10B981),
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 500;
+                if (isWide) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildInfoCard(
+                              context: context,
+                              label: appLocalizations.accountUsername,
+                              value: userName,
+                              icon: Icons.person,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildInfoCard(
+                              context: context,
+                              label: appLocalizations.accountStatus,
+                              value: isExpired
+                                  ? '🔴 ${appLocalizations.statusExpired}'
+                                  : '🟢 ${appLocalizations.statusActive}',
+                              icon: Icons.shield_outlined,
+                              valueColor: isExpired
+                                  ? Colors.redAccent
+                                  : const Color(0xFF10B981),
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildInfoCard(
+                              context: context,
+                              label: appLocalizations.dataLimit,
+                              value: limitText,
+                              icon: Icons.storage_rounded,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildInfoCard(
+                              context: context,
+                              label: appLocalizations.dataUsed,
+                              value: usedText,
+                              icon: Icons.pie_chart_outline_rounded,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInfoCard(
+                        context: context,
+                        label: appLocalizations.expirationDate,
+                        value: expireText,
+                        icon: Icons.calendar_today_rounded,
+                      ),
+                    ],
+                  );
+                }
+                return Column(
+                  children: [
+                    _buildInfoCard(
+                      context: context,
+                      label: appLocalizations.accountUsername,
+                      value: userName,
+                      icon: Icons.person,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      context: context,
+                      label: appLocalizations.accountStatus,
+                      value: isExpired
+                          ? '🔴 ${appLocalizations.statusExpired}'
+                          : '🟢 ${appLocalizations.statusActive}',
+                      icon: Icons.shield_outlined,
+                      valueColor: isExpired
+                          ? Colors.redAccent
+                          : const Color(0xFF10B981),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      context: context,
+                      label: appLocalizations.dataLimit,
+                      value: limitText,
+                      icon: Icons.storage_rounded,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      context: context,
+                      label: appLocalizations.dataUsed,
+                      value: usedText,
+                      icon: Icons.pie_chart_outline_rounded,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      context: context,
+                      label: appLocalizations.expirationDate,
+                      value: expireText,
+                      icon: Icons.calendar_today_rounded,
                     ),
                   ],
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
-                  child: _buildInfoCard(
-                    context: context,
-                    label: appLocalizations.accountStatus,
-                    value: isExpired
-                        ? appLocalizations.statusExpired
-                        : appLocalizations.statusActive,
-                    icon: isExpired
-                        ? Icons.warning_amber_rounded
-                        : Icons.check_circle_outline,
-                    valueColor: isExpired
-                        ? colorScheme.error
-                        : const Color(0xFF10B981),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildInfoCard(
-                    context: context,
-                    label: appLocalizations.expirationDate,
-                    value: expireText,
-                    icon: Icons.calendar_today_outlined,
-                    valueColor: isExpired ? colorScheme.error : null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoCard(
-                    context: context,
-                    label: appLocalizations.dataUsed,
-                    value: usedStr,
-                    icon: Icons.arrow_upward_rounded,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildInfoCard(
-                    context: context,
-                    label: appLocalizations.dataLimit,
-                    value: totalStr,
-                    icon: Icons.data_usage_rounded,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppCorner.lg),
+                  child: SizedBox(
+                    height: 48,
+                    child: FilledButton.icon(
+                      onPressed: _isUpdating
+                          ? null
+                          : () => _handleUpdate(currentProfile),
+                      icon: _isUpdating
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh_rounded),
+                      label: Text(appLocalizations.update),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppCorner.md),
+                        ),
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 48,
+                  child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop('change');
                     },
                     icon: const Icon(Icons.swap_horiz_rounded),
-                    label: Text(appLocalizations.changeSubscription),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: const Color(0xFF10B981),
+                    label: Text(appLocalizations.change),
+                    style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppCorner.lg),
+                        borderRadius: BorderRadius.circular(AppCorner.md),
                       ),
                     ),
-                    onPressed: _isUpdating
-                        ? null
-                        : () async {
-                            if (profile == null) return;
-                            setState(() => _isUpdating = true);
-                            try {
-                              final changed = await ref
-                                  .read(profilesActionProvider.notifier)
-                                  .updateProfile(profile, force: true);
-                              if (context.mounted) {
-                                Navigator.of(context).pop();
-                                dialogs.showNotifier(
-                                  changed
-                                      ? appLocalizations.subscriptionUpdated
-                                      : appLocalizations.subscriptionNoChanges,
-                                );
-                              }
-                            } finally {
-                              if (mounted) setState(() => _isUpdating = false);
-                            }
-                          },
-                    icon: _isUpdating
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.sync_rounded),
-                    label: Text(appLocalizations.updateSubscription),
                   ),
                 ),
               ],
