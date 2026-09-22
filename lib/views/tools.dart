@@ -17,6 +17,7 @@ import 'package:path/path.dart' show dirname, join;
 import 'config/advanced.dart';
 import 'developer.dart';
 import 'theme.dart';
+import 'donators.dart';
 
 class ToolsView extends ConsumerStatefulWidget {
   const ToolsView({super.key});
@@ -56,6 +57,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
       title: context.appLocalizations.other,
       items: [
         const _SupportItem(),
+        const _DonatorsItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
         const _InfoItem(),
       ],
@@ -66,15 +68,16 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.settings,
       items: [
-        const _LocaleItem(),
-        const _ThemeItem(),
-        const _BackupItem(),
-        if (system.isDesktop) const _HotkeyItem(),
-        if (system.isWindows) const _LoopbackItem(),
-        if (system.isAndroid) const _AccessItem(),
-        const _ConfigItem(),
-        const _AdvancedConfigItem(),
-        const _SettingItem(),
+        ListItem.open(
+          leading: const Icon(Icons.settings_outlined),
+          title: Text(context.appLocalizations.settings),
+          subtitle: Text(
+            '${context.appLocalizations.theme}, ${context.appLocalizations.language}...',
+          ),
+          widget: const SettingsView(),
+          maxWidth: 400,
+          forceFull: false,
+        ),
       ],
     );
   }
@@ -360,6 +363,51 @@ class _SupportItem extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonScaffold(
+      title: context.appLocalizations.settings,
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 20),
+        children: [
+          generateSectionV3(
+            items: [
+              const _LocaleItem(),
+              const _ThemeItem(),
+              const _BackupItem(),
+              if (system.isDesktop) const _HotkeyItem(),
+              if (system.isWindows) const _LoopbackItem(),
+              if (system.isAndroid) const _AccessItem(),
+              const _ConfigItem(),
+              const _AdvancedConfigItem(),
+              const _SettingItem(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DonatorsItem extends StatelessWidget {
+  const _DonatorsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.open(
+      leading: const Icon(Icons.workspace_premium_outlined),
+      title: Text(context.appLocalizations.donators),
+      subtitle: const Text('// Зал Славы'),
+      widget: const DonatorsView(),
+      maxWidth: 400,
+      forceFull: false,
     );
   }
 }

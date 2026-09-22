@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -177,16 +177,40 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({required ValidateConfig validate}) async {
+    final (newProfile, _) = await checkAndUpdate(validate: validate, force: true);
+    return newProfile;
+  }
+
+  Future<(Profile, bool)> checkAndUpdate({
+    required ValidateConfig validate,
+    bool force = false,
+  }) async {
     final response = await request.getFileResponseForUrl(url);
     final disposition = response.headers.value('content-disposition');
     final userinfo = response.headers.value('subscription-userinfo');
-    return copyWith(
+    final newSubscriptionInfo = SubscriptionInfo.formHString(userinfo);
+    final bytes = response.data ?? Uint8List.fromList([]);
+
+    final mFile = await file;
+    bool isContentEqual = false;
+    if (await mFile.exists()) {
+      final oldBytes = await mFile.readAsBytes();
+      isContentEqual = listEquals(oldBytes, bytes);
+    }
+    final isInfoEqual = subscriptionInfo == newSubscriptionInfo;
+
+    if (!force && isContentEqual && isInfoEqual) {
+      return (copyWith(lastUpdateDate: DateTime.now()), false);
+    }
+
+    final updated = await copyWith(
       label: label.takeFirstValid([
         getFileNameForDisposition(disposition),
         id.toString(),
       ]),
-      subscriptionInfo: SubscriptionInfo.formHString(userinfo),
-    ).saveFile(response.data ?? Uint8List.fromList([]), validate: validate);
+      subscriptionInfo: newSubscriptionInfo,
+    ).saveFile(bytes, validate: validate);
+    return (updated, true);
   }
 
   Future<Profile> saveFile(

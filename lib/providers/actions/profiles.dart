@@ -69,24 +69,27 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> updateProfile(
+  Future<bool> updateProfile(
     Profile profile, {
     bool showLoading = false,
+    bool force = false,
   }) async {
     final operation = showLoading
         ? ref.read(updatingKeysProvider.notifier).start(profile.updatingKey)
         : null;
     try {
       ref.read(profilesProvider.notifier).put(profile);
-      final newProfile = await profile.update(
+      final (newProfile, isChanged) = await profile.checkAndUpdate(
         validate: (path) => _core.validateConfig(path),
+        force: force,
       );
       ref.read(profilesProvider.notifier).put(newProfile);
-      if (profile.id == ref.read(currentProfileIdProvider)) {
+      if (isChanged && profile.id == ref.read(currentProfileIdProvider)) {
         ref
             .read(setupActionProvider.notifier)
             .applyProfileDebounce(silence: true);
       }
+      return isChanged;
     } finally {
       if (operation != null) {
         ref
@@ -117,6 +120,18 @@ class ProfilesAction extends _$ProfilesAction {
   }
 
   Future<void> addProfileFormURL(String url) async {
+    var trimmed = url.trim();
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+      trimmed = 'https://$trimmed';
+    }
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+      dialogs.showNotifier(
+        currentAppLocalizations.notLieVpnSubscription,
+        level: MessageLevel.error,
+      );
+      return;
+    }
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     }

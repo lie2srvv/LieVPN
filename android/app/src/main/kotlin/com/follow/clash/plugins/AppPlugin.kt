@@ -1,6 +1,11 @@
 package com.follow.clash.plugins
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
@@ -168,6 +173,14 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 result.success(true)
             }
 
+            "showNotification" -> {
+                val title = call.argument<String>("title") ?: ""
+                val message = call.argument<String>("message") ?: ""
+                val id = call.argument<Int>("id") ?: 1002
+                showNotification(title, message, id)
+                result.success(true)
+            }
+
             "isBatteryOptimizationDisabled" -> {
                 result.success(isBatteryOptimizationDisabled())
             }
@@ -191,6 +204,50 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             else -> {
                 result.notImplemented()
             }
+        }
+    }
+
+    private fun showNotification(title: String, message: String, id: Int) {
+        val context = GlobalState.application
+        val manager = NotificationManagerCompat.from(context)
+        val channelId = "lievpn_reminders"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            val channel = NotificationChannel(
+                channelId,
+                "LieVPN Notifications",
+                NotificationManager.IMPORTANCE_HIGH,
+            )
+            notificationManager?.createNotificationChannel(channel)
+        }
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+        }
+        val pendingIntent = if (intent != null) {
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+        } else null
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(com.follow.clash.service.R.drawable.ic_service)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+        ) {
+            manager.notify(id, notification)
         }
     }
 

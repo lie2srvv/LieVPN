@@ -131,6 +131,19 @@ class App {
     _packageIconTasks.clear();
   }
 
+  Future<bool?> showNotification({
+    required String title,
+    required String message,
+    int id = 1002,
+  }) async {
+    if (!Platform.isAndroid) return null;
+    return methodChannel.invokeMethod<bool>('showNotification', {
+      'title': title,
+      'message': message,
+      'id': id,
+    });
+  }
+
   Future<bool?> tip(String? message) async {
     return methodChannel.invokeMethod<bool>('tip', {'message': '$message'});
   }

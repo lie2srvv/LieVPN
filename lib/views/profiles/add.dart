@@ -1,3 +1,4 @@
+import 'package:fl_clash/enum/enum.dart';
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
@@ -12,9 +13,7 @@ class AddProfileView extends ConsumerWidget {
 
   const AddProfileView({super.key, required this.context});
 
-  Future<void> _handleAddProfileFormFile(WidgetRef ref) async {
-    unawaited(ref.read(profilesActionProvider.notifier).addProfileFormFile());
-  }
+
 
   Future<void> _toScan(WidgetRef ref) async {
     final profilesAction = ref.read(profilesActionProvider.notifier);
@@ -47,6 +46,14 @@ class AddProfileView extends ConsumerWidget {
           if (!value.isUrl) {
             return appLocalizations.urlTip('').trim();
           }
+          var val = value.trim();
+          if (!val.startsWith('http://') && !val.startsWith('https://')) {
+            val = 'https://$val';
+          }
+          final uri = Uri.tryParse(val);
+          if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+            return appLocalizations.notLieVpnSubscription;
+          }
           return null;
         },
       ),
@@ -66,12 +73,6 @@ class AddProfileView extends ConsumerWidget {
           title: Text(appLocalizations.qrcode),
           subtitle: Text(appLocalizations.qrcodeDesc),
           onTap: () => _toScan(ref),
-        ),
-        ListItem(
-          leading: const Icon(Icons.upload_file_sharp),
-          title: Text(appLocalizations.file),
-          subtitle: Text(appLocalizations.fileDesc),
-          onTap: () => _handleAddProfileFormFile(ref),
         ),
         ListItem(
           leading: const Icon(Icons.cloud_download_sharp),
@@ -97,6 +98,18 @@ class _URLFormDialogState extends State<URLFormDialog> {
   Future<void> _handleAddProfileFormURL() async {
     final url = _urlController.value.text;
     if (url.isEmpty) return;
+    var val = url.trim();
+    if (!val.startsWith('http://') && !val.startsWith('https://')) {
+      val = 'https://$val';
+    }
+    final uri = Uri.tryParse(val);
+    if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+      dialogs.showNotifier(
+        context.appLocalizations.notLieVpnSubscription,
+        level: MessageLevel.error,
+      );
+      return;
+    }
     Navigator.of(context).pop<String>(url);
   }
 

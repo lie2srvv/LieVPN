@@ -160,10 +160,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Network detection`
+  /// `Pub. IP`
   String get networkDetection {
     return Intl.message(
-      'Network detection',
+      'Pub. IP',
       name: 'networkDetection',
       desc: '',
       args: [],
@@ -1265,9 +1265,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Intranet IP`
+  /// `Loc. IP`
   String get intranetIP {
-    return Intl.message('Intranet IP', name: 'intranetIP', desc: '', args: []);
+    return Intl.message('Loc. IP', name: 'intranetIP', desc: '', args: []);
   }
 
   /// `View`
@@ -5110,6 +5110,221 @@ class AppLocalizations {
     return Intl.message(
       'The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.',
       name: 'installedAppsPermissionDeniedMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Dashboard`
+  String get dashboardLieVpn {
+    return Intl.message(
+      'LieVPN Dashboard',
+      name: 'dashboardLieVpn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal Account`
+  String get personalAccount {
+    return Intl.message(
+      'Personal Account',
+      name: 'personalAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `// USER`
+  String get userProfileHeader {
+    return Intl.message(
+      '// USER',
+      name: 'userProfileHeader',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `STATUS`
+  String get accountStatus {
+    return Intl.message('STATUS', name: 'accountStatus', desc: '', args: []);
+  }
+
+  /// `Active`
+  String get statusActive {
+    return Intl.message('Active', name: 'statusActive', desc: '', args: []);
+  }
+
+  /// `Expired`
+  String get statusExpired {
+    return Intl.message('Expired', name: 'statusExpired', desc: '', args: []);
+  }
+
+  /// `DATA LIMIT`
+  String get dataLimit {
+    return Intl.message('DATA LIMIT', name: 'dataLimit', desc: '', args: []);
+  }
+
+  /// `USED`
+  String get dataUsed {
+    return Intl.message('USED', name: 'dataUsed', desc: '', args: []);
+  }
+
+  /// `∞ Unlimited`
+  String get unlimited {
+    return Intl.message('∞ Unlimited', name: 'unlimited', desc: '', args: []);
+  }
+
+  /// `EXPIRATION DATE`
+  String get expirationDate {
+    return Intl.message(
+      'EXPIRATION DATE',
+      name: 'expirationDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `∞ Unlimited`
+  String get noExpiration {
+    return Intl.message(
+      '∞ Unlimited',
+      name: 'noExpiration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update subscription`
+  String get updateSubscription {
+    return Intl.message(
+      'Update subscription',
+      name: 'updateSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription updated`
+  String get subscriptionUpdated {
+    return Intl.message(
+      'Subscription updated',
+      name: 'subscriptionUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription is up to date`
+  String get subscriptionNoChanges {
+    return Intl.message(
+      'Subscription is up to date',
+      name: 'subscriptionNoChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This is not a LieVPN subscription`
+  String get notLieVpnSubscription {
+    return Intl.message(
+      'This is not a LieVPN subscription',
+      name: 'notLieVpnSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Donators`
+  String get donators {
+    return Intl.message('Donators', name: 'donators', desc: '', args: []);
+  }
+
+  /// `// Hall of Fame — Total Donations`
+  String get hallOfFameHeader {
+    return Intl.message(
+      '// Hall of Fame — Total Donations',
+      name: 'hallOfFameHeader',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Support project`
+  String get supportProject {
+    return Intl.message(
+      'Support project',
+      name: 'supportProject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 3 days. If you have already renewed, please update your subscription.`
+  String get subExpireReminder3d {
+    return Intl.message(
+      'Subscription expires in 3 days. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder3d',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 1 day. If you have already renewed, please update your subscription.`
+  String get subExpireReminder1d {
+    return Intl.message(
+      'Subscription expires in 1 day. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder1d',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 1 hour. If you have already renewed, please update your subscription.`
+  String get subExpireReminder1h {
+    return Intl.message(
+      'Subscription expires in 1 hour. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder1h',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription has expired. If you have already renewed, please update your subscription.`
+  String get subExpiredNotice {
+    return Intl.message(
+      'Your subscription has expired. If you have already renewed, please update your subscription.',
+      name: 'subExpiredNotice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expiring soon`
+  String get subExpiringTitle {
+    return Intl.message(
+      'Subscription expiring soon',
+      name: 'subExpiringTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expired`
+  String get subExpiredTitle {
+    return Intl.message(
+      'Subscription expired',
+      name: 'subExpiredTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `USERNAME`
+  String get accountUsername {
+    return Intl.message(
+      'USERNAME',
+      name: 'accountUsername',
       desc: '',
       args: [],
     );

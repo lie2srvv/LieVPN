@@ -309,6 +309,14 @@ class _ProfileUrlField extends StatelessWidget {
           if (!value.isUrl) {
             return appLocalizations.profileUrlInvalidValidationDesc;
           }
+          var val = value.trim();
+          if (!val.startsWith('http://') && !val.startsWith('https://')) {
+            val = 'https://$val';
+          }
+          final uri = Uri.tryParse(val);
+          if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+            return appLocalizations.notLieVpnSubscription;
+          }
           return null;
         },
       ),

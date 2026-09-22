@@ -84,6 +84,11 @@ class ApplicationState extends ConsumerState<Application> {
         exit(0);
       }
       _autoUpdateProfilesTask();
+      unawaited(
+        SubscriptionReminderManager.checkSubscriptionExpiry(
+          ref.read(currentProfileProvider),
+        ),
+      );
       _initLink();
       unawaited(app?.initShortcuts());
     });
@@ -99,8 +104,10 @@ class ApplicationState extends ConsumerState<Application> {
   }
 
   void _autoUpdateProfilesTask() {
-    _autoUpdateProfilesTaskTimer = Timer(const Duration(minutes: 20), () async {
+    _autoUpdateProfilesTaskTimer = Timer(const Duration(minutes: 15), () async {
       await ref.read(profilesActionProvider.notifier).autoUpdateProfiles();
+      final currentProfile = ref.read(currentProfileProvider);
+      await SubscriptionReminderManager.checkSubscriptionExpiry(currentProfile);
       if (!mounted) {
         return;
       }

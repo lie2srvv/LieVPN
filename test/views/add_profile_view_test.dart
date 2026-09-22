@@ -44,7 +44,7 @@ void main() {
 
     final l10n = currentAppLocalizations;
     expect(find.text(l10n.qrcode), findsOne);
-    expect(find.text(l10n.file), findsOne);
+    expect(find.text(l10n.file), findsNothing);
     expect(find.text(l10n.url), findsOne);
     expect(tester.takeException(), null);
   });
@@ -124,13 +124,13 @@ void main() {
 
     await tester.enterText(
       find.byType(TextField),
-      'https://example.com/profile',
+      'https://vpn.lie2srvv.com/profile',
     );
     await tester.tap(find.text(currentAppLocalizations.submit));
     await tester.pumpAndSettle();
 
     expect(find.byType(URLFormDialog), findsNothing);
-    expect(popped, 'https://example.com/profile');
+    expect(popped, 'https://vpn.lie2srvv.com/profile');
     expect(tester.takeException(), null);
   });
 }

@@ -117,6 +117,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Access control settings",
     ),
     "account": MessageLookupByLibrary.simpleMessage("Account"),
+    "accountStatus": MessageLookupByLibrary.simpleMessage("STATUS"),
+    "accountUsername": MessageLookupByLibrary.simpleMessage("USERNAME"),
     "action": MessageLookupByLibrary.simpleMessage("Action"),
     "actionMode": MessageLookupByLibrary.simpleMessage("Switch mode"),
     "actionProxy": MessageLookupByLibrary.simpleMessage("System proxy"),
@@ -344,6 +346,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Cut"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN Dashboard"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Data changes detected. Save them?",
     ),
@@ -353,6 +356,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "dataCollectionTip": MessageLookupByLibrary.simpleMessage(
       "Data collection notice",
     ),
+    "dataLimit": MessageLookupByLibrary.simpleMessage("DATA LIMIT"),
+    "dataUsed": MessageLookupByLibrary.simpleMessage("USED"),
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "Failed to save the change; it has been rolled back",
     ),
@@ -403,6 +408,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
+    "donators": MessageLookupByLibrary.simpleMessage("Donators"),
     "download": MessageLookupByLibrary.simpleMessage("Download"),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage(
@@ -433,6 +439,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "exitFullScreen": MessageLookupByLibrary.simpleMessage("Exit full screen"),
     "expand": MessageLookupByLibrary.simpleMessage("Standard"),
     "expectedStatus": MessageLookupByLibrary.simpleMessage("Expected status"),
+    "expirationDate": MessageLookupByLibrary.simpleMessage("EXPIRATION DATE"),
     "expireTime": MessageLookupByLibrary.simpleMessage("Expiration time"),
     "exportFile": MessageLookupByLibrary.simpleMessage("Export file"),
     "exportLogs": MessageLookupByLibrary.simpleMessage("Export logs"),
@@ -496,6 +503,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage(
       "Go to script configuration",
     ),
+    "hallOfFameHeader": MessageLookupByLibrary.simpleMessage(
+      "// Hall of Fame — Total Donations",
+    ),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Cache the changes?",
     ),
@@ -551,9 +561,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Enter the rule content",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "This system hides the installed app list until the permission is granted. Authorize it to configure the per-app proxy.",
     ),
@@ -577,7 +588,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "internet": MessageLookupByLibrary.simpleMessage("Internet"),
     "interval": MessageLookupByLibrary.simpleMessage("Interval"),
-    "intranetIP": MessageLookupByLibrary.simpleMessage("Intranet IP"),
+    "intranetIP": MessageLookupByLibrary.simpleMessage("Loc. IP"),
     "invalidBackupFile": MessageLookupByLibrary.simpleMessage(
       "Invalid backup file",
     ),
@@ -685,9 +696,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkDesc": MessageLookupByLibrary.simpleMessage(
       "Adjust network-related settings",
     ),
-    "networkDetection": MessageLookupByLibrary.simpleMessage(
-      "Network detection",
-    ),
+    "networkDetection": MessageLookupByLibrary.simpleMessage("Pub. IP"),
     "networkException": MessageLookupByLibrary.simpleMessage(
       "Network error, please check your connection and try again",
     ),
@@ -696,6 +705,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
     "nextMatch": MessageLookupByLibrary.simpleMessage("Next match"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
+    "noExpiration": MessageLookupByLibrary.simpleMessage("∞ Unlimited"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("No hotkeys yet"),
     "noInfo": MessageLookupByLibrary.simpleMessage("No info"),
     "noLongerRemind": MessageLookupByLibrary.simpleMessage(
@@ -709,6 +719,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Don\'t resolve hostname",
     ),
     "none": MessageLookupByLibrary.simpleMessage("None"),
+    "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
+      "This is not a LieVPN subscription",
+    ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "The current proxy group cannot be selected",
     ),
@@ -749,6 +762,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "paste": MessageLookupByLibrary.simpleMessage("Paste"),
+    "personalAccount": MessageLookupByLibrary.simpleMessage("Personal Account"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("Choose from album"),
     "pinWindow": MessageLookupByLibrary.simpleMessage("Pin window"),
     "pleaseBindWebDAV": MessageLookupByLibrary.simpleMessage(
@@ -1088,12 +1102,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "start": MessageLookupByLibrary.simpleMessage("Start"),
     "startVpn": MessageLookupByLibrary.simpleMessage("Starting VPN..."),
     "status": MessageLookupByLibrary.simpleMessage("Status"),
+    "statusActive": MessageLookupByLibrary.simpleMessage("Active"),
     "statusDesc": MessageLookupByLibrary.simpleMessage(
       "When disabled, the system DNS is used",
     ),
+    "statusExpired": MessageLookupByLibrary.simpleMessage("Expired"),
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
+    "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
+      "Subscription expires in 1 day. If you have already renewed, please update your subscription.",
+    ),
+    "subExpireReminder1h": MessageLookupByLibrary.simpleMessage(
+      "Subscription expires in 1 hour. If you have already renewed, please update your subscription.",
+    ),
+    "subExpireReminder3d": MessageLookupByLibrary.simpleMessage(
+      "Subscription expires in 3 days. If you have already renewed, please update your subscription.",
+    ),
+    "subExpiredNotice": MessageLookupByLibrary.simpleMessage(
+      "Your subscription has expired. If you have already renewed, please update your subscription.",
+    ),
+    "subExpiredTitle": MessageLookupByLibrary.simpleMessage(
+      "Subscription expired",
+    ),
+    "subExpiringTitle": MessageLookupByLibrary.simpleMessage(
+      "Subscription expiring soon",
+    ),
     "subRule": MessageLookupByLibrary.simpleMessage("Sub-rule"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("Sub-rule is empty"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage(
@@ -1103,6 +1137,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Subscription info",
     ),
+    "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage(
+      "Subscription is up to date",
+    ),
+    "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
+      "Subscription updated",
+    ),
+    "supportProject": MessageLookupByLibrary.simpleMessage("Support project"),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
@@ -1158,10 +1199,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "unknownNetworkError": MessageLookupByLibrary.simpleMessage(
       "Unknown network error",
     ),
+    "unlimited": MessageLookupByLibrary.simpleMessage("∞ Unlimited"),
     "unmaximize": MessageLookupByLibrary.simpleMessage("Restore down"),
     "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("Unpin window"),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
+    "updateSubscription": MessageLookupByLibrary.simpleMessage(
+      "Update subscription",
+    ),
     "upload": MessageLookupByLibrary.simpleMessage("Upload"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage(
@@ -1172,6 +1217,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
+    "userProfileHeader": MessageLookupByLibrary.simpleMessage("// USER"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),
     "view": MessageLookupByLibrary.simpleMessage("View"),

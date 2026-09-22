@@ -207,7 +207,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     ];
     return _buildIsEdit(
       (isEdit) => CommonScaffold(
-        title: context.appLocalizations.dashboard,
+        title: context.appLocalizations.dashboardLieVpn,
         actions: _buildActions(isEdit),
         floatingActionButton: const StartButton(),
         body: Align(
