@@ -21,64 +21,63 @@ class SubscriptionStatusCard extends ConsumerWidget {
       return CommonCard(
         radius: AppCorner.lg,
         onPressed: () {
-          // Opens PersonalAccountSheet or paste flow
           handleSubscriptionTap(context, ref);
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppCorner.md),
-                ),
-                child: const Icon(
-                  Icons.vpn_key_outlined,
-                  size: 24,
-                  color: Color(0xFF10B981),
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                    ),
+                    child: const Icon(
+                      Icons.shield_outlined,
+                      size: 22,
+                      color: Color(0xFF10B981),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appLocalizations.personalAccount,
+                          style: textTheme.titleMedium?.toBold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          appLocalizations.tapToInsertSubscription,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: const Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant.opacity50,
+                  ),
+                ],
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations.personalAccount,
-                      style: textTheme.titleMedium?.toBold,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      appLocalizations.tapToInsertSubscription,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF10B981),
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      appLocalizations.subscriptionFromClipboardHint,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant
-                            .withValues(alpha: 0.7),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.add_circle_outline_rounded,
-                color: Color(0xFF10B981),
-                size: 22,
+              const SizedBox(height: 10),
+              Text(
+                appLocalizations.subscriptionFromClipboardHint,
+                style: textTheme.bodySmall?.toLight,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

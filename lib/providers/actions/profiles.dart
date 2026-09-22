@@ -119,7 +119,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormURL(String url) async {
+  Future<bool> addProfileFormURL(String url) async {
     var trimmed = url.trim();
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
@@ -130,7 +130,15 @@ class ProfilesAction extends _$ProfilesAction {
         currentAppLocalizations.notLieVpnSubscription,
         level: MessageLevel.error,
       );
-      return;
+      return false;
+    }
+    final path = uri.path.trim();
+    if (path.isEmpty || path == '/' || path == '/index.html') {
+      dialogs.showNotifier(
+        currentAppLocalizations.notLieVpnSubscription,
+        level: MessageLevel.error,
+      );
+      return false;
     }
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
@@ -147,7 +155,9 @@ class ProfilesAction extends _$ProfilesAction {
     );
     if (profile != null) {
       putProfile(profile);
+      return true;
     }
+    return false;
   }
 
   void setProfileAndAutoApply(Profile profile) {

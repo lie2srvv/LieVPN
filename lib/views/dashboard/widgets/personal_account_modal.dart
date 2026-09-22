@@ -9,16 +9,26 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-bool isLieVpnSubscription(Profile? profile) {
-  if (profile == null) return false;
-  final url = profile.url.trim();
-  if (url.isEmpty) return false;
-  var target = url;
+bool _isValidSubscriptionUrl(String url) {
+  var target = url.trim();
+  if (target.isEmpty) return false;
   if (!target.startsWith('http://') && !target.startsWith('https://')) {
     target = 'https://$target';
   }
   final uri = Uri.tryParse(target);
-  return uri != null && uri.host.toLowerCase() == 'vpn.lie2srvv.com';
+  if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+    return false;
+  }
+  final path = uri.path.trim();
+  if (path.isEmpty || path == '/' || path == '/index.html') {
+    return false;
+  }
+  return true;
+}
+
+bool isLieVpnSubscription(Profile? profile) {
+  if (profile == null) return false;
+  return _isValidSubscriptionUrl(profile.url);
 }
 
 String? extractLieVpnUrl(String text) {
@@ -28,13 +38,19 @@ String? extractLieVpnUrl(String text) {
       RegExp(r'https?://vpn\.lie2srvv\.com[^\s]*', caseSensitive: false);
   final match = regex.firstMatch(trimmed);
   if (match != null) {
-    return match.group(0);
+    final candidate = match.group(0)!;
+    if (_isValidSubscriptionUrl(candidate)) {
+      return candidate;
+    }
   }
   final noProtoRegex =
       RegExp(r'(?:^|\s)(vpn\.lie2srvv\.com[^\s]*)', caseSensitive: false);
   final noProtoMatch = noProtoRegex.firstMatch(trimmed);
   if (noProtoMatch != null) {
-    return 'https://${noProtoMatch.group(1)}';
+    final candidate = 'https://${noProtoMatch.group(1)}';
+    if (_isValidSubscriptionUrl(candidate)) {
+      return candidate;
+    }
   }
   return null;
 }
@@ -151,6 +167,12 @@ void showAddSubscriptionSheet(BuildContext context, WidgetRef ref) {
                             uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
                           return loc.notLieVpnSubscription;
                         }
+                        final path = uri.path.trim();
+                        if (path.isEmpty ||
+                            path == '/' ||
+                            path == '/index.html') {
+                          return loc.notLieVpnSubscription;
+                        }
                         return null;
                       },
                     ),
@@ -182,10 +204,12 @@ Future<void> handleSubscriptionTap(BuildContext context, WidgetRef ref) async {
       appLocalizations.subscriptionActivating,
       level: MessageLevel.info,
     );
-    await ref
+    final success = await ref
         .read(profilesActionProvider.notifier)
         .addProfileFormURL(detectedUrl);
-    return;
+    if (success) {
+      return;
+    }
   }
 
   if (context.mounted) {
