@@ -36,7 +36,7 @@ pub fn restrict_listener_mode(options: ListenerOptions<'_>) -> ListenerOptions<'
     {
         use interprocess::os::unix::local_socket::ListenerOptionsExt as _;
 
-        options.mode(0o600)
+        options.mode(0o666)
     }
     #[cfg(not(target_os = "linux"))]
     {
@@ -49,7 +49,7 @@ pub fn restrict_socket_to_owner(path: &str) -> io::Result<()> {
     {
         use std::os::unix::fs::PermissionsExt;
 
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o666))?;
     }
     #[cfg(windows)]
     {

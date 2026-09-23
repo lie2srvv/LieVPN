@@ -101,7 +101,8 @@ class SetupAction extends _$SetupAction {
     if (system.isAndroid) {
       await _updateStartTime();
     }
-    final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;
+    final shouldRun = (_isRunning || ref.read(appSettingProvider).autoRun) &&
+        ref.read(hasActiveSubscriptionProvider);
     if (shouldRun) {
       await setRunning(true, initialize: true);
     } else {
@@ -110,6 +111,13 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<bool> setRunning(bool running, {bool initialize = false}) {
+    if (running && !ref.read(hasActiveSubscriptionProvider)) {
+      dialogs.showNotifier(
+        currentAppLocalizations.subscriptionRequiredDesc,
+        level: MessageLevel.warning,
+      );
+      return Future.value(false);
+    }
     if (running && !initialize && !ref.read(initProvider)) {
       return Future.value(true);
     }
@@ -247,12 +255,7 @@ class SetupAction extends _$SetupAction {
   void changeMode(Mode mode) {
     ref
         .read(patchClashConfigProvider.notifier)
-        .update((state) => state.copyWith(mode: mode));
-    if (mode == Mode.global) {
-      ref
-          .read(proxiesActionProvider.notifier)
-          .updateCurrentGroupName(GroupName.GLOBAL.name);
-    }
+        .update((state) => state.copyWith(mode: Mode.rule));
   }
 
   void autoApplyProfile() {

@@ -126,15 +126,7 @@ class AppTray implements TrayPort {
           checked: trayState.showTrayTitle,
           onSelected: commonAction.updateSpeedStatistics,
         ),
-      const TrayMenuSeparator(),
-      for (final mode in Mode.values)
-        TrayMenuCheckbox(
-          label: mode.label,
-          checked: mode == trayState.mode,
-          onSelected: () {
-            setupAction.changeMode(mode);
-          },
-        ),
+
       const TrayMenuSeparator(),
       if (isMacOS) ..._buildGroupMenu(trayState: trayState, read: read),
       if (trayState.isStart) ...[

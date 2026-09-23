@@ -77,3 +77,7 @@ devtools_options.yaml
 .fvm/
 .fvmrc
 /coverage/lcov.info
+
+gh_logs/
+squashfs-root/
+*.AppImage

@@ -143,6 +143,15 @@ class System {
   }
 
   Future<void> grantHomeDirAccess(String homeDirPath) async {
+    if (isLinux) {
+      try {
+        await runProcess('setfacl', ['-m', 'g::rx', homeDirPath]);
+      } catch (_) {}
+      try {
+        await runProcess('chmod', ['g+rx', homeDirPath]);
+      } catch (_) {}
+      return;
+    }
     if (!isMacOS) {
       return;
     }
@@ -221,7 +230,7 @@ class System {
       final escapedTarget = _shellEscape(targetPath);
       final escapedStage = _shellEscape(stagePath);
       final shellCommand =
-          'mkdir -p /opt/flclash && mv -f $escapedStage $escapedTarget && chown root:root $escapedTarget && chmod 4755 $escapedTarget && (setcap cap_net_admin,cap_net_bind_service+ep $escapedTarget 2>/dev/null || true)';
+          'mkdir -p /opt/flclash && mv -f $escapedStage $escapedTarget && chown root:root $escapedTarget && chmod 4755 $escapedTarget && (setcap cap_net_admin,cap_net_bind_service,cap_dac_override,cap_dac_read_search+ep $escapedTarget 2>/dev/null || true)';
       final ProcessResult result;
       try {
         result = await runProcess('pkexec', [
