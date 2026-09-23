@@ -345,11 +345,25 @@ abstract class Dns with _$Dns {
   factory Dns.fromJson(Map<String, Object?> json) => _$DnsFromJson(json);
 
   factory Dns.safeDnsFromJson(Map<String, Object?> json) {
-    return decodeOrRestoreDefault(
+    final parsed = decodeOrRestoreDefault(
       'dns config',
       () => Dns.fromJson(json),
       () => const Dns(),
     );
+    if (parsed.nameserver.any((s) => s.contains('doh.pub') || s.contains('alidns.com'))) {
+      return parsed.copyWith(
+        nameserver: const [
+          'https://dns.google/dns-query',
+          'https://1.1.1.1/dns-query',
+        ],
+        proxyServerNameserver: const [
+          'https://dns.google/dns-query',
+          '77.88.8.8',
+        ],
+        defaultNameserver: const ['77.88.8.8', '1.1.1.1', '8.8.8.8'],
+      );
+    }
+    return parsed;
   }
 }
 

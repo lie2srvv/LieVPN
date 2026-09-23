@@ -299,7 +299,14 @@ class SetupAction extends _$SetupAction {
     }
     // Release the current serial task before restartCore reapplies the profile.
     final restarted = await _restartCoreAfterAuthorization();
-    return restarted ? _SetupTaskResult.completed : _SetupTaskResult.failed;
+    if (!restarted) {
+      return _SetupTaskResult.failed;
+    }
+    return await _runSetup(
+      force: true,
+      silence: silence,
+      preloadInvoke: preloadInvoke,
+    );
   }
 
   Future<bool> _restartCoreAfterAuthorization() async {

@@ -64,7 +64,7 @@ class AppPath {
   static const String linuxExternalCorePath = '/opt/flclash/FlClashCore';
 
   String get corePath {
-    if (system.isLinux && system.isAppImage) {
+    if (system.isLinux) {
       if (File(linuxExternalCorePath).existsSync()) {
         return linuxExternalCorePath;
       }
