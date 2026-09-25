@@ -52,9 +52,10 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
   Widget build(BuildContext context) {
     final state = _state;
     final isVpnConnected = ref.watch(isStartProvider);
+    final appLocalizations = context.appLocalizations;
 
     return CommonScaffold(
-      title: context.appLocalizations.speedtest,
+      title: appLocalizations.speedtest,
       body: Container(
         color: const Color(0xFF060A08),
         child: SafeArea(
@@ -71,19 +72,19 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Top VPN state indicator badge
-                      _buildVpnBadge(isVpnConnected),
+                      _buildVpnBadge(context, isVpnConnected),
                       const SizedBox(height: 14),
 
                       // Center Speedometer Gauge
-                      _buildSpeedometerSection(state),
+                      _buildSpeedometerSection(context, state),
                       const SizedBox(height: 24),
 
                       // 3 Metric Cards: Download -> Upload -> Ping
-                      _buildMetricCards(state),
+                      _buildMetricCards(context, state),
                       const SizedBox(height: 24),
 
                       // Action Button
-                      _buildActionButton(state),
+                      _buildActionButton(context, state),
                       const SizedBox(height: 12),
                     ],
                   ),
@@ -96,7 +97,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildVpnBadge(bool isVpnConnected) {
+  Widget _buildVpnBadge(BuildContext context, bool isVpnConnected) {
+    final appLocalizations = context.appLocalizations;
     final dotColor =
         isVpnConnected ? const Color(0xFF22C55E) : const Color(0xFF64748B);
     final borderColor =
@@ -104,7 +106,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     final bgColor = isVpnConnected
         ? const Color(0xFF22C55E).withValues(alpha: 0.1)
         : Colors.white.withValues(alpha: 0.04);
-    final labelText = isVpnConnected ? 'VPN подключён' : 'VPN отключён';
+    final labelText = isVpnConnected
+        ? appLocalizations.vpnConnected
+        : appLocalizations.vpnDisconnected;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -147,36 +151,37 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildSpeedometerSection(SpeedtestState state) {
+  Widget _buildSpeedometerSection(BuildContext context, SpeedtestState state) {
+    final appLocalizations = context.appLocalizations;
     final double targetSpeed =
         state.phase == SpeedtestPhase.ping ? 0.0 : state.currentSpeedMbps;
 
-    String statusText = 'Готов к тестированию';
+    String statusText = appLocalizations.readyToTest;
     Color statusColor = Colors.white60;
 
     switch (state.phase) {
       case SpeedtestPhase.idle:
-        statusText = 'Готов к тестированию';
+        statusText = appLocalizations.readyToTest;
         statusColor = Colors.white60;
         break;
       case SpeedtestPhase.download:
-        statusText = 'Загрузка (Download)...';
+        statusText = appLocalizations.speedtestTestingDownload;
         statusColor = const Color(0xFF22C55E);
         break;
       case SpeedtestPhase.upload:
-        statusText = 'Отдача (Upload)...';
+        statusText = appLocalizations.speedtestTestingUpload;
         statusColor = const Color(0xFF38BDF8);
         break;
       case SpeedtestPhase.ping:
-        statusText = 'Измерение задержки (Ping)...';
+        statusText = appLocalizations.speedtestTestingPing;
         statusColor = const Color(0xFFF59E0B);
         break;
       case SpeedtestPhase.completed:
-        statusText = 'Тест успешно завершён';
+        statusText = appLocalizations.speedtestCompleted;
         statusColor = const Color(0xFF22C55E);
         break;
       case SpeedtestPhase.error:
-        statusText = state.errorMessage ?? 'Ошибка соединения';
+        statusText = state.errorMessage ?? appLocalizations.speedtestError;
         statusColor = const Color(0xFFEF4444);
         break;
     }
@@ -223,7 +228,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                           ),
                         ),
                         Text(
-                          'МБИТ/С',
+                          appLocalizations.speedtestGaugeUnit,
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
@@ -256,17 +261,18 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildMetricCards(SpeedtestState state) {
+  Widget _buildMetricCards(BuildContext context, SpeedtestState state) {
+    final appLocalizations = context.appLocalizations;
     return Row(
       children: [
         // 1. Download
         Expanded(
           child: _buildMetricTile(
-            title: 'Download',
+            title: appLocalizations.speedtestDownload,
             value: state.downloadMbps != null
                 ? state.downloadMbps!.toStringAsFixed(1)
                 : '—',
-            unit: 'Мбит/с',
+            unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_downward_rounded,
             iconColor: const Color(0xFF22C55E),
             isActive: state.phase == SpeedtestPhase.download,
@@ -277,11 +283,11 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         // 2. Upload
         Expanded(
           child: _buildMetricTile(
-            title: 'Upload',
+            title: appLocalizations.speedtestUpload,
             value: state.uploadMbps != null
                 ? state.uploadMbps!.toStringAsFixed(1)
                 : '—',
-            unit: 'Мбит/с',
+            unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_upward_rounded,
             iconColor: const Color(0xFF38BDF8),
             isActive: state.phase == SpeedtestPhase.upload,
@@ -292,9 +298,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         // 3. Ping
         Expanded(
           child: _buildMetricTile(
-            title: 'Ping',
+            title: appLocalizations.speedtestPing,
             value: state.pingMs != null ? '${state.pingMs}' : '—',
-            unit: 'мс',
+            unit: appLocalizations.speedtestUnitMs,
             icon: Icons.timer_outlined,
             iconColor: const Color(0xFFF59E0B),
             isActive: state.phase == SpeedtestPhase.ping,
@@ -375,7 +381,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildActionButton(SpeedtestState state) {
+  Widget _buildActionButton(BuildContext context, SpeedtestState state) {
+    final appLocalizations = context.appLocalizations;
     if (state.isRunning) {
       return SizedBox(
         width: double.infinity,
@@ -390,9 +397,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           ),
           onPressed: _cancelTest,
           icon: const Icon(Icons.stop_rounded),
-          label: const Text(
-            'Остановить',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          label: Text(
+            appLocalizations.speedtestStop,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
       );
@@ -417,7 +424,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           size: 22,
         ),
         label: Text(
-          isCompleted ? 'Измерить ещё раз' : 'Запустить тест',
+          isCompleted ? appLocalizations.speedtestRunAgain : appLocalizations.speedtestStart,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),

@@ -5534,6 +5534,276 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `VPN Connected`
+  String get vpnConnected {
+    return Intl.message(
+      'VPN Connected',
+      name: 'vpnConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `VPN Disconnected`
+  String get vpnDisconnected {
+    return Intl.message(
+      'VPN Disconnected',
+      name: 'vpnDisconnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ready to test`
+  String get readyToTest {
+    return Intl.message(
+      'Ready to test',
+      name: 'readyToTest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing download speed...`
+  String get speedtestTestingDownload {
+    return Intl.message(
+      'Testing download speed...',
+      name: 'speedtestTestingDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing upload speed...`
+  String get speedtestTestingUpload {
+    return Intl.message(
+      'Testing upload speed...',
+      name: 'speedtestTestingUpload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Measuring latency (Ping)...`
+  String get speedtestTestingPing {
+    return Intl.message(
+      'Measuring latency (Ping)...',
+      name: 'speedtestTestingPing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test completed successfully`
+  String get speedtestCompleted {
+    return Intl.message(
+      'Test completed successfully',
+      name: 'speedtestCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection error`
+  String get speedtestError {
+    return Intl.message(
+      'Connection error',
+      name: 'speedtestError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get speedtestDownload {
+    return Intl.message(
+      'Download',
+      name: 'speedtestDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload`
+  String get speedtestUpload {
+    return Intl.message('Upload', name: 'speedtestUpload', desc: '', args: []);
+  }
+
+  /// `Ping`
+  String get speedtestPing {
+    return Intl.message('Ping', name: 'speedtestPing', desc: '', args: []);
+  }
+
+  /// `Stop`
+  String get speedtestStop {
+    return Intl.message('Stop', name: 'speedtestStop', desc: '', args: []);
+  }
+
+  /// `Start Test`
+  String get speedtestStart {
+    return Intl.message(
+      'Start Test',
+      name: 'speedtestStart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test Again`
+  String get speedtestRunAgain {
+    return Intl.message(
+      'Test Again',
+      name: 'speedtestRunAgain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mbps`
+  String get speedtestUnitMbps {
+    return Intl.message('Mbps', name: 'speedtestUnitMbps', desc: '', args: []);
+  }
+
+  /// `ms`
+  String get speedtestUnitMs {
+    return Intl.message('ms', name: 'speedtestUnitMs', desc: '', args: []);
+  }
+
+  /// `MBPS`
+  String get speedtestGaugeUnit {
+    return Intl.message('MBPS', name: 'speedtestGaugeUnit', desc: '', args: []);
+  }
+
+  /// `All systems operational`
+  String get statusAllSystemsOperational {
+    return Intl.message(
+      'All systems operational',
+      name: 'statusAllSystemsOperational',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All servers are in "Operational" status`
+  String get statusAllSystemsOperationalDesc {
+    return Intl.message(
+      'All servers are in "Operational" status',
+      name: 'statusAllSystemsOperationalDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Partial outages`
+  String get statusPartialOutages {
+    return Intl.message(
+      'Partial outages',
+      name: 'statusPartialOutages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{up} of {total} operational`
+  String statusPartialOutagesDesc(Object up, Object total) {
+    return Intl.message(
+      '$up of $total operational',
+      name: 'statusPartialOutagesDesc',
+      desc: '',
+      args: [up, total],
+    );
+  }
+
+  /// `All servers down`
+  String get statusAllDown {
+    return Intl.message(
+      'All servers down',
+      name: 'statusAllDown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All monitors report an error`
+  String get statusAllDownDesc {
+    return Intl.message(
+      'All monitors report an error',
+      name: 'statusAllDownDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `// MONITORS`
+  String get statusMonitors {
+    return Intl.message(
+      '// MONITORS',
+      name: 'statusMonitors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checking servers...`
+  String get statusChecking {
+    return Intl.message(
+      'Checking servers...',
+      name: 'statusChecking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All servers operational ({count})`
+  String statusAllAvailable(Object count) {
+    return Intl.message(
+      'All servers operational ($count)',
+      name: 'statusAllAvailable',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Updated`
+  String get statusUpdated {
+    return Intl.message('Updated', name: 'statusUpdated', desc: '', args: []);
+  }
+
+  /// `Operational`
+  String get statusOperational {
+    return Intl.message(
+      'Operational',
+      name: 'statusOperational',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Down`
+  String get statusDown {
+    return Intl.message('Down', name: 'statusDown', desc: '', args: []);
+  }
+
+  /// `Check history`
+  String get statusCheckHistory {
+    return Intl.message(
+      'Check history',
+      name: 'statusCheckHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No monitor data`
+  String get statusNoMonitors {
+    return Intl.message(
+      'No monitor data',
+      name: 'statusNoMonitors',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -92,9 +92,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(count) => "${count} selected";
 
-  static String m29(label) => "${label} must be a URL";
+  static String m29(count) => "All servers operational (${count})";
 
-  static String m30(count) =>
+  static String m30(up, total) => "${up} of ${total} operational";
+
+  static String m31(label) => "${label} must be a URL";
+
+  static String m32(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -868,6 +872,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
+    "readyToTest": MessageLookupByLibrary.simpleMessage("Ready to test"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("Redo"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
@@ -1109,9 +1114,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialRules": MessageLookupByLibrary.simpleMessage("Special rules"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("Speed statistics"),
     "speedtest": MessageLookupByLibrary.simpleMessage("Speedtest"),
+    "speedtestCompleted": MessageLookupByLibrary.simpleMessage(
+      "Test completed successfully",
+    ),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage(
       "Test connection speed",
     ),
+    "speedtestDownload": MessageLookupByLibrary.simpleMessage("Download"),
+    "speedtestError": MessageLookupByLibrary.simpleMessage("Connection error"),
+    "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
+    "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("Test Again"),
+    "speedtestStart": MessageLookupByLibrary.simpleMessage("Start Test"),
+    "speedtestStop": MessageLookupByLibrary.simpleMessage("Stop"),
+    "speedtestTestingDownload": MessageLookupByLibrary.simpleMessage(
+      "Testing download speed...",
+    ),
+    "speedtestTestingPing": MessageLookupByLibrary.simpleMessage(
+      "Measuring latency (Ping)...",
+    ),
+    "speedtestTestingUpload": MessageLookupByLibrary.simpleMessage(
+      "Testing upload speed...",
+    ),
+    "speedtestUnitMbps": MessageLookupByLibrary.simpleMessage("Mbps"),
+    "speedtestUnitMs": MessageLookupByLibrary.simpleMessage("ms"),
+    "speedtestUpload": MessageLookupByLibrary.simpleMessage("Upload"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("Split strategy"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "Split strategy cannot be empty",
@@ -1126,10 +1153,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("Starting VPN..."),
     "status": MessageLookupByLibrary.simpleMessage("Status"),
     "statusActive": MessageLookupByLibrary.simpleMessage("Active"),
+    "statusAllAvailable": m29,
+    "statusAllDown": MessageLookupByLibrary.simpleMessage("All servers down"),
+    "statusAllDownDesc": MessageLookupByLibrary.simpleMessage(
+      "All monitors report an error",
+    ),
+    "statusAllSystemsOperational": MessageLookupByLibrary.simpleMessage(
+      "All systems operational",
+    ),
+    "statusAllSystemsOperationalDesc": MessageLookupByLibrary.simpleMessage(
+      "All servers are in \"Operational\" status",
+    ),
+    "statusCheckHistory": MessageLookupByLibrary.simpleMessage("Check history"),
+    "statusChecking": MessageLookupByLibrary.simpleMessage(
+      "Checking servers...",
+    ),
     "statusDesc": MessageLookupByLibrary.simpleMessage(
       "When disabled, the system DNS is used",
     ),
+    "statusDown": MessageLookupByLibrary.simpleMessage("Down"),
     "statusExpired": MessageLookupByLibrary.simpleMessage("Expired"),
+    "statusMonitors": MessageLookupByLibrary.simpleMessage("// MONITORS"),
+    "statusNoMonitors": MessageLookupByLibrary.simpleMessage("No monitor data"),
+    "statusOperational": MessageLookupByLibrary.simpleMessage("Operational"),
+    "statusPartialOutages": MessageLookupByLibrary.simpleMessage(
+      "Partial outages",
+    ),
+    "statusPartialOutagesDesc": m30,
+    "statusUpdated": MessageLookupByLibrary.simpleMessage("Updated"),
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
@@ -1262,7 +1313,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain a profile from a URL",
     ),
-    "urlTip": m29,
+    "urlTip": m31,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
@@ -1274,6 +1325,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(
       "VPN-related configuration change detected",
     ),
+    "vpnConnected": MessageLookupByLibrary.simpleMessage("VPN Connected"),
+    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("VPN Disconnected"),
     "vpnEnableDesc": MessageLookupByLibrary.simpleMessage(
       "Route all system traffic through VpnService automatically",
     ),
@@ -1284,7 +1337,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m30,
+    "yearsAgo": m32,
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

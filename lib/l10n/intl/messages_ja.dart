@@ -81,9 +81,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(count) => "${count} 件選択中";
 
-  static String m29(label) => "${label}はURLである必要があります";
+  static String m29(count) => "全サーバー稼働中 (${count})";
 
-  static String m30(count) => "${count} 年前";
+  static String m30(up, total) => "${up}/${total} 台が稼働中";
+
+  static String m31(label) => "${label}はURLである必要があります";
+
+  static String m32(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -722,6 +726,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("クイック入力"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
+    "readyToTest": MessageLookupByLibrary.simpleMessage("テスト準備完了"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redirポート"),
     "redo": MessageLookupByLibrary.simpleMessage("やり直す"),
     "remote": MessageLookupByLibrary.simpleMessage("リモート"),
@@ -929,7 +934,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialRules": MessageLookupByLibrary.simpleMessage("特殊ルール"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("速度統計"),
     "speedtest": MessageLookupByLibrary.simpleMessage("スピードテスト"),
+    "speedtestCompleted": MessageLookupByLibrary.simpleMessage("テスト完了"),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage("通信速度テスト"),
+    "speedtestDownload": MessageLookupByLibrary.simpleMessage("ダウンロード"),
+    "speedtestError": MessageLookupByLibrary.simpleMessage("接続エラー"),
+    "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
+    "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("再測定"),
+    "speedtestStart": MessageLookupByLibrary.simpleMessage("テスト開始"),
+    "speedtestStop": MessageLookupByLibrary.simpleMessage("停止"),
+    "speedtestTestingDownload": MessageLookupByLibrary.simpleMessage(
+      "ダウンロード速度測定中...",
+    ),
+    "speedtestTestingPing": MessageLookupByLibrary.simpleMessage(
+      "遅延測定中 (Ping)...",
+    ),
+    "speedtestTestingUpload": MessageLookupByLibrary.simpleMessage(
+      "アップロード速度測定中...",
+    ),
+    "speedtestUnitMbps": MessageLookupByLibrary.simpleMessage("Mbps"),
+    "speedtestUnitMs": MessageLookupByLibrary.simpleMessage("ms"),
+    "speedtestUpload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("振り分け戦略"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "振り分け戦略は空にできません",
@@ -944,8 +969,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("VPNを起動しています..."),
     "status": MessageLookupByLibrary.simpleMessage("状態"),
     "statusActive": MessageLookupByLibrary.simpleMessage("有効"),
+    "statusAllAvailable": m29,
+    "statusAllDown": MessageLookupByLibrary.simpleMessage("全サーバー停止中"),
+    "statusAllDownDesc": MessageLookupByLibrary.simpleMessage(
+      "すべての監視対象でエラーが発生しています",
+    ),
+    "statusAllSystemsOperational": MessageLookupByLibrary.simpleMessage(
+      "全システム正常稼働中",
+    ),
+    "statusAllSystemsOperationalDesc": MessageLookupByLibrary.simpleMessage(
+      "すべてのサーバーが利用可能です",
+    ),
+    "statusCheckHistory": MessageLookupByLibrary.simpleMessage("監視履歴"),
+    "statusChecking": MessageLookupByLibrary.simpleMessage("サーバー確認中..."),
     "statusDesc": MessageLookupByLibrary.simpleMessage("無効にすると、システムDNSを使用します"),
+    "statusDown": MessageLookupByLibrary.simpleMessage("停止中"),
     "statusExpired": MessageLookupByLibrary.simpleMessage("期限切れ"),
+    "statusMonitors": MessageLookupByLibrary.simpleMessage("// 監視対象"),
+    "statusNoMonitors": MessageLookupByLibrary.simpleMessage("監視データがありません"),
+    "statusOperational": MessageLookupByLibrary.simpleMessage("稼働中"),
+    "statusPartialOutages": MessageLookupByLibrary.simpleMessage("一部で障害発生中"),
+    "statusPartialOutagesDesc": m30,
+    "statusUpdated": MessageLookupByLibrary.simpleMessage("更新済み"),
     "stop": MessageLookupByLibrary.simpleMessage("停止"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPNを停止しています..."),
     "style": MessageLookupByLibrary.simpleMessage("スタイル"),
@@ -1056,7 +1101,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URLからプロファイルを取得します"),
-    "urlTip": m29,
+    "urlTip": m31,
     "useHosts": MessageLookupByLibrary.simpleMessage("Hostsを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムのHostsを使用"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("使用済みトラフィック"),
@@ -1068,13 +1113,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(
       "VPN関連の設定変更を検出しました",
     ),
+    "vpnConnected": MessageLookupByLibrary.simpleMessage("VPN 接続中"),
+    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("VPN 切断"),
     "vpnEnableDesc": MessageLookupByLibrary.simpleMessage(
       "VpnServiceでシステムの全トラフィックを自動的にルーティングします",
     ),
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPNの再起動後に有効になります"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m30,
+    "yearsAgo": m32,
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

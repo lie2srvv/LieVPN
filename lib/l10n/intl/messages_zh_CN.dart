@@ -81,9 +81,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(count) => "已选择 ${count} 项";
 
-  static String m29(label) => "${label}必须为URL";
+  static String m29(count) => "所有节点可用 (${count})";
 
-  static String m30(count) => "${count} 年前";
+  static String m30(up, total) => "${up} / ${total} 节点正常";
+
+  static String m31(label) => "${label}必须为URL";
+
+  static String m32(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -622,6 +626,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
     "quickFill": MessageLookupByLibrary.simpleMessage("一键填入"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
+    "readyToTest": MessageLookupByLibrary.simpleMessage("准备测速"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir端口"),
     "redo": MessageLookupByLibrary.simpleMessage("重做"),
     "remote": MessageLookupByLibrary.simpleMessage("远程"),
@@ -801,7 +806,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialRules": MessageLookupByLibrary.simpleMessage("特殊规则"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("网速统计"),
     "speedtest": MessageLookupByLibrary.simpleMessage("测速"),
+    "speedtestCompleted": MessageLookupByLibrary.simpleMessage("测速已完成"),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage("测试连接速度"),
+    "speedtestDownload": MessageLookupByLibrary.simpleMessage("下载"),
+    "speedtestError": MessageLookupByLibrary.simpleMessage("连接错误"),
+    "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestPing": MessageLookupByLibrary.simpleMessage("延迟"),
+    "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("重新测速"),
+    "speedtestStart": MessageLookupByLibrary.simpleMessage("开始测速"),
+    "speedtestStop": MessageLookupByLibrary.simpleMessage("停止"),
+    "speedtestTestingDownload": MessageLookupByLibrary.simpleMessage(
+      "正在测试下载速度...",
+    ),
+    "speedtestTestingPing": MessageLookupByLibrary.simpleMessage(
+      "正在测量延迟 (Ping)...",
+    ),
+    "speedtestTestingUpload": MessageLookupByLibrary.simpleMessage(
+      "正在测试上传速度...",
+    ),
+    "speedtestUnitMbps": MessageLookupByLibrary.simpleMessage("Mbps"),
+    "speedtestUnitMs": MessageLookupByLibrary.simpleMessage("ms"),
+    "speedtestUpload": MessageLookupByLibrary.simpleMessage("上传"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("分流策略"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage("分流策略不能为空"),
     "ssidsEmpty": MessageLookupByLibrary.simpleMessage("SSIDs为空"),
@@ -814,8 +839,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("正在启动VPN..."),
     "status": MessageLookupByLibrary.simpleMessage("状态"),
     "statusActive": MessageLookupByLibrary.simpleMessage("激活"),
+    "statusAllAvailable": m29,
+    "statusAllDown": MessageLookupByLibrary.simpleMessage("所有节点均不可用"),
+    "statusAllDownDesc": MessageLookupByLibrary.simpleMessage("所有监控均报告错误"),
+    "statusAllSystemsOperational": MessageLookupByLibrary.simpleMessage(
+      "所有系统运行正常",
+    ),
+    "statusAllSystemsOperationalDesc": MessageLookupByLibrary.simpleMessage(
+      "所有节点均处于可用状态",
+    ),
+    "statusCheckHistory": MessageLookupByLibrary.simpleMessage("监控历史"),
+    "statusChecking": MessageLookupByLibrary.simpleMessage("正在检查服务器..."),
     "statusDesc": MessageLookupByLibrary.simpleMessage("关闭后将使用系统DNS"),
+    "statusDown": MessageLookupByLibrary.simpleMessage("不可用"),
     "statusExpired": MessageLookupByLibrary.simpleMessage("已过期"),
+    "statusMonitors": MessageLookupByLibrary.simpleMessage("// 监控节点"),
+    "statusNoMonitors": MessageLookupByLibrary.simpleMessage("暂无监控数据"),
+    "statusOperational": MessageLookupByLibrary.simpleMessage("可用"),
+    "statusPartialOutages": MessageLookupByLibrary.simpleMessage("部分节点异常"),
+    "statusPartialOutagesDesc": m30,
+    "statusUpdated": MessageLookupByLibrary.simpleMessage("已更新"),
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("风格"),
@@ -912,7 +955,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m29,
+    "urlTip": m31,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
@@ -924,13 +967,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(
       "检测到VPN相关配置改动",
     ),
+    "vpnConnected": MessageLookupByLibrary.simpleMessage("VPN 已连接"),
+    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("VPN 已断开"),
     "vpnEnableDesc": MessageLookupByLibrary.simpleMessage(
       "通过VpnService自动路由系统所有流量",
     ),
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m30,
+    "yearsAgo": m32,
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

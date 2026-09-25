@@ -92,9 +92,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(count) => "Выбрано: ${count}";
 
-  static String m29(label) => "Значение «${label}» должно быть URL";
+  static String m29(count) => "Все серверы доступны (${count})";
 
-  static String m30(count) =>
+  static String m30(up, total) => "Работают ${up} из ${total}";
+
+  static String m31(label) => "Значение «${label}» должно быть URL";
+
+  static String m32(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -908,6 +912,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("Быстрое заполнение"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Радуга"),
+    "readyToTest": MessageLookupByLibrary.simpleMessage("Готов к тестированию"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Порт Redir"),
     "redo": MessageLookupByLibrary.simpleMessage("Повторить"),
     "remote": MessageLookupByLibrary.simpleMessage("Удалённо"),
@@ -1163,9 +1168,33 @@ class MessageLookup extends MessageLookupByLibrary {
       "Статистика скорости",
     ),
     "speedtest": MessageLookupByLibrary.simpleMessage("Спидтест"),
+    "speedtestCompleted": MessageLookupByLibrary.simpleMessage(
+      "Тест успешно завершён",
+    ),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage(
       "Тест скорости соединения",
     ),
+    "speedtestDownload": MessageLookupByLibrary.simpleMessage("Download"),
+    "speedtestError": MessageLookupByLibrary.simpleMessage("Ошибка соединения"),
+    "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("МБИТ/С"),
+    "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
+    "speedtestRunAgain": MessageLookupByLibrary.simpleMessage(
+      "Измерить ещё раз",
+    ),
+    "speedtestStart": MessageLookupByLibrary.simpleMessage("Запустить тест"),
+    "speedtestStop": MessageLookupByLibrary.simpleMessage("Остановить"),
+    "speedtestTestingDownload": MessageLookupByLibrary.simpleMessage(
+      "Загрузка (Download)...",
+    ),
+    "speedtestTestingPing": MessageLookupByLibrary.simpleMessage(
+      "Измерение задержки (Ping)...",
+    ),
+    "speedtestTestingUpload": MessageLookupByLibrary.simpleMessage(
+      "Отдача (Upload)...",
+    ),
+    "speedtestUnitMbps": MessageLookupByLibrary.simpleMessage("Мбит/с"),
+    "speedtestUnitMs": MessageLookupByLibrary.simpleMessage("мс"),
+    "speedtestUpload": MessageLookupByLibrary.simpleMessage("Upload"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage(
       "Стратегия распределения",
     ),
@@ -1182,10 +1211,38 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("Запуск VPN..."),
     "status": MessageLookupByLibrary.simpleMessage("Статус"),
     "statusActive": MessageLookupByLibrary.simpleMessage("Активен"),
+    "statusAllAvailable": m29,
+    "statusAllDown": MessageLookupByLibrary.simpleMessage("Серверы недоступны"),
+    "statusAllDownDesc": MessageLookupByLibrary.simpleMessage(
+      "Все мониторы сообщают об ошибке",
+    ),
+    "statusAllSystemsOperational": MessageLookupByLibrary.simpleMessage(
+      "Все системы работают нормально",
+    ),
+    "statusAllSystemsOperationalDesc": MessageLookupByLibrary.simpleMessage(
+      "Все серверы в статусе «Доступен»",
+    ),
+    "statusCheckHistory": MessageLookupByLibrary.simpleMessage(
+      "История проверок",
+    ),
+    "statusChecking": MessageLookupByLibrary.simpleMessage(
+      "Проверка серверов...",
+    ),
     "statusDesc": MessageLookupByLibrary.simpleMessage(
       "При отключении используется системный DNS",
     ),
+    "statusDown": MessageLookupByLibrary.simpleMessage("Недоступен"),
     "statusExpired": MessageLookupByLibrary.simpleMessage("Истекла"),
+    "statusMonitors": MessageLookupByLibrary.simpleMessage("// МОНИТОРЫ"),
+    "statusNoMonitors": MessageLookupByLibrary.simpleMessage(
+      "Нет данных о мониторах",
+    ),
+    "statusOperational": MessageLookupByLibrary.simpleMessage("Доступен"),
+    "statusPartialOutages": MessageLookupByLibrary.simpleMessage(
+      "Частичные проблемы",
+    ),
+    "statusPartialOutagesDesc": m30,
+    "statusUpdated": MessageLookupByLibrary.simpleMessage("Обновлено"),
     "stop": MessageLookupByLibrary.simpleMessage("Стоп"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Остановка VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Стиль"),
@@ -1322,7 +1379,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("Отдача"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("Получить профиль по URL"),
-    "urlTip": m29,
+    "urlTip": m31,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системный hosts",
@@ -1340,6 +1397,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(
       "Обнаружено изменение настроек VPN",
     ),
+    "vpnConnected": MessageLookupByLibrary.simpleMessage("VPN подключён"),
+    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("VPN отключён"),
     "vpnEnableDesc": MessageLookupByLibrary.simpleMessage(
       "Автоматически направляет весь системный трафик через VpnService",
     ),
@@ -1352,7 +1411,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m30,
+    "yearsAgo": m32,
     "zhCN": MessageLookupByLibrary.simpleMessage("Упрощённый китайский"),
   };
 }

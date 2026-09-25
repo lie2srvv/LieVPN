@@ -65,12 +65,13 @@ class _ServerStatusViewState extends State<ServerStatusView> {
   @override
   Widget build(BuildContext context) {
     final state = _state;
+    final appLocalizations = context.appLocalizations;
 
     return CommonScaffold(
-      title: context.appLocalizations.serverStatus,
+      title: appLocalizations.serverStatus,
       actions: [
         IconButton(
-          tooltip: 'Обновить',
+          tooltip: appLocalizations.update,
           icon: state.isLoading
               ? const SizedBox(
                   width: 18,
@@ -95,7 +96,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
               Row(
                 children: [
                   Text(
-                    '// МОНИТОРЫ',
+                    appLocalizations.statusMonitors,
                     style: TextStyle(
                       fontFamily: 'monospace',
                       fontSize: 12,
@@ -110,7 +111,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
               if (state.monitors.isEmpty && state.isLoading)
                 _buildLoadingSkeletons()
               else if (state.monitors.isEmpty)
-                _buildEmptyState()
+                _buildEmptyState(context)
               else
                 ...state.monitors.map((m) => _buildMonitorCard(context, m)),
             ],
@@ -121,6 +122,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
   }
 
   Widget _buildOverallBanner(BuildContext context, ServerStatusState state) {
+    final appLocalizations = context.appLocalizations;
     final bool isDegraded = state.hasPartialIssues;
     final bool isAllDown = state.allDown;
 
@@ -136,22 +138,22 @@ class _ServerStatusViewState extends State<ServerStatusView> {
       bgColor = const Color(0xFF261014);
       iconColor = const Color(0xFFEF4444);
       iconData = Icons.cancel_outlined;
-      title = 'Серверы недоступны';
-      subtitle = 'Все мониторы сообщают об ошибке';
+      title = appLocalizations.statusAllDown;
+      subtitle = appLocalizations.statusAllDownDesc;
     } else if (isDegraded) {
       borderColor = const Color(0xFFF59E0B).withValues(alpha: 0.35);
       bgColor = const Color(0xFF271C0F);
       iconColor = const Color(0xFFF59E0B);
       iconData = Icons.warning_amber_rounded;
-      title = 'Частичные проблемы';
-      subtitle = 'Работают ${state.upCount} из ${state.monitors.length}';
+      title = appLocalizations.statusPartialOutages;
+      subtitle = appLocalizations.statusPartialOutagesDesc(state.upCount, state.monitors.length);
     } else {
       borderColor = const Color(0xFF22C55E).withValues(alpha: 0.3);
       bgColor = const Color(0xFF0D1F17);
       iconColor = const Color(0xFF22C55E);
       iconData = Icons.check_circle_outline_rounded;
-      title = 'Все системы работают нормально';
-      subtitle = 'Все серверы в статусе «Доступен»';
+      title = appLocalizations.statusAllSystemsOperational;
+      subtitle = appLocalizations.statusAllSystemsOperationalDesc;
     }
 
     return Container(
@@ -208,7 +210,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'Обновлено',
+                appLocalizations.statusUpdated,
                 style: TextStyle(
                   fontFamily: 'monospace',
                   color: Colors.white.withValues(alpha: 0.35),
@@ -233,12 +235,13 @@ class _ServerStatusViewState extends State<ServerStatusView> {
   }
 
   Widget _buildMonitorCard(BuildContext context, MonitorStatusData data) {
+    final appLocalizations = context.appLocalizations;
     final isUp = data.isUp;
     final dotColor = isUp ? const Color(0xFF22C55E) : const Color(0xFFEF4444);
     final badgeBg = isUp
         ? const Color(0xFF22C55E).withValues(alpha: 0.15)
         : const Color(0xFFEF4444).withValues(alpha: 0.15);
-    final badgeText = isUp ? 'Доступен' : 'Недоступен';
+    final badgeText = isUp ? appLocalizations.statusOperational : appLocalizations.statusDown;
 
     final recentBeats = data.heartbeats.length > 35
         ? data.heartbeats.sublist(data.heartbeats.length - 35)
@@ -343,7 +346,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'История проверок',
+                appLocalizations.statusCheckHistory,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 10,
@@ -382,12 +385,12 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Text(
-          'Нет данных о мониторах',
+          context.appLocalizations.statusNoMonitors,
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.4),
             fontSize: 14,

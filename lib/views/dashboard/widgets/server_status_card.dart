@@ -40,6 +40,7 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final colorScheme = context.colorScheme;
+    final appLocalizations = context.appLocalizations;
 
     Color iconColor;
     IconData iconData;
@@ -48,19 +49,19 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
     if (_isLoading) {
       iconColor = const Color(0xFF22C55E);
       iconData = Icons.wifi_tethering;
-      statusTitle = 'Проверка серверов...';
+      statusTitle = appLocalizations.statusChecking;
     } else if (_isAllDown && _totalCount > 0) {
       iconColor = const Color(0xFFEF4444);
       iconData = Icons.cancel_outlined;
-      statusTitle = 'Серверы недоступны';
+      statusTitle = appLocalizations.statusAllDown;
     } else if (_upCount < _totalCount) {
       iconColor = const Color(0xFFF59E0B);
       iconData = Icons.warning_amber_rounded;
-      statusTitle = 'Работают $_upCount из $_totalCount';
+      statusTitle = appLocalizations.statusPartialOutagesDesc(_upCount, _totalCount);
     } else {
       iconColor = const Color(0xFF22C55E);
       iconData = Icons.check_circle_outline_rounded;
-      statusTitle = 'Все серверы доступны ($_totalCount)';
+      statusTitle = appLocalizations.statusAllAvailable(_totalCount);
     }
 
     return CommonCard(
@@ -94,7 +95,7 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Статус серверов',
+                    appLocalizations.serverStatus,
                     style: textTheme.titleMedium?.toBold,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
