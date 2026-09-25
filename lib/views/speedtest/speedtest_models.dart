@@ -7,14 +7,8 @@ enum SpeedtestPhase {
   error,
 }
 
-enum SpeedtestSource {
-  ookla,
-  yandex,
-}
-
 class SpeedtestState {
   final SpeedtestPhase phase;
-  final SpeedtestSource source;
   final double currentSpeedMbps;
   final double? downloadMbps;
   final double? uploadMbps;
@@ -23,7 +17,6 @@ class SpeedtestState {
 
   const SpeedtestState({
     this.phase = SpeedtestPhase.idle,
-    this.source = SpeedtestSource.yandex,
     this.currentSpeedMbps = 0.0,
     this.downloadMbps,
     this.uploadMbps,
@@ -38,7 +31,6 @@ class SpeedtestState {
 
   SpeedtestState copyWith({
     SpeedtestPhase? phase,
-    SpeedtestSource? source,
     double? currentSpeedMbps,
     double? downloadMbps,
     double? uploadMbps,
@@ -47,7 +39,6 @@ class SpeedtestState {
   }) {
     return SpeedtestState(
       phase: phase ?? this.phase,
-      source: source ?? this.source,
       currentSpeedMbps: currentSpeedMbps ?? this.currentSpeedMbps,
       downloadMbps: downloadMbps ?? this.downloadMbps,
       uploadMbps: uploadMbps ?? this.uploadMbps,

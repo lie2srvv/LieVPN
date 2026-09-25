@@ -25,10 +25,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
   }
 
   void _startTest() {
-    final isVpnConnected = ref.read(isStartProvider);
-
     _service.runTest(
-      isVpnConnected: isVpnConnected,
       onUpdate: (newState) {
         if (mounted) {
           setState(() {
