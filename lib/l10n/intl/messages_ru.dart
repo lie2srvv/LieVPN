@@ -1132,6 +1132,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Выбрано"),
     "selectedCountTitle": m28,
+    "serverStatus": MessageLookupByLibrary.simpleMessage("Статус серверов"),
+    "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "Состояние и аптайм серверов LieVPN",
+    ),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
     "showLess": MessageLookupByLibrary.simpleMessage("Свернуть"),
@@ -1157,6 +1161,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialRules": MessageLookupByLibrary.simpleMessage("Специальные правила"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage(
       "Статистика скорости",
+    ),
+    "speedtest": MessageLookupByLibrary.simpleMessage("Спидтест"),
+    "speedtestDesc": MessageLookupByLibrary.simpleMessage(
+      "Тест скорости соединения",
     ),
     "splitStrategy": MessageLookupByLibrary.simpleMessage(
       "Стратегия распределения",

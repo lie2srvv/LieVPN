@@ -660,5 +660,9 @@
   "checkUpdateStatus": "检查续订",
   "subscriptionInvalidOrEmpty": "订阅不包含服务器或无效",
   "subscriptionFoundInClipboard": "在剪贴板中找到订阅",
-  "enterSubscriptionUrl": "输入 LieVPN 订阅链接"
+  "enterSubscriptionUrl": "输入 LieVPN 订阅链接",
+  "speedtest": "测速",
+  "speedtestDesc": "测试连接速度",
+  "serverStatus": "服务器状态",
+  "serverStatusDesc": "LieVPN 服务器状态与正常运行时间"
 }

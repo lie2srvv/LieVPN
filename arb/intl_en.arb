@@ -660,5 +660,9 @@
   "checkUpdateStatus": "Check Renewal",
   "subscriptionInvalidOrEmpty": "Subscription contains no servers or is invalid",
   "subscriptionFoundInClipboard": "Subscription found in clipboard",
-  "enterSubscriptionUrl": "Enter LieVPN subscription URL"
+  "enterSubscriptionUrl": "Enter LieVPN subscription URL",
+  "speedtest": "Speedtest",
+  "speedtestDesc": "Test connection speed",
+  "serverStatus": "Server Status",
+  "serverStatusDesc": "LieVPN servers state and uptime"
 }

@@ -660,5 +660,9 @@
   "checkUpdateStatus": "Проверить продление",
   "subscriptionInvalidOrEmpty": "Подписка не содержит серверов или недействительна",
   "subscriptionFoundInClipboard": "Найдена подписка в буфере обмена",
-  "enterSubscriptionUrl": "Введите ссылку на подписку LieVPN"
+  "enterSubscriptionUrl": "Введите ссылку на подписку LieVPN",
+  "speedtest": "Спидтест",
+  "speedtestDesc": "Тест скорости соединения",
+  "serverStatus": "Статус серверов",
+  "serverStatusDesc": "Состояние и аптайм серверов LieVPN"
 }

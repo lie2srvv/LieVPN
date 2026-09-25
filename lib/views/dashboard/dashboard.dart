@@ -11,6 +11,7 @@ import 'widget_registry.dart';
 import 'widgets/core_status_button.dart';
 import 'widgets/start_button.dart';
 import 'widgets/subscription_status_card.dart';
+import 'widgets/server_status_card.dart';
 
 typedef _IsEditWidgetBuilder = Widget Function(bool isEdit);
 
@@ -231,7 +232,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SubscriptionStatusCard(),
+                          const SubscriptionStatusCard(),
+                          SizedBox(height: spacing),
+                          const ServerStatusCard(),
                           SizedBox(height: spacing),
                           Grid(
                             crossAxisCount: columns,

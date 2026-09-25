@@ -660,5 +660,9 @@
   "checkUpdateStatus": "更新を確認",
   "subscriptionInvalidOrEmpty": "サブスクリプションにサーバーが含まれていないか、無効です",
   "subscriptionFoundInClipboard": "クリップボードにサブスクリプションが見つかりました",
-  "enterSubscriptionUrl": "LieVPN サブスクリプション URL を入力"
+  "enterSubscriptionUrl": "LieVPN サブスクリプション URL を入力",
+  "speedtest": "スピードテスト",
+  "speedtestDesc": "通信速度テスト",
+  "serverStatus": "サーバー状況",
+  "serverStatusDesc": "LieVPN サーバー状況と稼働時間"
 }

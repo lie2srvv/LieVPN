@@ -1080,6 +1080,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Selected"),
     "selectedCountTitle": m28,
+    "serverStatus": MessageLookupByLibrary.simpleMessage("Server Status"),
+    "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "LieVPN servers state and uptime",
+    ),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
     "showLess": MessageLookupByLibrary.simpleMessage("Collapse"),
@@ -1104,6 +1108,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialProxy": MessageLookupByLibrary.simpleMessage("Special proxy"),
     "specialRules": MessageLookupByLibrary.simpleMessage("Special rules"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("Speed statistics"),
+    "speedtest": MessageLookupByLibrary.simpleMessage("Speedtest"),
+    "speedtestDesc": MessageLookupByLibrary.simpleMessage(
+      "Test connection speed",
+    ),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("Split strategy"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "Split strategy cannot be empty",

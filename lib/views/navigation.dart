@@ -21,6 +21,13 @@ class Navigation implements NavigationPort {
             const DashboardView(key: GlobalObjectKey(PageLabel.dashboard)),
       ),
       NavigationItem(
+        icon: const Icon(Icons.speed),
+        label: PageLabel.speedtest,
+        builder: (_) =>
+            const SpeedtestView(key: GlobalObjectKey(PageLabel.speedtest)),
+        modes: [NavigationItemMode.mobile, NavigationItemMode.desktop],
+      ),
+      NavigationItem(
         icon: const Icon(Icons.article),
         label: PageLabel.proxies,
         builder: (_) =>

@@ -5499,6 +5499,41 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Speedtest`
+  String get speedtest {
+    return Intl.message('Speedtest', name: 'speedtest', desc: '', args: []);
+  }
+
+  /// `Test connection speed`
+  String get speedtestDesc {
+    return Intl.message(
+      'Test connection speed',
+      name: 'speedtestDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server Status`
+  String get serverStatus {
+    return Intl.message(
+      'Server Status',
+      name: 'serverStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN servers state and uptime`
+  String get serverStatusDesc {
+    return Intl.message(
+      'LieVPN servers state and uptime',
+      name: 'serverStatusDesc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

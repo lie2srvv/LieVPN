@@ -8,6 +8,8 @@ extension PageLabelL10n on PageLabel {
     final appLocalizations = currentAppLocalizations;
     return switch (this) {
       PageLabel.dashboard => appLocalizations.dashboard,
+      PageLabel.speedtest => appLocalizations.speedtest,
+      PageLabel.serverStatus => appLocalizations.serverStatus,
       PageLabel.proxies => appLocalizations.proxies,
       PageLabel.profiles => appLocalizations.profiles,
       PageLabel.tools => appLocalizations.tools,
@@ -25,6 +27,8 @@ extension PageLabelL10n on PageLabel {
       PageLabel.requests => appLocalizations.requestsDesc,
       PageLabel.resources => appLocalizations.resourcesDesc,
       PageLabel.connections => appLocalizations.connectionsDesc,
+      PageLabel.speedtest => appLocalizations.speedtestDesc,
+      PageLabel.serverStatus => appLocalizations.serverStatusDesc,
       PageLabel.dashboard ||
       PageLabel.proxies ||
       PageLabel.profiles ||

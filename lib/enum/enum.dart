@@ -330,6 +330,8 @@ extension GeoResourceExt on GeoResource {
 
 enum PageLabel {
   dashboard,
+  speedtest,
+  serverStatus,
   proxies,
   profiles,
   tools,
