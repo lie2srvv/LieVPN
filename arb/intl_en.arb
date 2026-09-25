@@ -695,5 +695,19 @@
   "statusOperational": "Operational",
   "statusDown": "Down",
   "statusCheckHistory": "Check history",
-  "statusNoMonitors": "No monitor data"
+  "statusNoMonitors": "No monitor data",
+  "checkUpdates": "Check for updates",
+  "checkUpdatesDesc": "Check if a newer version is available",
+  "newVersionAvailable": "Update {version} available",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "You are using the latest version",
+  "updateLater": "Later",
+  "updateNow": "Update",
+  "updateCheckError": "Failed to check for updates"
 }

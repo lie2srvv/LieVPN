@@ -67,27 +67,29 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(count) => "${count} 个月前";
 
-  static String m22(label) => "暂无${label}";
+  static String m22(version) => "发现新版本 ${version}";
 
-  static String m23(label) => "${label}必须为数字";
+  static String m23(label) => "暂无${label}";
 
-  static String m24(label) => "${label} 必须在 1024 到 49151 之间";
+  static String m24(label) => "${label}必须为数字";
 
-  static String m25(count) => "${count} 个代理";
+  static String m25(label) => "${label} 必须在 1024 到 49151 之间";
 
-  static String m26(count) => "${count} 条规则";
+  static String m26(count) => "${count} 个代理";
 
-  static String m27(count) => "${count} 秒";
+  static String m27(count) => "${count} 条规则";
 
-  static String m28(count) => "已选择 ${count} 项";
+  static String m28(count) => "${count} 秒";
 
-  static String m29(count) => "所有节点可用 (${count})";
+  static String m29(count) => "已选择 ${count} 项";
 
-  static String m30(up, total) => "${up} / ${total} 节点正常";
+  static String m30(count) => "所有节点可用 (${count})";
 
-  static String m31(label) => "${label}必须为URL";
+  static String m31(up, total) => "${up} / ${total} 节点正常";
 
-  static String m32(count) => "${count} 年前";
+  static String m32(label) => "${label}必须为URL";
+
+  static String m33(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -206,6 +208,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdate": MessageLookupByLibrary.simpleMessage("检查更新"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("当前应用已经是最新版了"),
     "checkUpdateStatus": MessageLookupByLibrary.simpleMessage("检查续订"),
+    "checkUpdates": MessageLookupByLibrary.simpleMessage("检查更新"),
+    "checkUpdatesDesc": MessageLookupByLibrary.simpleMessage("检查是否有新版本可用"),
     "clearData": MessageLookupByLibrary.simpleMessage("清除数据"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("清除搜索"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("导出剪贴板"),
@@ -447,6 +451,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP保持活动间隔"),
     "key": MessageLookupByLibrary.simpleMessage("键"),
     "language": MessageLookupByLibrary.simpleMessage("语言"),
+    "latestVersionInstalled": MessageLookupByLibrary.simpleMessage("当前已是最新版本"),
     "launchInterrupted": MessageLookupByLibrary.simpleMessage("启动未完成"),
     "launchInterruptedTip": MessageLookupByLibrary.simpleMessage(
       "应用上次在启动过程中意外退出。已跳过本次自动配置，你可以手动启动重试。",
@@ -514,6 +519,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
     "networkType": MessageLookupByLibrary.simpleMessage("网络类型"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("中性"),
+    "newVersionAvailable": m22,
     "nextMatch": MessageLookupByLibrary.simpleMessage("下一个匹配"),
     "noData": MessageLookupByLibrary.simpleMessage("暂无数据"),
     "noExpiration": MessageLookupByLibrary.simpleMessage("∞ 永久有效"),
@@ -532,8 +538,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage("当前代理组无法选中"),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage("没有配置文件,请先添加配置文件"),
-    "nullTip": m22,
-    "numberTip": m23,
+    "nullTip": m23,
+    "numberTip": m24,
     "onDemand": MessageLookupByLibrary.simpleMessage("按需运行"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage("配置程序特定场景运行状态"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
@@ -568,7 +574,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "port": MessageLookupByLibrary.simpleMessage("端口"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
-    "portTip": m24,
+    "portTip": m25,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用DOH的http/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
@@ -597,7 +603,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "project": MessageLookupByLibrary.simpleMessage("项目"),
     "providers": MessageLookupByLibrary.simpleMessage("外部资源"),
     "proxies": MessageLookupByLibrary.simpleMessage("代理"),
-    "proxiesCount": m25,
+    "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("代理为空"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("代理链"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
@@ -756,7 +762,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleSet": MessageLookupByLibrary.simpleMessage("规则集"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("规则目标"),
     "rules": MessageLookupByLibrary.simpleMessage("规则"),
-    "rulesCount": m26,
+    "rulesCount": m27,
     "save": MessageLookupByLibrary.simpleMessage("保存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("是否保存更改？"),
     "scanQrCode": MessageLookupByLibrary.simpleMessage("扫描二维码"),
@@ -767,7 +773,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scrollToSelected": MessageLookupByLibrary.simpleMessage("滚动到已选"),
     "search": MessageLookupByLibrary.simpleMessage("搜索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m27,
+    "secondsCount": m28,
     "selectAll": MessageLookupByLibrary.simpleMessage("全选"),
     "selectMatchTarget": MessageLookupByLibrary.simpleMessage(
       "选择 MATCH-TARGET",
@@ -778,7 +784,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectSplitStrategy": MessageLookupByLibrary.simpleMessage("请选择分流策略"),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("请选择子规则"),
     "selected": MessageLookupByLibrary.simpleMessage("已选择"),
-    "selectedCountTitle": m28,
+    "selectedCountTitle": m29,
     "serverStatus": MessageLookupByLibrary.simpleMessage("服务器状态"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN 服务器状态与正常运行时间",
@@ -839,7 +845,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("正在启动VPN..."),
     "status": MessageLookupByLibrary.simpleMessage("状态"),
     "statusActive": MessageLookupByLibrary.simpleMessage("激活"),
-    "statusAllAvailable": m29,
+    "statusAllAvailable": m30,
     "statusAllDown": MessageLookupByLibrary.simpleMessage("所有节点均不可用"),
     "statusAllDownDesc": MessageLookupByLibrary.simpleMessage("所有监控均报告错误"),
     "statusAllSystemsOperational": MessageLookupByLibrary.simpleMessage(
@@ -857,7 +863,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusNoMonitors": MessageLookupByLibrary.simpleMessage("暂无监控数据"),
     "statusOperational": MessageLookupByLibrary.simpleMessage("可用"),
     "statusPartialOutages": MessageLookupByLibrary.simpleMessage("部分节点异常"),
-    "statusPartialOutagesDesc": m30,
+    "statusPartialOutagesDesc": m31,
     "statusUpdated": MessageLookupByLibrary.simpleMessage("已更新"),
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止VPN..."),
@@ -951,11 +957,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("未命名"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("取消置顶"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
+    "updateCheckError": MessageLookupByLibrary.simpleMessage("检查更新失败"),
+    "updateLater": MessageLookupByLibrary.simpleMessage("稍后"),
+    "updateNow": MessageLookupByLibrary.simpleMessage("立即更新"),
     "updateSubscription": MessageLookupByLibrary.simpleMessage("更新订阅"),
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m31,
+    "urlTip": m32,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
@@ -975,7 +984,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m32,
+    "yearsAgo": m33,
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

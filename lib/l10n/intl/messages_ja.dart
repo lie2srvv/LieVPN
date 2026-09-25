@@ -67,27 +67,29 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(count) => "${count} か月前";
 
-  static String m22(label) => "${label}はまだありません";
+  static String m22(version) => "バージョン ${version} が利用可能です";
 
-  static String m23(label) => "${label}は数値である必要があります";
+  static String m23(label) => "${label}はまだありません";
 
-  static String m24(label) => "${label} は 1024〜49151 の範囲で指定してください";
+  static String m24(label) => "${label}は数値である必要があります";
 
-  static String m25(count) => "プロキシ ${count} 件";
+  static String m25(label) => "${label} は 1024〜49151 の範囲で指定してください";
 
-  static String m26(count) => "ルール ${count} 件";
+  static String m26(count) => "プロキシ ${count} 件";
 
-  static String m27(count) => "${count} 秒";
+  static String m27(count) => "ルール ${count} 件";
 
-  static String m28(count) => "${count} 件選択中";
+  static String m28(count) => "${count} 秒";
 
-  static String m29(count) => "全サーバー稼働中 (${count})";
+  static String m29(count) => "${count} 件選択中";
 
-  static String m30(up, total) => "${up}/${total} 台が稼働中";
+  static String m30(count) => "全サーバー稼働中 (${count})";
 
-  static String m31(label) => "${label}はURLである必要があります";
+  static String m31(up, total) => "${up}/${total} 台が稼働中";
 
-  static String m32(count) => "${count} 年前";
+  static String m32(label) => "${label}はURLである必要があります";
+
+  static String m33(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -222,6 +224,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdate": MessageLookupByLibrary.simpleMessage("更新を確認"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("すでに最新バージョンです"),
     "checkUpdateStatus": MessageLookupByLibrary.simpleMessage("更新を確認"),
+    "checkUpdates": MessageLookupByLibrary.simpleMessage("アップデートを確認"),
+    "checkUpdatesDesc": MessageLookupByLibrary.simpleMessage(
+      "新しいバージョンがあるか確認します",
+    ),
     "clearData": MessageLookupByLibrary.simpleMessage("データを消去"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("検索をクリア"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("クリップボードへエクスポート"),
@@ -513,6 +519,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "key": MessageLookupByLibrary.simpleMessage("キー"),
     "language": MessageLookupByLibrary.simpleMessage("言語"),
+    "latestVersionInstalled": MessageLookupByLibrary.simpleMessage(
+      "最新バージョンを使用しています",
+    ),
     "launchInterrupted": MessageLookupByLibrary.simpleMessage("起動が完了しませんでした"),
     "launchInterruptedTip": MessageLookupByLibrary.simpleMessage(
       "前回、アプリは起動中に予期せず終了しました。今回の自動セットアップはスキップしました。手動で起動して再試行できます。",
@@ -590,6 +599,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
     "networkType": MessageLookupByLibrary.simpleMessage("ネットワーク種別"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("ニュートラル"),
+    "newVersionAvailable": m22,
     "nextMatch": MessageLookupByLibrary.simpleMessage("次の一致"),
     "noData": MessageLookupByLibrary.simpleMessage("データがありません"),
     "noExpiration": MessageLookupByLibrary.simpleMessage("∞ 無期限"),
@@ -614,8 +624,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "プロファイルがありません。先にプロファイルを追加してください",
     ),
-    "nullTip": m22,
-    "numberTip": m23,
+    "nullTip": m23,
+    "numberTip": m24,
     "onDemand": MessageLookupByLibrary.simpleMessage("オンデマンド"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "特定のシナリオでのアプリの実行状態を設定します",
@@ -656,7 +666,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "port": MessageLookupByLibrary.simpleMessage("ポート"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
-    "portTip": m24,
+    "portTip": m25,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("DoHでHTTP/3を優先します"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前提条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーを押してください"),
@@ -685,7 +695,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "project": MessageLookupByLibrary.simpleMessage("プロジェクト"),
     "providers": MessageLookupByLibrary.simpleMessage("外部リソース"),
     "proxies": MessageLookupByLibrary.simpleMessage("プロキシ"),
-    "proxiesCount": m25,
+    "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("プロキシが空です"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("プロキシチェーン"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
@@ -880,7 +890,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleSet": MessageLookupByLibrary.simpleMessage("ルールセット"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("ルールターゲット"),
     "rules": MessageLookupByLibrary.simpleMessage("ルール"),
-    "rulesCount": m26,
+    "rulesCount": m27,
     "save": MessageLookupByLibrary.simpleMessage("保存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("変更を保存しますか？"),
     "scanQrCode": MessageLookupByLibrary.simpleMessage("QRコードをスキャン"),
@@ -891,7 +901,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scrollToSelected": MessageLookupByLibrary.simpleMessage("選択項目へスクロール"),
     "search": MessageLookupByLibrary.simpleMessage("検索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m27,
+    "secondsCount": m28,
     "selectAll": MessageLookupByLibrary.simpleMessage("すべて選択"),
     "selectMatchTarget": MessageLookupByLibrary.simpleMessage(
       "MATCH-TARGET を選択",
@@ -906,7 +916,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("サブルールを選択してください"),
     "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
-    "selectedCountTitle": m28,
+    "selectedCountTitle": m29,
     "serverStatus": MessageLookupByLibrary.simpleMessage("サーバー状況"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN サーバー状況と稼働時間",
@@ -969,7 +979,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "startVpn": MessageLookupByLibrary.simpleMessage("VPNを起動しています..."),
     "status": MessageLookupByLibrary.simpleMessage("状態"),
     "statusActive": MessageLookupByLibrary.simpleMessage("有効"),
-    "statusAllAvailable": m29,
+    "statusAllAvailable": m30,
     "statusAllDown": MessageLookupByLibrary.simpleMessage("全サーバー停止中"),
     "statusAllDownDesc": MessageLookupByLibrary.simpleMessage(
       "すべての監視対象でエラーが発生しています",
@@ -989,7 +999,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusNoMonitors": MessageLookupByLibrary.simpleMessage("監視データがありません"),
     "statusOperational": MessageLookupByLibrary.simpleMessage("稼働中"),
     "statusPartialOutages": MessageLookupByLibrary.simpleMessage("一部で障害発生中"),
-    "statusPartialOutagesDesc": m30,
+    "statusPartialOutagesDesc": m31,
     "statusUpdated": MessageLookupByLibrary.simpleMessage("更新済み"),
     "stop": MessageLookupByLibrary.simpleMessage("停止"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPNを停止しています..."),
@@ -1097,11 +1107,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("名称未設定"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("固定を解除"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
+    "updateCheckError": MessageLookupByLibrary.simpleMessage(
+      "アップデートの確認に失敗しました",
+    ),
+    "updateLater": MessageLookupByLibrary.simpleMessage("あとで"),
+    "updateNow": MessageLookupByLibrary.simpleMessage("更新する"),
     "updateSubscription": MessageLookupByLibrary.simpleMessage("サブスクリプションを更新"),
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URLからプロファイルを取得します"),
-    "urlTip": m31,
+    "urlTip": m32,
     "useHosts": MessageLookupByLibrary.simpleMessage("Hostsを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムのHostsを使用"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("使用済みトラフィック"),
@@ -1121,7 +1136,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPNの再起動後に有効になります"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m32,
+    "yearsAgo": m33,
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

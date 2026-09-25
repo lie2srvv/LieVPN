@@ -695,5 +695,19 @@
   "statusOperational": "Доступен",
   "statusDown": "Недоступен",
   "statusCheckHistory": "История проверок",
-  "statusNoMonitors": "Нет данных о мониторах"
+  "statusNoMonitors": "Нет данных о мониторах",
+  "checkUpdates": "Проверить обновления",
+  "checkUpdatesDesc": "Проверить наличие новой версии",
+  "newVersionAvailable": "Доступно обновление {version}",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "У вас установлена последняя версия",
+  "updateLater": "Позже",
+  "updateNow": "Обновить",
+  "updateCheckError": "Не удалось проверить обновления"
 }

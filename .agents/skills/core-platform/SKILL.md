@@ -71,3 +71,10 @@ Read `.agents/architecture.md` for the current core modes, manager stack, build 
   a scope-specific cleanup API instead.
 - `plugins/setup/` is a build harness, not a Dart API plugin.
 - Build hooks can trigger Go or Rust compilation indirectly through Flutter platform builds.
+
+## Versioning Policy & Releases
+Always follow the project release and versioning policy defined in `VERSIONING.md`:
+- Current baseline version: `1.0.0`
+- Minor/patch fixes: `1.0.1`, `1.0.2`, ..., `1.0.20`, etc.
+- Colossal/major updates: `1.1.0`
+- On release, update `pubspec.yaml`, `/var/www/files/version.json` on the server, and push to GitHub.

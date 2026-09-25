@@ -695,5 +695,19 @@
   "statusOperational": "稼働中",
   "statusDown": "停止中",
   "statusCheckHistory": "監視履歴",
-  "statusNoMonitors": "監視データがありません"
+  "statusNoMonitors": "監視データがありません",
+  "checkUpdates": "アップデートを確認",
+  "checkUpdatesDesc": "新しいバージョンがあるか確認します",
+  "newVersionAvailable": "バージョン {version} が利用可能です",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "最新バージョンを使用しています",
+  "updateLater": "あとで",
+  "updateNow": "更新する",
+  "updateCheckError": "アップデートの確認に失敗しました"
 }

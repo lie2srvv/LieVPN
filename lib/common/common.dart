@@ -1,3 +1,4 @@
+export 'app_update_manager.dart';
 export 'app_localizations.dart';
 export 'app_ports.dart';
 export 'changelog.dart';

@@ -90,6 +90,7 @@ class ApplicationState extends ConsumerState<Application> {
           ref.read(currentProfileProvider),
         ),
       );
+      unawaited(AppUpdateManager.autoCheckUpdate(ref));
       _initLink();
       unawaited(app?.initShortcuts());
     });

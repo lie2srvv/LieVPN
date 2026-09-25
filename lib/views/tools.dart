@@ -59,6 +59,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         const _SupportItem(),
         const _DonatorsItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
+        const _CheckUpdateItem(),
         const _InfoItem(),
       ],
     );
@@ -138,7 +139,7 @@ class _LocaleItem extends ConsumerWidget {
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: const [Locale('ru'), Locale('en')],
+      options: const [Locale('ru'), Locale('en'), Locale('ja')],
       onChanged: (Locale? locale) {
         if (locale != null) {
           ref
@@ -265,6 +266,23 @@ class _SettingItem extends StatelessWidget {
       title: Text(context.appLocalizations.application),
       subtitle: Text(context.appLocalizations.applicationDesc),
       widget: const ApplicationSettingView(),
+    );
+  }
+}
+
+class _CheckUpdateItem extends StatelessWidget {
+  const _CheckUpdateItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem(
+      leading: const Icon(Icons.system_update_alt_rounded),
+      title: Text(context.appLocalizations.checkUpdates),
+      subtitle: Text(context.appLocalizations.checkUpdatesDesc),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        AppUpdateManager.manualCheckUpdate(context);
+      },
     );
   }
 }

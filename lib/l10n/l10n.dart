@@ -5804,6 +5804,66 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Check for updates`
+  String get checkUpdates {
+    return Intl.message(
+      'Check for updates',
+      name: 'checkUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check if a newer version is available`
+  String get checkUpdatesDesc {
+    return Intl.message(
+      'Check if a newer version is available',
+      name: 'checkUpdatesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update {version} available`
+  String newVersionAvailable(String version) {
+    return Intl.message(
+      'Update $version available',
+      name: 'newVersionAvailable',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `You are using the latest version`
+  String get latestVersionInstalled {
+    return Intl.message(
+      'You are using the latest version',
+      name: 'latestVersionInstalled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Later`
+  String get updateLater {
+    return Intl.message('Later', name: 'updateLater', desc: '', args: []);
+  }
+
+  /// `Update`
+  String get updateNow {
+    return Intl.message('Update', name: 'updateNow', desc: '', args: []);
+  }
+
+  /// `Failed to check for updates`
+  String get updateCheckError {
+    return Intl.message(
+      'Failed to check for updates',
+      name: 'updateCheckError',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
