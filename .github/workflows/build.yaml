@@ -117,8 +117,8 @@ jobs:
           echo "Found app at: $APP_PATH"
           cp -r "$APP_PATH" dist/Payload/
           cd dist
-          zip -r -q LieVPN-1.0.4-ios.ipa Payload
-          cp LieVPN-1.0.4-ios.ipa LieVPN-ios.ipa
+          zip -r -q LieVPN-1.0.5-ios.ipa Payload
+          cp LieVPN-1.0.5-ios.ipa LieVPN-ios.ipa
           rm -rf Payload
           ls -lh
 
