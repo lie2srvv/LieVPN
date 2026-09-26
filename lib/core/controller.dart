@@ -17,8 +17,10 @@ class CoreController {
   CoreController._internal() {
     if (system.isAndroid) {
       _interface = coreLib!;
-    } else {
+    } else if (coreService != null) {
       _interface = coreService!;
+    } else {
+      _interface = StubCoreHandler();
     }
   }
 

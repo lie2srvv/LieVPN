@@ -1,4 +1,3 @@
-import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
@@ -6,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:tray/tray.dart';
 
 import 'app_localizations.dart';
-import 'l10n_labels.dart';
 import 'app_ports.dart';
 import 'constant.dart';
 import 'provider_reader.dart';
@@ -103,7 +101,6 @@ class AppTray implements TrayPort {
   }) {
     final commonAction = read(commonActionProvider.notifier);
     final systemAction = read(systemActionProvider.notifier);
-    final setupAction = read(setupActionProvider.notifier);
     final appLocalizations = currentAppLocalizations;
 
     return [

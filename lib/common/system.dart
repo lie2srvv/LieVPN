@@ -39,6 +39,10 @@ class System {
 
   bool get isLinux => Platform.isLinux;
 
+  bool get isIOS => Platform.isIOS;
+
+  bool get isMobile => isAndroid || isIOS;
+
   bool get isTV => _isTV;
 
   Future<int> init() async {
@@ -56,6 +60,11 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ios' =>
+        int.tryParse(
+          (deviceInfo as IosDeviceInfo).systemVersion.split('.').first,
+        ) ??
+        0,
       String() => 0,
     };
   }
@@ -269,7 +278,7 @@ class System {
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isIOS) {
       await SystemNavigator.pop();
     }
   }

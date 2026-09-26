@@ -1,4 +1,4 @@
-name: Build LieVPN (Android, Windows & Linux)
+name: Build LieVPN (Windows & iOS)
 
 on:
   workflow_dispatch:
@@ -7,62 +7,6 @@ on:
       - main
 
 jobs:
-  build-apk:
-    name: Build Android APK
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.26.4'
-          cache-dependency-path: core/go.sum
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup NDK
-        uses: nttld/setup-ndk@v1
-        id: build-ndk
-        with:
-          ndk-version: r28c
-          link-to-sdk: true
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: master
-          flutter-version: '3.47.1'
-          cache: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      - name: Get Flutter Dependency
-        run: |
-          flutter --version
-          flutter pub get
-
-      - name: Setup & Build Android
-        env:
-          ANDROID_NDK_HOME: ${{ steps.build-ndk.outputs.ndk-path }}
-        run: dart setup.dart android -v
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: LieVPN-Android-APK
-          path: ./dist/*
-          overwrite: true
-
   build-windows:
     name: Build Windows App
     runs-on: windows-latest
@@ -100,21 +44,16 @@ jobs:
           name: LieVPN-Windows
           path: ./dist/*
           overwrite: true
-  build-linux:
-    name: Build Linux App
-    runs-on: ubuntu-latest
+
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-14
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.26.4'
-          cache-dependency-path: core/go.sum
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -123,24 +62,32 @@ jobs:
           flutter-version: '3.47.1'
           cache: true
 
-      - name: Install Linux Dependencies
+      - name: Setup CocoaPods
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev libayatana-appindicator3-dev libsecret-1-dev libfuse2
-          sudo wget -q -O /usr/local/bin/appimagetool https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
-          sudo chmod +x /usr/local/bin/appimagetool
+          pod --version
 
-      - name: Get Flutter Dependency
+      - name: Get Flutter Dependencies
         run: |
           flutter --version
           flutter pub get
 
-      - name: Setup & Build Linux
-        run: dart setup.dart linux --targets=appimage -v
+      - name: Build iOS Application
+        run: |
+          flutter build ios --release --no-codesign
 
-      - name: Upload Linux Artifacts
+      - name: Package IPA
+        run: |
+          mkdir -p dist/Payload
+          cp -r build/ios/iphoneos/Runner.app dist/Payload/
+          cd dist
+          zip -r -q LieVPN-1.0.4-ios.ipa Payload
+          cp LieVPN-1.0.4-ios.ipa LieVPN-ios.ipa
+          rm -rf Payload
+          ls -lh
+
+      - name: Upload iOS IPA Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LieVPN-Linux
-          path: ./dist/*
+          name: LieVPN-iOS-IPA
+          path: ./dist/*.ipa
           overwrite: true

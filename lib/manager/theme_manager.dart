@@ -17,7 +17,7 @@ class ThemeManager extends ConsumerWidget {
   const ThemeManager({super.key, required this.child});
 
   Widget _buildSystemUi(Widget child) {
-    if (!system.isAndroid) {
+    if (!system.isAndroid && !system.isIOS) {
       return child;
     }
     return Consumer(
@@ -30,6 +30,9 @@ class ThemeManager extends ConsumerWidget {
           value: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: iconBrightness,
+            statusBarBrightness: brightness == Brightness.light
+                ? Brightness.light
+                : Brightness.dark,
             systemNavigationBarIconBrightness: iconBrightness,
             systemNavigationBarColor: Colors.transparent,
             systemNavigationBarDividerColor: Colors.transparent,

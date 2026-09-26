@@ -5,3 +5,4 @@ export 'event.dart';
 export 'lib.dart';
 export 'method.dart';
 export 'service.dart';
+export 'stub.dart';

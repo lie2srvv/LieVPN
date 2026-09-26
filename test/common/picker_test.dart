@@ -24,6 +24,9 @@ base class _LocalPlatformFile extends PlatformFile {
   Future<int> length() => _file.length();
 
   @override
+  int lengthSync() => _file.lengthSync();
+
+  @override
   Future<Uint8List> readAsBytes() => _file.readAsBytes();
 
   @override
@@ -38,15 +41,12 @@ void main() {
         'fl_clash_picker_test_',
       );
       addTearDown(() => directory.delete(recursive: true));
-
-      final file = File('${directory.path}/profile.yaml');
-      await file.writeAsString('mixed-port: 7890');
+      final file = File('${directory.path}/config.yaml');
+      await file.writeAsBytes([1, 2, 3, 4]);
 
       final platformFile = _LocalPlatformFile(file);
 
-      final bytes = await platformFile.readBytes();
-
-      expect(String.fromCharCodes(bytes), 'mixed-port: 7890');
+      expect(await platformFile.readBytes(), [1, 2, 3, 4]);
     });
   });
 }
