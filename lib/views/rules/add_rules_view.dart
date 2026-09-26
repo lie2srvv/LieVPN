@@ -120,9 +120,11 @@ class _AddRulesViewState extends ConsumerState<AddRulesView> {
           (r.ruleTarget?.toUpperCase() == 'DIRECT');
     }).toList();
 
-    return CommonScaffold(
-      title: appLocalizations.addRules,
-      body: SafeArea(
+    return Material(
+      color: colorScheme.surface,
+      child: CommonScaffold(
+        title: appLocalizations.addRules,
+        body: SafeArea(
         child: Column(
           children: [
             // Top Section: Input Card
@@ -475,6 +477,7 @@ class _AddRulesViewState extends ConsumerState<AddRulesView> {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -601,10 +604,12 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
                 it.identifier.toLowerCase().contains(query);
           }).toList();
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
-      ),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.75,
+        ),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: const BorderRadius.vertical(
@@ -739,6 +744,7 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
