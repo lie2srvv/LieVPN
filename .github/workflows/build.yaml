@@ -1,4 +1,4 @@
-name: Build LieVPN (Windows & iOS)
+name: Build LieVPN (Windows)
 
 on:
   workflow_dispatch:
@@ -45,86 +45,7 @@ jobs:
           path: ./dist/*
           overwrite: true
 
-  build-ios:
-    name: Build iOS IPA
-    runs-on: macos-14
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Select Xcode
-        run: |
-          XCODE_PATH=$(find /Applications -maxdepth 1 -name "Xcode_16*.app" -o -name "Xcode_15.4*.app" | sort -r | head -n 1)
-          if [ -n "$XCODE_PATH" ]; then
-            echo "Selecting $XCODE_PATH"
-            sudo xcode-select -s "$XCODE_PATH"
-          fi
-          xcodebuild -version
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.95.0
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: master
-          flutter-version: '3.47.1'
-          cache: true
-
-      - name: Get Flutter Dependencies
-        run: |
-          flutter --version
-          flutter pub get
-
-      - name: Patch Dependencies for iOS
-        run: |
-          python3 -c "
-          import os, glob
-          search_dirs = [os.path.expanduser('~/.pub-cache'), '/Users/runner/.pub-cache', '.']
-          for base in search_dirs:
-              for p in glob.glob(f'{base}/**/FPPDeviceInfoPlusPlugin.m', recursive=True):
-                  with open(p, 'r') as f:
-                      lines = f.readlines()
-                  new_lines = []
-                  for l in lines:
-                      if '[info isiOSAppOnVision]' in l:
-                          new_lines.append('      isiOSAppOnVision = [NSNumber numberWithBool:NO];\n')
-                      else:
-                          new_lines.append(l)
-                  with open(p, 'w') as f:
-                      f.writelines(new_lines)
-                  print('Successfully patched selector in:', p)
-          "
-
-      - name: Build iOS Application
-        run: |
-          flutter build ios --release --no-codesign --config-only
-          xcodebuild build -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" EXPANDED_CODE_SIGN_IDENTITY=""
-
-      - name: Package IPA
-        run: |
-          mkdir -p dist/Payload
-          APP_PATH=$(find build/DerivedData -name "Runner.app" | grep "Release-iphoneos" | head -n 1)
-          if [ -z "$APP_PATH" ]; then
-            APP_PATH=$(find build -name "Runner.app" | grep "Release-iphoneos" | head -n 1)
-          fi
-          echo "Found app at: $APP_PATH"
-          cp -r "$APP_PATH" dist/Payload/
-          cd dist
-          zip -r -q LieVPN-1.0.5-ios.ipa Payload
-          cp LieVPN-1.0.5-ios.ipa LieVPN-ios.ipa
-          rm -rf Payload
-          ls -lh
-
-      - name: Upload iOS IPA Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: LieVPN-iOS-IPA
-          path: ./dist/*.ipa
-          overwrite: true
+  # iOS IPA build temporarily hidden
+  # build-ios:
+  #   name: Build iOS IPA
+  #   runs-on: macos-14

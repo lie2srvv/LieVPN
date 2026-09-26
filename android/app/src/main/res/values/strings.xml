@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_vpn_name">LieVPN Переключатель</string>
+    <string name="widget_vpn_description">Быстрое подключение и статус LieVPN</string>
+    <string name="widget_dino_name">LieVPN Runner</string>
+    <string name="widget_dino_description">Мини-игра: перепрыгивай РКН, Яндекс и VK</string>
+    <string name="vpn_connected">Подключено</string>
+    <string name="vpn_disconnected">Отключено</string>
+</resources>

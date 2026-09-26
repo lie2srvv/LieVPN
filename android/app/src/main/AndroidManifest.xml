@@ -125,6 +125,33 @@
                 android:value="true" />
         </service>
 
+        <!-- LieVPN Adaptive Switcher Widget -->
+        <receiver
+            android:name=".LieVpnWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_vpn_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_vpn_info" />
+        </receiver>
+
+        <!-- LieVPN Runner Dino Game Widget -->
+        <receiver
+            android:name=".DinoGameWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_dino_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.lie2srvv.vpn.DINO_JUMP" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_dino_info" />
+        </receiver>
+
         <receiver
             android:name=".ServiceBroadcastReceiver"
             android:enabled="true"

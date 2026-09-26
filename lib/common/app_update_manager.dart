@@ -11,25 +11,52 @@ import 'package:fl_clash/state.dart';
 
 class AppUpdateInfo {
   final String version;
-  final String apkUrl;
-  final String? windowsUrl;
-  final String? linuxUrl;
+  final String downloadUrl;
   final String? releaseNotes;
 
   const AppUpdateInfo({
     required this.version,
-    required this.apkUrl,
-    this.windowsUrl,
-    this.linuxUrl,
+    required this.downloadUrl,
     this.releaseNotes,
   });
 
-  factory AppUpdateInfo.fromJson(Map<String, dynamic> json) {
+  /// Parses platform-specific update info with fallback to legacy flat format
+  factory AppUpdateInfo.fromPlatformJson(Map<String, dynamic> json) {
+    String platformKey;
+    String defaultUrl;
+    if (Platform.isAndroid) {
+      platformKey = 'android';
+      defaultUrl = 'https://clck.lie2srvv.com/files/lievpn.apk';
+    } else if (Platform.isWindows) {
+      platformKey = 'windows';
+      defaultUrl = 'https://clck.lie2srvv.com/files/LieVPN-Windows.zip';
+    } else if (Platform.isLinux) {
+      platformKey = 'linux';
+      defaultUrl = 'https://clck.lie2srvv.com/files/LieVPN-Linux.AppImage';
+    } else {
+      platformKey = 'other';
+      defaultUrl = 'https://clck.lie2srvv.com/files/lievpn.apk';
+    }
+
+    if (json[platformKey] is Map<String, dynamic>) {
+      final pMap = json[platformKey] as Map<String, dynamic>;
+      return AppUpdateInfo(
+        version: pMap['version'] as String? ?? json['version'] as String? ?? '1.0.0',
+        downloadUrl: pMap['url'] as String? ?? defaultUrl,
+        releaseNotes: pMap['releaseNotes'] as String? ?? json['releaseNotes'] as String?,
+      );
+    }
+
+    // Legacy fallback
+    final legacyUrl = Platform.isWindows
+        ? (json['windowsUrl'] as String? ?? defaultUrl)
+        : Platform.isLinux
+            ? (json['linuxUrl'] as String? ?? defaultUrl)
+            : (json['apkUrl'] as String? ?? defaultUrl);
+
     return AppUpdateInfo(
       version: json['version'] as String? ?? '1.0.0',
-      apkUrl: json['apkUrl'] as String? ?? 'https://clck.lie2srvv.com/files/lievpn.apk',
-      windowsUrl: json['windowsUrl'] as String?,
-      linuxUrl: json['linuxUrl'] as String?,
+      downloadUrl: legacyUrl,
       releaseNotes: json['releaseNotes'] as String?,
     );
   }
@@ -79,7 +106,7 @@ class AppUpdateManager {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        final updateInfo = AppUpdateInfo.fromJson(response.data!);
+        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
         final currentVersion = globalState.packageInfo.version;
         if (isNewerVersion(updateInfo.version, currentVersion)) {
           return updateInfo;
@@ -147,11 +174,7 @@ class AppUpdateManager {
 
   static void showUpdateDialog(BuildContext context, AppUpdateInfo update) {
     final loc = context.appLocalizations;
-    final downloadUrl = Platform.isWindows
-        ? (update.windowsUrl ?? update.apkUrl)
-        : Platform.isLinux
-            ? (update.linuxUrl ?? 'https://clck.lie2srvv.com/files/LieVPN-Linux.AppImage')
-            : update.apkUrl;
+    final downloadUrl = update.downloadUrl;
 
     showModalBottomSheet(
       context: context,
