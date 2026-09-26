@@ -15,3 +15,4 @@ export 'subscription_lock/subscription_lock_view.dart';
 export 'tools.dart';
 export 'server_status/server_status_view.dart';
 export 'speedtest/speedtest_view.dart';
+export 'rules/add_rules_view.dart';

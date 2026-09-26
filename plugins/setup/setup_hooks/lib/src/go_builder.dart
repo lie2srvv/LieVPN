@@ -113,6 +113,9 @@ class GoBuilder {
 
   Map<String, String> _buildEnvironment(Target target) {
     final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
+    if (target.goarch == 'amd64') {
+      env['GOAMD64'] = 'v1';
+    }
     if (target.isLib) {
       env
         ..['CGO_ENABLED'] = '1'
@@ -277,13 +280,8 @@ class GoBuilder {
   void _clearDirectory(String dirPath) {
     final dir = Directory(dirPath);
     if (!dir.existsSync()) return;
-
     for (final entity in dir.listSync()) {
-      if (entity is File || entity is Link) {
-        entity.deleteSync();
-      } else if (entity is Directory) {
-        entity.deleteSync(recursive: true);
-      }
+      entity.deleteSync(recursive: true);
     }
   }
 }

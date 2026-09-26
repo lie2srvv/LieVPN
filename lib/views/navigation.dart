@@ -58,6 +58,13 @@ class Navigation implements NavigationPort {
         modes: [NavigationItemMode.desktop, NavigationItemMode.more],
       ),
       NavigationItem(
+        icon: const Icon(Icons.alt_route_rounded),
+        label: PageLabel.addRules,
+        builder: (_) =>
+            const AddRulesView(key: GlobalObjectKey(PageLabel.addRules)),
+        modes: [NavigationItemMode.desktop, NavigationItemMode.more],
+      ),
+      NavigationItem(
         icon: const Icon(Icons.storage),
         label: PageLabel.resources,
         builder: (_) =>

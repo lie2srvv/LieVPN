@@ -709,5 +709,22 @@
   "latestVersionInstalled": "You are using the latest version",
   "updateLater": "Later",
   "updateNow": "Update",
-  "updateCheckError": "Failed to check for updates"
+  "updateCheckError": "Failed to check for updates",
+  "addRules": "Add Rules",
+  "addRulesDesc": "Custom direct routing rules (DIRECT)",
+  "ruleDomain": "Domain",
+  "ruleApp": "App",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "Process or package name (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "Select app or process",
+  "selectAppTitle": "Select App / Process",
+  "searchAppHint": "Search app or process...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "Type",
+  "ruleContent": "Rule",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "No rules added yet. Add a domain or app above.",
+  "ruleAlreadyExists": "This rule already exists",
+  "ruleInputEmpty": "Input field cannot be empty",
+  "ruleAddedSuccess": "Rule added successfully"
 }

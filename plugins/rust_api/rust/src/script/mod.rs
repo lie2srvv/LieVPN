@@ -53,6 +53,6 @@ fn evaluate_within(script: &str, config: &str, timeout: Duration) -> Result<Stri
 }
 
 #[cfg(not(target_os = "ios"))]
-fn describe(error: rquickjs::Error) -> String {
+fn describe(error: rquickjs::CaughtError<'_>) -> String {
     format!("{error}")
 }

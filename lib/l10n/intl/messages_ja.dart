@@ -123,6 +123,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "addProxyGroup": MessageLookupByLibrary.simpleMessage("プロキシグループを追加"),
     "addProxyProviders": MessageLookupByLibrary.simpleMessage("プロキシプロバイダーを追加"),
     "addRule": MessageLookupByLibrary.simpleMessage("ルールを追加"),
+    "addRules": MessageLookupByLibrary.simpleMessage("ルール追加"),
+    "addRulesDesc": MessageLookupByLibrary.simpleMessage(
+      "カスタムダイレクトルーティングルール (DIRECT)",
+    ),
     "addSsid": MessageLookupByLibrary.simpleMessage("SSIDを追加"),
     "addSubscription": MessageLookupByLibrary.simpleMessage("サブスクリプションを追加"),
     "addWidget": MessageLookupByLibrary.simpleMessage("ウィジェットを追加"),
@@ -601,6 +605,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "neutralScheme": MessageLookupByLibrary.simpleMessage("ニュートラル"),
     "newVersionAvailable": m22,
     "nextMatch": MessageLookupByLibrary.simpleMessage("次の一致"),
+    "noAddedRulesYet": MessageLookupByLibrary.simpleMessage(
+      "追加されたルールはありません。上部からドメインまたはアプリを追加してください。",
+    ),
     "noData": MessageLookupByLibrary.simpleMessage("データがありません"),
     "noExpiration": MessageLookupByLibrary.simpleMessage("∞ 無期限"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("ホットキーはまだありません"),
@@ -787,6 +794,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ru": MessageLookupByLibrary.simpleMessage("ロシア語"),
     "rule": MessageLookupByLibrary.simpleMessage("ルール"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage("論理ルール AND"),
+    "ruleActionDirectBadge": MessageLookupByLibrary.simpleMessage("DIRECT"),
     "ruleActionDomainDesc": MessageLookupByLibrary.simpleMessage("完全なドメインにマッチ"),
     "ruleActionDomainKeywordDesc": MessageLookupByLibrary.simpleMessage(
       "ドメインキーワードにマッチ",
@@ -885,10 +893,29 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "LinuxのユーザーIDにマッチ",
     ),
+    "ruleAddedSuccess": MessageLookupByLibrary.simpleMessage("ルールが正常に追加されました"),
+    "ruleAlreadyExists": MessageLookupByLibrary.simpleMessage("このルールは既に存在します"),
+    "ruleApp": MessageLookupByLibrary.simpleMessage("アプリ"),
+    "ruleContent": MessageLookupByLibrary.simpleMessage("ルール"),
+    "ruleDomain": MessageLookupByLibrary.simpleMessage("ドメイン"),
+    "ruleDomainHint": MessageLookupByLibrary.simpleMessage(
+      "example.com (DOMAIN-SUFFIX)",
+    ),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("ルールが空です"),
+    "ruleInputEmpty": MessageLookupByLibrary.simpleMessage(
+      "入力フィールドを空にすることはできません",
+    ),
     "ruleName": MessageLookupByLibrary.simpleMessage("ルール名"),
+    "ruleProcessHint": MessageLookupByLibrary.simpleMessage(
+      "プロセス名またはパッケージ名 (PROCESS-NAME)",
+    ),
+    "ruleSelectAppTooltip": MessageLookupByLibrary.simpleMessage(
+      "アプリまたはプロセスを選択",
+    ),
     "ruleSet": MessageLookupByLibrary.simpleMessage("ルールセット"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("ルールターゲット"),
+    "ruleTargetDirect": MessageLookupByLibrary.simpleMessage("DIRECT"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("タイプ"),
     "rules": MessageLookupByLibrary.simpleMessage("ルール"),
     "rulesCount": m27,
     "save": MessageLookupByLibrary.simpleMessage("保存"),
@@ -900,9 +927,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "scrollToSelected": MessageLookupByLibrary.simpleMessage("選択項目へスクロール"),
     "search": MessageLookupByLibrary.simpleMessage("検索"),
+    "searchAppHint": MessageLookupByLibrary.simpleMessage("アプリまたはプロセスを検索..."),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
     "secondsCount": m28,
     "selectAll": MessageLookupByLibrary.simpleMessage("すべて選択"),
+    "selectAppTitle": MessageLookupByLibrary.simpleMessage("アプリ / プロセスを選択"),
     "selectMatchTarget": MessageLookupByLibrary.simpleMessage(
       "MATCH-TARGET を選択",
     ),

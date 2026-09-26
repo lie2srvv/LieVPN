@@ -139,6 +139,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Add proxy providers",
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Add rule"),
+    "addRules": MessageLookupByLibrary.simpleMessage("Add Rules"),
+    "addRulesDesc": MessageLookupByLibrary.simpleMessage(
+      "Custom direct routing rules (DIRECT)",
+    ),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
     "addSubscription": MessageLookupByLibrary.simpleMessage("Add subscription"),
     "addWidget": MessageLookupByLibrary.simpleMessage("Add widget"),
@@ -729,6 +733,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
     "newVersionAvailable": m22,
     "nextMatch": MessageLookupByLibrary.simpleMessage("Next match"),
+    "noAddedRulesYet": MessageLookupByLibrary.simpleMessage(
+      "No rules added yet. Add a domain or app above.",
+    ),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
     "noExpiration": MessageLookupByLibrary.simpleMessage("∞ Unlimited"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("No hotkeys yet"),
@@ -951,6 +958,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage(
       "Logical rule AND",
     ),
+    "ruleActionDirectBadge": MessageLookupByLibrary.simpleMessage("DIRECT"),
     "ruleActionDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Match the full domain",
     ),
@@ -1057,10 +1065,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "Match the Linux user ID",
     ),
+    "ruleAddedSuccess": MessageLookupByLibrary.simpleMessage(
+      "Rule added successfully",
+    ),
+    "ruleAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "This rule already exists",
+    ),
+    "ruleApp": MessageLookupByLibrary.simpleMessage("App"),
+    "ruleContent": MessageLookupByLibrary.simpleMessage("Rule"),
+    "ruleDomain": MessageLookupByLibrary.simpleMessage("Domain"),
+    "ruleDomainHint": MessageLookupByLibrary.simpleMessage(
+      "example.com (DOMAIN-SUFFIX)",
+    ),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("Rule is empty"),
+    "ruleInputEmpty": MessageLookupByLibrary.simpleMessage(
+      "Input field cannot be empty",
+    ),
     "ruleName": MessageLookupByLibrary.simpleMessage("Rule name"),
+    "ruleProcessHint": MessageLookupByLibrary.simpleMessage(
+      "Process or package name (PROCESS-NAME)",
+    ),
+    "ruleSelectAppTooltip": MessageLookupByLibrary.simpleMessage(
+      "Select app or process",
+    ),
     "ruleSet": MessageLookupByLibrary.simpleMessage("Rule set"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("Rule target"),
+    "ruleTargetDirect": MessageLookupByLibrary.simpleMessage("DIRECT"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("Type"),
     "rules": MessageLookupByLibrary.simpleMessage("Rules"),
     "rulesCount": m27,
     "save": MessageLookupByLibrary.simpleMessage("Save"),
@@ -1074,9 +1105,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Scroll to selected",
     ),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
+    "searchAppHint": MessageLookupByLibrary.simpleMessage(
+      "Search app or process...",
+    ),
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "secondsCount": m28,
     "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
+    "selectAppTitle": MessageLookupByLibrary.simpleMessage(
+      "Select App / Process",
+    ),
     "selectMatchTarget": MessageLookupByLibrary.simpleMessage(
       "Select MATCH-TARGET",
     ),

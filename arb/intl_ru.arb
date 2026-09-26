@@ -709,5 +709,22 @@
   "latestVersionInstalled": "У вас установлена последняя версия",
   "updateLater": "Позже",
   "updateNow": "Обновить",
-  "updateCheckError": "Не удалось проверить обновления"
+  "updateCheckError": "Не удалось проверить обновления",
+  "addRules": "Добавить правила",
+  "addRulesDesc": "Пользовательские правила прямого подключения (DIRECT)",
+  "ruleDomain": "Домен",
+  "ruleApp": "Приложение",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "Имя процесса или пакета (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "Выбрать приложение или процесс",
+  "selectAppTitle": "Выбрать приложение / процесс",
+  "searchAppHint": "Поиск приложения или процесса...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "Тип",
+  "ruleContent": "Правило",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "Правил пока нет. Добавьте домен или приложение выше.",
+  "ruleAlreadyExists": "Такое правило уже существует",
+  "ruleInputEmpty": "Поле ввода не может быть пустым",
+  "ruleAddedSuccess": "Правило успешно добавлено"
 }

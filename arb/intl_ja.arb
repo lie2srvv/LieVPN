@@ -709,5 +709,22 @@
   "latestVersionInstalled": "最新バージョンを使用しています",
   "updateLater": "あとで",
   "updateNow": "更新する",
-  "updateCheckError": "アップデートの確認に失敗しました"
+  "updateCheckError": "アップデートの確認に失敗しました",
+  "addRules": "ルール追加",
+  "addRulesDesc": "カスタムダイレクトルーティングルール (DIRECT)",
+  "ruleDomain": "ドメイン",
+  "ruleApp": "アプリ",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "プロセス名またはパッケージ名 (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "アプリまたはプロセスを選択",
+  "selectAppTitle": "アプリ / プロセスを選択",
+  "searchAppHint": "アプリまたはプロセスを検索...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "タイプ",
+  "ruleContent": "ルール",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "追加されたルールはありません。上部からドメインまたはアプリを追加してください。",
+  "ruleAlreadyExists": "このルールは既に存在します",
+  "ruleInputEmpty": "入力フィールドを空にすることはできません",
+  "ruleAddedSuccess": "ルールが正常に追加されました"
 }

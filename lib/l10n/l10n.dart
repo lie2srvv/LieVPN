@@ -5864,6 +5864,146 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Add Rules`
+  String get addRules {
+    return Intl.message('Add Rules', name: 'addRules', desc: '', args: []);
+  }
+
+  /// `Custom direct routing rules (DIRECT)`
+  String get addRulesDesc {
+    return Intl.message(
+      'Custom direct routing rules (DIRECT)',
+      name: 'addRulesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domain`
+  String get ruleDomain {
+    return Intl.message('Domain', name: 'ruleDomain', desc: '', args: []);
+  }
+
+  /// `App`
+  String get ruleApp {
+    return Intl.message('App', name: 'ruleApp', desc: '', args: []);
+  }
+
+  /// `example.com (DOMAIN-SUFFIX)`
+  String get ruleDomainHint {
+    return Intl.message(
+      'example.com (DOMAIN-SUFFIX)',
+      name: 'ruleDomainHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Process or package name (PROCESS-NAME)`
+  String get ruleProcessHint {
+    return Intl.message(
+      'Process or package name (PROCESS-NAME)',
+      name: 'ruleProcessHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select app or process`
+  String get ruleSelectAppTooltip {
+    return Intl.message(
+      'Select app or process',
+      name: 'ruleSelectAppTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select App / Process`
+  String get selectAppTitle {
+    return Intl.message(
+      'Select App / Process',
+      name: 'selectAppTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search app or process...`
+  String get searchAppHint {
+    return Intl.message(
+      'Search app or process...',
+      name: 'searchAppHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DIRECT`
+  String get ruleTargetDirect {
+    return Intl.message('DIRECT', name: 'ruleTargetDirect', desc: '', args: []);
+  }
+
+  /// `Type`
+  String get ruleType {
+    return Intl.message('Type', name: 'ruleType', desc: '', args: []);
+  }
+
+  /// `Rule`
+  String get ruleContent {
+    return Intl.message('Rule', name: 'ruleContent', desc: '', args: []);
+  }
+
+  /// `DIRECT`
+  String get ruleActionDirectBadge {
+    return Intl.message(
+      'DIRECT',
+      name: 'ruleActionDirectBadge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rules added yet. Add a domain or app above.`
+  String get noAddedRulesYet {
+    return Intl.message(
+      'No rules added yet. Add a domain or app above.',
+      name: 'noAddedRulesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This rule already exists`
+  String get ruleAlreadyExists {
+    return Intl.message(
+      'This rule already exists',
+      name: 'ruleAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input field cannot be empty`
+  String get ruleInputEmpty {
+    return Intl.message(
+      'Input field cannot be empty',
+      name: 'ruleInputEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rule added successfully`
+  String get ruleAddedSuccess {
+    return Intl.message(
+      'Rule added successfully',
+      name: 'ruleAddedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

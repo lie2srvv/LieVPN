@@ -141,6 +141,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Добавить провайдеров прокси",
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Добавить правило"),
+    "addRules": MessageLookupByLibrary.simpleMessage("Добавить правила"),
+    "addRulesDesc": MessageLookupByLibrary.simpleMessage(
+      "Пользовательские правила прямого подключения (DIRECT)",
+    ),
     "addSsid": MessageLookupByLibrary.simpleMessage("Добавить SSID"),
     "addSubscription": MessageLookupByLibrary.simpleMessage(
       "Добавить подписку",
@@ -757,6 +761,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Нейтральная"),
     "newVersionAvailable": m22,
     "nextMatch": MessageLookupByLibrary.simpleMessage("Следующее совпадение"),
+    "noAddedRulesYet": MessageLookupByLibrary.simpleMessage(
+      "Правил пока нет. Добавьте домен или приложение выше.",
+    ),
     "noData": MessageLookupByLibrary.simpleMessage("Нет данных"),
     "noExpiration": MessageLookupByLibrary.simpleMessage("∞ Бессрочно"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("Горячих клавиш пока нет"),
@@ -1003,6 +1010,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage(
       "Логическое правило AND",
     ),
+    "ruleActionDirectBadge": MessageLookupByLibrary.simpleMessage("DIRECT"),
     "ruleActionDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Сопоставить полный домен",
     ),
@@ -1111,10 +1119,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "Сопоставить Linux USER ID",
     ),
+    "ruleAddedSuccess": MessageLookupByLibrary.simpleMessage(
+      "Правило успешно добавлено",
+    ),
+    "ruleAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "Такое правило уже существует",
+    ),
+    "ruleApp": MessageLookupByLibrary.simpleMessage("Приложение"),
+    "ruleContent": MessageLookupByLibrary.simpleMessage("Правило"),
+    "ruleDomain": MessageLookupByLibrary.simpleMessage("Домен"),
+    "ruleDomainHint": MessageLookupByLibrary.simpleMessage(
+      "example.com (DOMAIN-SUFFIX)",
+    ),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("Правило пусто"),
+    "ruleInputEmpty": MessageLookupByLibrary.simpleMessage(
+      "Поле ввода не может быть пустым",
+    ),
     "ruleName": MessageLookupByLibrary.simpleMessage("Название правила"),
+    "ruleProcessHint": MessageLookupByLibrary.simpleMessage(
+      "Имя процесса или пакета (PROCESS-NAME)",
+    ),
+    "ruleSelectAppTooltip": MessageLookupByLibrary.simpleMessage(
+      "Выбрать приложение или процесс",
+    ),
     "ruleSet": MessageLookupByLibrary.simpleMessage("Набор правил"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("Цель правила"),
+    "ruleTargetDirect": MessageLookupByLibrary.simpleMessage("DIRECT"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("Тип"),
     "rules": MessageLookupByLibrary.simpleMessage("Правила"),
     "rulesCount": m27,
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
@@ -1128,9 +1159,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Прокрутить к выбранному",
     ),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
+    "searchAppHint": MessageLookupByLibrary.simpleMessage(
+      "Поиск приложения или процесса...",
+    ),
     "seconds": MessageLookupByLibrary.simpleMessage("секунд"),
     "secondsCount": m28,
     "selectAll": MessageLookupByLibrary.simpleMessage("Выбрать всё"),
+    "selectAppTitle": MessageLookupByLibrary.simpleMessage(
+      "Выбрать приложение / процесс",
+    ),
     "selectMatchTarget": MessageLookupByLibrary.simpleMessage(
       "Выбрать MATCH-TARGET",
     ),
