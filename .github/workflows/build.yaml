@@ -76,6 +76,20 @@ jobs:
           flutter --version
           flutter pub get
 
+      - name: Patch Dependencies for iOS
+        run: |
+          python3 -c "
+          import glob
+          for p in glob.glob('/Users/runner/.pub-cache/**/FPPDeviceInfoPlusPlugin.m', recursive=True):
+              with open(p, 'r') as f:
+                  c = f.read()
+              if 'isiOSAppOnVision' in c:
+                  c = c.replace('[[NSProcessInfo processInfo] isiOSAppOnVision]', 'NO')
+                  with open(p, 'w') as f:
+                      f.write(c)
+                  print('Patched isiOSAppOnVision in:', p)
+          "
+
       - name: Build iOS Application
         run: |
           flutter build ios --release --no-codesign
