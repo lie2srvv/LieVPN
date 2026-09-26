@@ -2,7 +2,7 @@
 
 A modern multi-platform proxy client based on ClashMeta (mihomo), built with Flutter.
 
-Supported platforms: Android, Windows, macOS, Linux.
+Supported platforms: Android, Windows, Linux.
 
 ### Features
 - Material You Design & Modern UI
