@@ -84,12 +84,16 @@ jobs:
           for base in search_dirs:
               for p in glob.glob(f'{base}/**/FPPDeviceInfoPlusPlugin.m', recursive=True):
                   with open(p, 'r') as f:
-                      c = f.read()
-                  if 'isiOSAppOnVision' in c:
-                      c = c.replace('isiOSAppOnVision', 'isiOSAppOnMac')
-                      with open(p, 'w') as f:
-                          f.write(c)
-                      print('Successfully patched in:', p)
+                      lines = f.readlines()
+                  new_lines = []
+                  for l in lines:
+                      if '[info isiOSAppOnVision]' in l:
+                          new_lines.append('      isiOSAppOnVision = [NSNumber numberWithBool:NO];\n')
+                      else:
+                          new_lines.append(l)
+                  with open(p, 'w') as f:
+                      f.writelines(new_lines)
+                  print('Successfully patched selector in:', p)
           "
 
       - name: Build iOS Application
