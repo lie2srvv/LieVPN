@@ -55,59 +55,63 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     final state = _state;
     final isVpnConnected = ref.watch(isStartProvider);
     final appLocalizations = context.appLocalizations;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return CommonScaffold(
       title: appLocalizations.speedtest,
-      body: Container(
-        color: const Color(0xFF060A08),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 32,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Top VPN state indicator badge
-                      _buildVpnBadge(context, isVpnConnected),
-                      const SizedBox(height: 14),
-
-                      // Center Speedometer Gauge
-                      _buildSpeedometerSection(context, state),
-                      const SizedBox(height: 24),
-
-                      // 3 Metric Cards: Download -> Upload -> Ping
-                      _buildMetricCards(context, state),
-                      const SizedBox(height: 24),
-
-                      // Action Button
-                      _buildActionButton(context, state),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 32,
                 ),
-              );
-            },
-          ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Top VPN state indicator badge
+                    _buildVpnBadge(context, isVpnConnected, colorScheme),
+                    const SizedBox(height: 14),
+
+                    // Center Speedometer Gauge
+                    _buildSpeedometerSection(context, state, colorScheme),
+                    const SizedBox(height: 24),
+
+                    // 3 Metric Cards: Download -> Upload -> Ping
+                    _buildMetricCards(context, state, colorScheme),
+                    const SizedBox(height: 24),
+
+                    // Action Button
+                    _buildActionButton(context, state, colorScheme),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildVpnBadge(BuildContext context, bool isVpnConnected) {
+  Widget _buildVpnBadge(
+    BuildContext context,
+    bool isVpnConnected,
+    ColorScheme colorScheme,
+  ) {
     final appLocalizations = context.appLocalizations;
-    final dotColor =
-        isVpnConnected ? const Color(0xFF22C55E) : const Color(0xFF64748B);
-    final borderColor =
-        isVpnConnected ? const Color(0xFF22C55E).withValues(alpha: 0.3) : Colors.white12;
+    final dotColor = isVpnConnected
+        ? const Color(0xFF10B981)
+        : colorScheme.onSurfaceVariant.withValues(alpha: 0.4);
+    final borderColor = isVpnConnected
+        ? const Color(0xFF10B981).withValues(alpha: 0.3)
+        : colorScheme.outlineVariant.withValues(alpha: 0.3);
     final bgColor = isVpnConnected
-        ? const Color(0xFF22C55E).withValues(alpha: 0.1)
-        : Colors.white.withValues(alpha: 0.04);
+        ? const Color(0xFF10B981).withValues(alpha: 0.1)
+        : colorScheme.surfaceContainerHighest.withValues(alpha: 0.35);
     final labelText = isVpnConnected
         ? appLocalizations.vpnConnected
         : appLocalizations.vpnDisconnected;
@@ -116,7 +120,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppCorner.full),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: Row(
@@ -143,7 +147,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           Text(
             labelText,
             style: TextStyle(
-              color: isVpnConnected ? const Color(0xFF22C55E) : Colors.white60,
+              color: isVpnConnected ? const Color(0xFF10B981) : colorScheme.onSurfaceVariant,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -153,26 +157,30 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildSpeedometerSection(BuildContext context, SpeedtestState state) {
+  Widget _buildSpeedometerSection(
+    BuildContext context,
+    SpeedtestState state,
+    ColorScheme colorScheme,
+  ) {
     final appLocalizations = context.appLocalizations;
     final double targetSpeed =
         state.phase == SpeedtestPhase.ping ? 0.0 : state.currentSpeedMbps;
 
     String statusText = appLocalizations.readyToTest;
-    Color statusColor = Colors.white60;
+    Color statusColor = colorScheme.onSurfaceVariant;
 
     switch (state.phase) {
       case SpeedtestPhase.idle:
         statusText = appLocalizations.readyToTest;
-        statusColor = Colors.white60;
+        statusColor = colorScheme.onSurfaceVariant;
         break;
       case SpeedtestPhase.download:
         statusText = appLocalizations.speedtestTestingDownload;
-        statusColor = const Color(0xFF22C55E);
+        statusColor = colorScheme.primary;
         break;
       case SpeedtestPhase.upload:
         statusText = appLocalizations.speedtestTestingUpload;
-        statusColor = const Color(0xFF38BDF8);
+        statusColor = colorScheme.tertiary;
         break;
       case SpeedtestPhase.ping:
         statusText = appLocalizations.speedtestTestingPing;
@@ -180,11 +188,11 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         break;
       case SpeedtestPhase.completed:
         statusText = appLocalizations.speedtestCompleted;
-        statusColor = const Color(0xFF22C55E);
+        statusColor = const Color(0xFF10B981);
         break;
       case SpeedtestPhase.error:
         statusText = state.errorMessage ?? appLocalizations.speedtestError;
-        statusColor = const Color(0xFFEF4444);
+        statusColor = colorScheme.error;
         break;
     }
 
@@ -206,6 +214,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                     painter: _SpeedGaugePainter(
                       speedMbps: animatedSpeed,
                       isActive: state.isRunning,
+                      colorScheme: colorScheme,
                     ),
                   ),
                   Positioned(
@@ -220,13 +229,13 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                                       state.phase == SpeedtestPhase.completed
                                   ? state.downloadMbps!.toStringAsFixed(1)
                                   : '0.0'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onSurface,
                             letterSpacing: -1.5,
-                            fontFeatures: [FontFeature.tabularFigures()],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                         Text(
@@ -236,7 +245,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2,
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -263,20 +272,25 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildMetricCards(BuildContext context, SpeedtestState state) {
+  Widget _buildMetricCards(
+    BuildContext context,
+    SpeedtestState state,
+    ColorScheme colorScheme,
+  ) {
     final appLocalizations = context.appLocalizations;
     return Row(
       children: [
         // 1. Download
         Expanded(
           child: _buildMetricTile(
+            colorScheme: colorScheme,
             title: appLocalizations.speedtestDownload,
             value: state.downloadMbps != null
                 ? state.downloadMbps!.toStringAsFixed(1)
                 : '—',
             unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_downward_rounded,
-            iconColor: const Color(0xFF22C55E),
+            iconColor: colorScheme.primary,
             isActive: state.phase == SpeedtestPhase.download,
           ),
         ),
@@ -285,13 +299,14 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         // 2. Upload
         Expanded(
           child: _buildMetricTile(
+            colorScheme: colorScheme,
             title: appLocalizations.speedtestUpload,
             value: state.uploadMbps != null
                 ? state.uploadMbps!.toStringAsFixed(1)
                 : '—',
             unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_upward_rounded,
-            iconColor: const Color(0xFF38BDF8),
+            iconColor: colorScheme.tertiary,
             isActive: state.phase == SpeedtestPhase.upload,
           ),
         ),
@@ -300,6 +315,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         // 3. Ping
         Expanded(
           child: _buildMetricTile(
+            colorScheme: colorScheme,
             title: appLocalizations.speedtestPing,
             value: state.pingMs != null ? '${state.pingMs}' : '—',
             unit: appLocalizations.speedtestUnitMs,
@@ -313,6 +329,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
   }
 
   Widget _buildMetricTile({
+    required ColorScheme colorScheme,
     required String title,
     required String value,
     required String unit,
@@ -323,12 +340,12 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF101614),
-        borderRadius: BorderRadius.circular(16),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(AppCorner.lg),
         border: Border.all(
           color: isActive
-              ? iconColor.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.08),
+              ? iconColor.withValues(alpha: 0.6)
+              : colorScheme.outlineVariant.withValues(alpha: 0.25),
           width: isActive ? 1.5 : 1,
         ),
         boxShadow: isActive
@@ -353,7 +370,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -361,12 +378,12 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'monospace',
               fontSize: 17,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontFeatures: [FontFeature.tabularFigures()],
+              color: colorScheme.onSurface,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 2),
@@ -375,7 +392,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
             style: TextStyle(
               fontSize: 10,
               fontFamily: 'monospace',
-              color: Colors.white.withValues(alpha: 0.35),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -383,7 +400,11 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, SpeedtestState state) {
+  Widget _buildActionButton(
+    BuildContext context,
+    SpeedtestState state,
+    ColorScheme colorScheme,
+  ) {
     final appLocalizations = context.appLocalizations;
     if (state.isRunning) {
       return SizedBox(
@@ -391,10 +412,10 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         height: 52,
         child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFFEF4444),
-            side: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+            foregroundColor: colorScheme.error,
+            side: BorderSide(color: colorScheme.error, width: 1.5),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppCorner.md),
             ),
           ),
           onPressed: _cancelTest,
@@ -413,11 +434,11 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       height: 52,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF22C55E),
-          foregroundColor: const Color(0xFF060A08),
-          elevation: 4,
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppCorner.md),
           ),
         ),
         onPressed: _startTest,
@@ -440,10 +461,12 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
 class _SpeedGaugePainter extends CustomPainter {
   final double speedMbps;
   final bool isActive;
+  final ColorScheme colorScheme;
 
   _SpeedGaugePainter({
     required this.speedMbps,
     required this.isActive,
+    required this.colorScheme,
   });
 
   // Map speed from 0 to 500+ Mbps dynamically across the arc
@@ -467,7 +490,7 @@ class _SpeedGaugePainter extends CustomPainter {
 
     // 1. Background Arc Track
     final bgPaint = Paint()
-      ..color = const Color(0xFF14241C)
+      ..color = colorScheme.outlineVariant.withValues(alpha: 0.25)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.round;
@@ -478,7 +501,7 @@ class _SpeedGaugePainter extends CustomPainter {
     // 2. Scale Ticks & Labels (0, 10, 50, 100, 250, 500)
     final List<int> scaleValues = [0, 10, 50, 100, 250, 500];
     final tickPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
+      ..color = colorScheme.outlineVariant.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -500,7 +523,7 @@ class _SpeedGaugePainter extends CustomPainter {
       final textSpan = TextSpan(
         text: val.toString(),
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.35),
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           fontSize: 10,
           fontFamily: 'monospace',
           fontWeight: FontWeight.w600,
@@ -520,7 +543,7 @@ class _SpeedGaugePainter extends CustomPainter {
 
     // Minor ticks between markers
     final minorTickPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.06)
+      ..color = colorScheme.outlineVariant.withValues(alpha: 0.25)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -544,14 +567,14 @@ class _SpeedGaugePainter extends CustomPainter {
       final activeSweep = sweepAngle * currentFraction;
 
       final gradientPaint = Paint()
-        ..shader = const SweepGradient(
+        ..shader = SweepGradient(
           startAngle: startAngle,
           endAngle: startAngle + sweepAngle,
           colors: [
-            Color(0xFF059669),
-            Color(0xFF10B981),
-            Color(0xFF22C55E),
-            Color(0xFF4ADE80),
+            colorScheme.primary.withValues(alpha: 0.5),
+            colorScheme.primary,
+            colorScheme.secondary,
+            colorScheme.tertiary,
           ],
         ).createShader(rect)
         ..style = PaintingStyle.stroke
@@ -568,12 +591,12 @@ class _SpeedGaugePainter extends CustomPainter {
       );
 
       final glowPaint = Paint()
-        ..color = const Color(0xFF22C55E).withValues(alpha: 0.6)
+        ..color = colorScheme.primary.withValues(alpha: 0.6)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
       canvas.drawCircle(tipOffset, 8, glowPaint);
 
       final dotPaint = Paint()
-        ..color = const Color(0xFF4ADE80)
+        ..color = colorScheme.primary
         ..style = PaintingStyle.fill;
       canvas.drawCircle(tipOffset, 5, dotPaint);
     }
@@ -601,21 +624,21 @@ class _SpeedGaugePainter extends CustomPainter {
 
     final needlePaint = Paint()
       ..color = isActive
-          ? const Color(0xFF22C55E)
-          : Colors.white.withValues(alpha: 0.25)
+          ? colorScheme.primary
+          : colorScheme.onSurfaceVariant.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     canvas.drawPath(needlePath, needlePaint);
 
     // Center Hub Pivot
     final hubPaint = Paint()
-      ..color = const Color(0xFF101614)
+      ..color = colorScheme.surfaceContainerHighest
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, 9, hubPaint);
 
     final hubRingPaint = Paint()
       ..color = isActive
-          ? const Color(0xFF22C55E)
-          : Colors.white.withValues(alpha: 0.3)
+          ? colorScheme.primary
+          : colorScheme.outlineVariant.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
     canvas.drawCircle(center, 9, hubRingPaint);
@@ -624,6 +647,7 @@ class _SpeedGaugePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _SpeedGaugePainter oldDelegate) {
     return oldDelegate.speedMbps != speedMbps ||
-        oldDelegate.isActive != isActive;
+        oldDelegate.isActive != isActive ||
+        oldDelegate.colorScheme != colorScheme;
   }
 }

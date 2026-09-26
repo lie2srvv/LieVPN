@@ -1,18 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/widgets/widgets.dart';
 import 'status_page_models.dart';
 import 'status_page_service.dart';
 
-class ServerStatusView extends StatefulWidget {
-  const ServerStatusView({super.key});
-
-  @override
-  State<ServerStatusView> createState() => _ServerStatusViewState();
+Future<void> showServerStatusSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppCorner.xxl)),
+    ),
+    builder: (_) => const ServerStatusSheet(),
+  );
 }
 
-class _ServerStatusViewState extends State<ServerStatusView> {
+class ServerStatusSheet extends StatefulWidget {
+  const ServerStatusSheet({super.key});
+
+  @override
+  State<ServerStatusSheet> createState() => _ServerStatusSheetState();
+}
+
+class _ServerStatusSheetState extends State<ServerStatusSheet> {
   final ServerStatusService _service = ServerStatusService();
   ServerStatusState _state = const ServerStatusState(isLoading: true);
   Timer? _autoRefreshTimer;
@@ -63,56 +74,105 @@ class _ServerStatusViewState extends State<ServerStatusView> {
   @override
   Widget build(BuildContext context) {
     final state = _state;
-    final appLocalizations = context.appLocalizations;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final appLocalizations = context.appLocalizations;
+    final maxHeight = MediaQuery.of(context).size.height * 0.85;
 
-    return CommonScaffold(
-      title: appLocalizations.serverStatus,
-      actions: [
-        IconButton(
-          tooltip: appLocalizations.update,
-          icon: state.isLoading
-              ? SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: colorScheme.primary,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                    ),
+                    child: Icon(
+                      Icons.dns_rounded,
+                      color: colorScheme.onPrimaryContainer,
+                      size: 22,
+                    ),
                   ),
-                )
-              : const Icon(Icons.refresh_rounded),
-          onPressed: state.isLoading ? null : () => _loadStatus(),
-        ),
-      ],
-      body: RefreshIndicator(
-        onRefresh: () => _loadStatus(),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          children: [
-            _buildOverallBanner(context, state),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Text(
-                  appLocalizations.statusMonitors.toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.2,
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appLocalizations.serverStatus,
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${appLocalizations.statusUpdated}: ${_formatMoscowTime(state.lastUpdated)}',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: appLocalizations.update,
+                    icon: state.isLoading
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colorScheme.primary,
+                            ),
+                          )
+                        : Icon(Icons.refresh_rounded, color: colorScheme.primary),
+                    onPressed: state.isLoading ? null : () => _loadStatus(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Content List
+              Flexible(
+                child: RefreshIndicator(
+                  onRefresh: () => _loadStatus(),
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      _buildOverallBanner(context, state),
+                      const SizedBox(height: 16),
+                      Text(
+                        appLocalizations.statusMonitors.toUpperCase(),
+                        style: textTheme.labelSmall?.copyWith(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (state.monitors.isEmpty && state.isLoading)
+                        _buildLoadingSkeletons(context)
+                      else if (state.monitors.isEmpty)
+                        _buildEmptyState(context)
+                      else
+                        ...state.monitors.map((m) => _buildMonitorCard(context, m)),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (state.monitors.isEmpty && state.isLoading)
-              _buildLoadingSkeletons(context)
-            else if (state.monitors.isEmpty)
-              _buildEmptyState(context)
-            else
-              ...state.monitors.map((m) => _buildMonitorCard(context, m)),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -122,6 +182,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     final appLocalizations = context.appLocalizations;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+
     final bool isDegraded = state.hasPartialIssues;
     final bool isAllDown = state.allDown;
 
@@ -139,7 +200,10 @@ class _ServerStatusViewState extends State<ServerStatusView> {
       statusColor = const Color(0xFFF59E0B);
       iconData = Icons.warning_amber_rounded;
       title = appLocalizations.statusPartialOutages;
-      subtitle = appLocalizations.statusPartialOutagesDesc(state.upCount, state.monitors.length);
+      subtitle = appLocalizations.statusPartialOutagesDesc(
+        state.upCount,
+        state.monitors.length,
+      );
     } else {
       statusColor = const Color(0xFF10B981);
       iconData = Icons.check_circle_outline_rounded;
@@ -148,43 +212,39 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(AppCorner.lg),
-        border: Border.all(color: statusColor.withValues(alpha: 0.35), width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: statusColor.withValues(alpha: 0.08),
-            blurRadius: 16,
-            spreadRadius: 1,
-          ),
-        ],
+        border: Border.all(
+          color: statusColor.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(iconData, color: statusColor, size: 28),
+            child: Icon(iconData, color: statusColor, size: 24),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: textTheme.titleMedium?.copyWith(
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: textTheme.bodySmall?.copyWith(
@@ -193,30 +253,6 @@ class _ServerStatusViewState extends State<ServerStatusView> {
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                appLocalizations.statusUpdated,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                  fontSize: 10,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                _formatMoscowTime(state.lastUpdated),
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  color: colorScheme.onSurface,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -245,8 +281,8 @@ class _ServerStatusViewState extends State<ServerStatusView> {
             : colorScheme.error);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
         borderRadius: BorderRadius.circular(AppCorner.lg),
@@ -261,21 +297,21 @@ class _ServerStatusViewState extends State<ServerStatusView> {
           Row(
             children: [
               Container(
-                width: 10,
-                height: 10,
+                width: 8,
+                height: 8,
                 decoration: BoxDecoration(
                   color: dotColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: dotColor.withValues(alpha: 0.6),
-                      blurRadius: 6,
+                      blurRadius: 4,
                       spreadRadius: 1,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   data.monitor.name,
@@ -287,16 +323,15 @@ class _ServerStatusViewState extends State<ServerStatusView> {
               ),
               Text(
                 data.uptimeText,
-                style: TextStyle(
+                style: textTheme.bodySmall?.copyWith(
                   fontFamily: 'monospace',
                   color: uptimeColor,
-                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
                   color: badgeBg,
                   borderRadius: BorderRadius.circular(AppCorner.sm),
@@ -305,17 +340,17 @@ class _ServerStatusViewState extends State<ServerStatusView> {
                   badgeText,
                   style: TextStyle(
                     color: dotColor,
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           // Heartbeat timeline bars
           SizedBox(
-            height: 24,
+            height: 20,
             child: Row(
               children: recentBeats.map((b) {
                 final barColor = b.isUp
@@ -367,8 +402,8 @@ class _ServerStatusViewState extends State<ServerStatusView> {
       children: List.generate(
         3,
         (index) => Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          height: 80,
+          margin: const EdgeInsets.only(bottom: 10),
+          height: 72,
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(AppCorner.lg),
@@ -382,7 +417,7 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40),
+        padding: const EdgeInsets.symmetric(vertical: 32),
         child: Text(
           context.appLocalizations.statusNoMonitors,
           style: TextStyle(

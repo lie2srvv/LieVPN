@@ -32,7 +32,12 @@ class AppPath {
 
   AppPath._internal() {
     appDirPath = join(dirname(Platform.resolvedExecutable));
-    supportDirectory().then((value) {
+    supportDirectory().then((value) async {
+      if (Platform.isLinux) {
+        try {
+          await _migrateLegacyLinuxDataDir(value);
+        } catch (_) {}
+      }
       dataDir.complete(value);
     });
     temporaryDirectory().then((value) {
@@ -167,6 +172,52 @@ class AppPath {
     final directory = await tempDir.future;
     return directory.path;
   }
+
+  static Future<void> _migrateLegacyLinuxDataDir(Directory targetDir) async {
+    final parent = targetDir.parent;
+    final legacyDir = Directory(join(parent.path, 'com.follow.clash'));
+    if (!await legacyDir.exists()) {
+      return;
+    }
+
+    if (!await targetDir.exists()) {
+      await targetDir.create(recursive: true);
+    }
+
+    final targetEntities = targetDir.listSync();
+    final hasExistingData = targetEntities.any((e) =>
+        basename(e.path) == 'database.sqlite' ||
+        basename(e.path) == 'config.yaml' ||
+        basename(e.path) == 'profiles');
+
+    if (hasExistingData) {
+      return;
+    }
+
+    await _copyDirectory(legacyDir, targetDir);
+  }
+
+  static Future<void> _copyDirectory(Directory source, Directory destination) async {
+    await for (final entity in source.list(recursive: false)) {
+      final name = basename(entity.path);
+      if (name.endsWith('.lock') || name.endsWith('.sock')) {
+        continue;
+      }
+      final newPath = join(destination.path, name);
+      if (entity is Directory) {
+        final newDir = Directory(newPath);
+        if (!await newDir.exists()) {
+          await newDir.create(recursive: true);
+        }
+        await _copyDirectory(entity, newDir);
+      } else if (entity is File) {
+        try {
+          await entity.copy(newPath);
+        } catch (_) {}
+      }
+    }
+  }
+
 }
 
 final appPath = AppPath();

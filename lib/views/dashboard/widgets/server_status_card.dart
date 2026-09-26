@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/views/server_status/status_page_service.dart';
-import 'package:fl_clash/views/server_status/server_status_view.dart';
+import 'package:fl_clash/views/server_status/server_status_modal.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 
 class ServerStatusCard extends StatefulWidget {
@@ -47,11 +47,11 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
     String statusTitle;
 
     if (_isLoading) {
-      iconColor = const Color(0xFF22C55E);
+      iconColor = const Color(0xFF10B981);
       iconData = Icons.wifi_tethering;
       statusTitle = appLocalizations.statusChecking;
     } else if (_isAllDown && _totalCount > 0) {
-      iconColor = const Color(0xFFEF4444);
+      iconColor = colorScheme.error;
       iconData = Icons.cancel_outlined;
       statusTitle = appLocalizations.statusAllDown;
     } else if (_upCount < _totalCount) {
@@ -59,7 +59,7 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
       iconData = Icons.warning_amber_rounded;
       statusTitle = appLocalizations.statusPartialOutagesDesc(_upCount, _totalCount);
     } else {
-      iconColor = const Color(0xFF22C55E);
+      iconColor = const Color(0xFF10B981);
       iconData = Icons.check_circle_outline_rounded;
       statusTitle = appLocalizations.statusAllAvailable(_totalCount);
     }
@@ -67,11 +67,7 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
     return CommonCard(
       radius: AppCorner.lg,
       onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const ServerStatusView(),
-          ),
-        );
+        showServerStatusSheet(context);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
