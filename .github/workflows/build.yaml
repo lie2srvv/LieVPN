@@ -79,15 +79,17 @@ jobs:
       - name: Patch Dependencies for iOS
         run: |
           python3 -c "
-          import glob
-          for p in glob.glob('/Users/runner/.pub-cache/**/FPPDeviceInfoPlusPlugin.m', recursive=True):
-              with open(p, 'r') as f:
-                  c = f.read()
-              if 'isiOSAppOnVision' in c:
-                  c = c.replace('[[NSProcessInfo processInfo] isiOSAppOnVision]', 'NO')
-                  with open(p, 'w') as f:
-                      f.write(c)
-                  print('Patched isiOSAppOnVision in:', p)
+          import os, glob
+          search_dirs = [os.path.expanduser('~/.pub-cache'), '/Users/runner/.pub-cache', '.']
+          for base in search_dirs:
+              for p in glob.glob(f'{base}/**/FPPDeviceInfoPlusPlugin.m', recursive=True):
+                  with open(p, 'r') as f:
+                      c = f.read()
+                  if 'isiOSAppOnVision' in c:
+                      c = c.replace('isiOSAppOnVision', 'isiOSAppOnMac')
+                      with open(p, 'w') as f:
+                          f.write(c)
+                      print('Successfully patched in:', p)
           "
 
       - name: Build iOS Application
