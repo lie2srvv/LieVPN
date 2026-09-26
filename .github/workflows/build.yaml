@@ -98,12 +98,18 @@ jobs:
 
       - name: Build iOS Application
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --config-only
+          xcodebuild build -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" EXPANDED_CODE_SIGN_IDENTITY=""
 
       - name: Package IPA
         run: |
           mkdir -p dist/Payload
-          cp -r build/ios/iphoneos/Runner.app dist/Payload/
+          APP_PATH=$(find build/DerivedData -name "Runner.app" | grep "Release-iphoneos" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build -name "Runner.app" | grep "Release-iphoneos" | head -n 1)
+          fi
+          echo "Found app at: $APP_PATH"
+          cp -r "$APP_PATH" dist/Payload/
           cd dist
           zip -r -q LieVPN-1.0.4-ios.ipa Payload
           cp LieVPN-1.0.4-ios.ipa LieVPN-ios.ipa
