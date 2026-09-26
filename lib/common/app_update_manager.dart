@@ -13,12 +13,14 @@ class AppUpdateInfo {
   final String version;
   final String apkUrl;
   final String? windowsUrl;
+  final String? linuxUrl;
   final String? releaseNotes;
 
   const AppUpdateInfo({
     required this.version,
     required this.apkUrl,
     this.windowsUrl,
+    this.linuxUrl,
     this.releaseNotes,
   });
 
@@ -27,6 +29,7 @@ class AppUpdateInfo {
       version: json['version'] as String? ?? '1.0.0',
       apkUrl: json['apkUrl'] as String? ?? 'https://clck.lie2srvv.com/files/lievpn.apk',
       windowsUrl: json['windowsUrl'] as String?,
+      linuxUrl: json['linuxUrl'] as String?,
       releaseNotes: json['releaseNotes'] as String?,
     );
   }
@@ -146,7 +149,9 @@ class AppUpdateManager {
     final loc = context.appLocalizations;
     final downloadUrl = Platform.isWindows
         ? (update.windowsUrl ?? update.apkUrl)
-        : update.apkUrl;
+        : Platform.isLinux
+            ? (update.linuxUrl ?? 'https://clck.lie2srvv.com/files/LieVPN-Linux.AppImage')
+            : update.apkUrl;
 
     showModalBottomSheet(
       context: context,

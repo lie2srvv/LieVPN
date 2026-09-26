@@ -250,7 +250,7 @@ abstract class Tun with _$Tun {
     @Default(false) bool enable,
     @Default(appName) String device,
     @JsonKey(name: 'auto-route') @Default(false) bool autoRoute,
-    @Default(TunStack.mixed) TunStack stack,
+    @Default(TunStack.gvisor) TunStack stack,
     @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,
   }) = _Tun;
