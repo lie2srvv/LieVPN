@@ -125,6 +125,19 @@
                 android:value="true" />
         </service>
 
+        <!-- LieVPN 1x1 Minimalist Toggle Widget -->
+        <receiver
+            android:name=".LieVpnToggleWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_toggle_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_toggle_icon_info" />
+        </receiver>
+
         <receiver
             android:name=".ServiceBroadcastReceiver"
             android:enabled="true"

@@ -41,9 +41,24 @@ class AppUpdateInfo {
     if (json[platformKey] is Map<String, dynamic>) {
       final pMap = json[platformKey] as Map<String, dynamic>;
       return AppUpdateInfo(
-        version: pMap['version'] as String? ?? json['version'] as String? ?? '1.0.0',
-        downloadUrl: pMap['url'] as String? ?? defaultUrl,
+        version: pMap['version'] as String? ?? '1.0.0',
+        downloadUrl: pMap['url'] as String? ?? pMap['apkUrl'] as String? ?? defaultUrl,
         releaseNotes: pMap['releaseNotes'] as String? ?? json['releaseNotes'] as String?,
+      );
+    }
+
+    // Direct platform payload (e.g. from version_android.json or version_linux.json)
+    if (json.containsKey('url') || json.containsKey('apkUrl') || json.containsKey('windowsUrl') || json.containsKey('linuxUrl')) {
+      final directUrl = json['url'] as String? ??
+          (Platform.isWindows
+              ? (json['windowsUrl'] as String? ?? defaultUrl)
+              : Platform.isLinux
+                  ? (json['linuxUrl'] as String? ?? defaultUrl)
+                  : (json['apkUrl'] as String? ?? defaultUrl));
+      return AppUpdateInfo(
+        version: json['version'] as String? ?? '1.0.0',
+        downloadUrl: directUrl,
+        releaseNotes: json['releaseNotes'] as String?,
       );
     }
 
@@ -63,7 +78,18 @@ class AppUpdateInfo {
 }
 
 class AppUpdateManager {
-  static const String _versionUrl = 'https://clck.lie2srvv.com/files/version.json';
+  static const String _fallbackVersionUrl = 'https://clck.lie2srvv.com/files/version.json';
+
+  static String get _platformVersionUrl {
+    if (Platform.isAndroid) {
+      return 'https://clck.lie2srvv.com/files/version_android.json';
+    } else if (Platform.isWindows) {
+      return 'https://clck.lie2srvv.com/files/version_windows.json';
+    } else if (Platform.isLinux) {
+      return 'https://clck.lie2srvv.com/files/version_linux.json';
+    }
+    return _fallbackVersionUrl;
+  }
 
   static bool isNewerVersion(String latest, String current) {
     final l = latest
@@ -92,19 +118,35 @@ class AppUpdateManager {
   }
 
   static Future<AppUpdateInfo?> fetchUpdate() async {
-    try {
-      final dio = Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 6),
-          receiveTimeout: const Duration(seconds: 8),
-        ),
-      );
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 8),
+      ),
+    );
 
+    // 1. First try platform-specific update endpoint
+    try {
       final response = await dio.get<Map<String, dynamic>>(
-        _versionUrl,
+        _platformVersionUrl,
         options: Options(responseType: ResponseType.json),
       );
+      if (response.statusCode == 200 && response.data != null) {
+        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
+        final currentVersion = globalState.packageInfo.version;
+        if (isNewerVersion(updateInfo.version, currentVersion)) {
+          return updateInfo;
+        }
+        return null;
+      }
+    } catch (_) {}
 
+    // 2. Fallback to unified version.json
+    try {
+      final response = await dio.get<Map<String, dynamic>>(
+        _fallbackVersionUrl,
+        options: Options(responseType: ResponseType.json),
+      );
       if (response.statusCode == 200 && response.data != null) {
         final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
         final currentVersion = globalState.packageInfo.version;
@@ -113,6 +155,7 @@ class AppUpdateManager {
         }
       }
     } catch (_) {}
+
     return null;
   }
 
@@ -174,7 +217,6 @@ class AppUpdateManager {
 
   static void showUpdateDialog(BuildContext context, AppUpdateInfo update) {
     final loc = context.appLocalizations;
-    final downloadUrl = update.downloadUrl;
 
     showModalBottomSheet(
       context: context,
@@ -276,7 +318,7 @@ class AppUpdateManager {
                       ),
                       onPressed: () {
                         Navigator.pop(sheetContext);
-                        dialogs.openUrl(downloadUrl);
+                        dialogs.openUrl(update.downloadUrl);
                       },
                       child: Text(
                         loc.updateNow,
