@@ -169,11 +169,20 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
     return respond(false);
   }
 
+  g_autofree gchar* icon_dir = g_path_get_dirname(icon_path);
+  g_autofree gchar* icon_base = g_path_get_basename(icon_path);
+  gchar* dot = strrchr(icon_base, '.');
+  if (dot != nullptr) {
+    *dot = 0;
+  }
+
   const bool is_new = self->indicator == nullptr;
   if (is_new) {
     self->indicator =
-        app_indicator_new(id, icon_path, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+        app_indicator_new_with_path(id, icon_base, APP_INDICATOR_CATEGORY_APPLICATION_STATUS, icon_dir);
   }
+
+  app_indicator_set_icon_theme_path(self->indicator, icon_dir);
 
   attach_menu(self, fl_value_lookup_string(args, "menu"));
 
@@ -181,7 +190,7 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
     app_indicator_set_status(self->indicator, APP_INDICATOR_STATUS_PASSIVE);
   }
 
-  app_indicator_set_icon_full(self->indicator, icon_path, "");
+  app_indicator_set_icon_full(self->indicator, icon_base, "");
 
   const char* tool_tip = string_value(args, "toolTip");
   if (tool_tip != nullptr) {
