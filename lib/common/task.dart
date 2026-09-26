@@ -245,6 +245,13 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
       rawConfig['dns']['nameserver'] = [...nameserver, systemDns];
     }
   }
+  // Ensure DIRECT domains resolve reliably via system / local DNS
+  if (rawConfig['dns'] is Map) {
+    final dnsMap = rawConfig['dns'] as Map;
+    if (dnsMap['direct-nameserver'] == null || (dnsMap['direct-nameserver'] is List && (dnsMap['direct-nameserver'] as List).isEmpty)) {
+      dnsMap['direct-nameserver'] = [systemDns, '77.88.8.8'];
+    }
+  }
   List<String> rules = [];
   if (data.rules.isEmpty) {
     if (rawConfig['rules'] != null) {
