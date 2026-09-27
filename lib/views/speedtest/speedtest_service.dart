@@ -31,6 +31,10 @@ class SpeedtestService {
     const state = SpeedtestState(
       phase: SpeedtestPhase.download,
       currentSpeedMbps: 0.0,
+      downloadMbps: null,
+      uploadMbps: null,
+      pingMs: null,
+      errorMessage: null,
     );
     onUpdate(state);
 
@@ -44,7 +48,11 @@ class SpeedtestService {
       if (!_isCanceled) {
         onUpdate(state.copyWith(
           phase: SpeedtestPhase.error,
-          errorMessage: e.toString(),
+          currentSpeedMbps: 0.0,
+          downloadMbps: 0.0,
+          uploadMbps: 0.0,
+          pingMs: 0,
+          errorMessage: null,
         ));
       }
     }
@@ -75,6 +83,8 @@ class SpeedtestService {
             'Origin': 'https://www.speedtest.net',
             'Accept': 'application/json, text/plain, */*',
           },
+          sendTimeout: const Duration(seconds: 4),
+          receiveTimeout: const Duration(seconds: 4),
         ),
         cancelToken: _currentCancelToken,
       );
@@ -185,7 +195,9 @@ class SpeedtestService {
           (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
     }
-    if (finalDownloadMbps <= 0.0) finalDownloadMbps = 35.0;
+    if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
+      finalDownloadMbps = 0.0;
+    }
 
     state = state.copyWith(
       downloadMbps: finalDownloadMbps,
@@ -244,7 +256,9 @@ class SpeedtestService {
           (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
     }
-    if (finalUploadMbps <= 0.0) finalUploadMbps = 25.0;
+    if (finalUploadMbps < 0.0 || bytesUploaded == 0) {
+      finalUploadMbps = 0.0;
+    }
 
     // ================= STEP 3: PING =================
     state = state.copyWith(
@@ -269,6 +283,8 @@ class SpeedtestService {
               'Referer': 'https://www.speedtest.net/',
               'Origin': 'https://www.speedtest.net',
             },
+            sendTimeout: const Duration(seconds: 2),
+            receiveTimeout: const Duration(seconds: 2),
             responseType: ResponseType.bytes,
           ),
           cancelToken: _currentCancelToken,
@@ -279,10 +295,25 @@ class SpeedtestService {
         }
       } catch (_) {}
     }
-    if (bestPing == 9999) bestPing = 35;
+    final int finalPing = (bestPing == 9999) ? 0 : bestPing;
+
+    if (finalDownloadMbps <= 0.0 && finalUploadMbps <= 0.0) {
+      state = state.copyWith(
+        downloadMbps: 0.0,
+        uploadMbps: 0.0,
+        pingMs: 0,
+        currentSpeedMbps: 0.0,
+        phase: SpeedtestPhase.error,
+        errorMessage: null,
+      );
+      onUpdate(state);
+      return;
+    }
 
     state = state.copyWith(
-      pingMs: bestPing,
+      downloadMbps: finalDownloadMbps,
+      uploadMbps: finalUploadMbps,
+      pingMs: finalPing,
       currentSpeedMbps: 0.0,
       phase: SpeedtestPhase.completed,
     );
@@ -297,8 +328,40 @@ class SpeedtestService {
     void Function(SpeedtestState state) onUpdate,
     SpeedtestState initialState,
   ) async {
-    const cdnBase = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net';
     SpeedtestState state = initialState;
+
+    String dlUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/probes/50mb';
+    String? ulPostUrl;
+    String pingUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/ping';
+
+    try {
+      final probeRes = await _dio.get<Map<String, dynamic>>(
+        'https://yandex.ru/internet/api/v0/get-probes',
+        options: Options(
+          sendTimeout: const Duration(seconds: 3),
+          receiveTimeout: const Duration(seconds: 3),
+        ),
+        cancelToken: _currentCancelToken,
+      );
+      final data = probeRes.data;
+      if (data != null) {
+        final dlProbes = (data['download']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        if (dlProbes != null && dlProbes.isNotEmpty) {
+          final first = dlProbes.first['url']?.toString();
+          if (first != null && first.isNotEmpty) dlUrl = first;
+        }
+        final ulProbes = (data['upload']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        if (ulProbes != null && ulProbes.isNotEmpty) {
+          final first = ulProbes.first['postUrl']?.toString();
+          if (first != null && first.isNotEmpty) ulPostUrl = first;
+        }
+        final latProbes = (data['latency']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        if (latProbes != null && latProbes.isNotEmpty) {
+          final first = latProbes.first['url']?.toString();
+          if (first != null && first.isNotEmpty) pingUrl = first;
+        }
+      }
+    } catch (_) {}
 
     if (_isCanceled) return;
 
@@ -309,7 +372,6 @@ class SpeedtestService {
     );
     onUpdate(state);
 
-    const downloadUrl = '$cdnBase/probes/50mb';
     final downloadStopwatch = Stopwatch()..start();
     double finalDownloadMbps = 0.0;
     int bytesReceived = 0;
@@ -319,8 +381,12 @@ class SpeedtestService {
       _currentCancelToken = cancelToken;
 
       final response = await _dio.get<ResponseBody>(
-        downloadUrl,
-        options: Options(responseType: ResponseType.stream),
+        dlUrl,
+        options: Options(
+          sendTimeout: const Duration(seconds: 4),
+          receiveTimeout: const Duration(seconds: 8),
+          responseType: ResponseType.stream,
+        ),
         cancelToken: cancelToken,
       );
 
@@ -356,7 +422,9 @@ class SpeedtestService {
           (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
     }
-    if (finalDownloadMbps <= 0.0) finalDownloadMbps = 45.0;
+    if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
+      finalDownloadMbps = 0.0;
+    }
 
     state = state.copyWith(
       downloadMbps: finalDownloadMbps,
@@ -372,37 +440,39 @@ class SpeedtestService {
     double finalUploadMbps = 0.0;
     int bytesUploaded = 0;
 
-    final uploadPayload = Uint8List(512 * 1024); // 512KB probe
+    if (ulPostUrl != null && ulPostUrl.isNotEmpty) {
+      final uploadPayload = Uint8List(512 * 1024); // 512KB probe
 
-    while (uploadStopwatch.elapsedMilliseconds < 5000 && !_isCanceled) {
-      try {
-        final cancelToken = CancelToken();
-        _currentCancelToken = cancelToken;
+      while (uploadStopwatch.elapsedMilliseconds < 5000 && !_isCanceled) {
+        try {
+          final cancelToken = CancelToken();
+          _currentCancelToken = cancelToken;
 
-        await _dio.post(
-          '$cdnBase/empty',
-          data: Stream.fromIterable([uploadPayload]),
-          options: Options(
-            headers: {
-              'Content-Type': 'application/octet-stream',
-              'Content-Length': uploadPayload.length.toString(),
-            },
-          ),
-          cancelToken: cancelToken,
-        );
-        bytesUploaded += uploadPayload.length;
-        final elapsedMs = uploadStopwatch.elapsedMilliseconds;
-        if (elapsedMs > 150) {
-          final elapsedSec = elapsedMs / 1000.0;
-          final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
-          finalUploadMbps = mbps;
-          onUpdate(state.copyWith(
-            currentSpeedMbps: mbps,
-            uploadMbps: mbps,
-          ));
+          await _dio.post(
+            ulPostUrl,
+            data: Stream.fromIterable([uploadPayload]),
+            options: Options(
+              headers: {
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': uploadPayload.length.toString(),
+              },
+            ),
+            cancelToken: cancelToken,
+          );
+          bytesUploaded += uploadPayload.length;
+          final elapsedMs = uploadStopwatch.elapsedMilliseconds;
+          if (elapsedMs > 150) {
+            final elapsedSec = elapsedMs / 1000.0;
+            final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
+            finalUploadMbps = mbps;
+            onUpdate(state.copyWith(
+              currentSpeedMbps: mbps,
+              uploadMbps: mbps,
+            ));
+          }
+        } catch (_) {
+          break;
         }
-      } catch (_) {
-        break;
       }
     }
     uploadStopwatch.stop();
@@ -412,7 +482,9 @@ class SpeedtestService {
           (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
     }
-    if (finalUploadMbps <= 0.0) finalUploadMbps = 30.0;
+    if (finalUploadMbps < 0.0 || bytesUploaded == 0) {
+      finalUploadMbps = 0.0;
+    }
 
     // ================= STEP 3: PING =================
     state = state.copyWith(
@@ -430,8 +502,12 @@ class SpeedtestService {
       try {
         final sw = Stopwatch()..start();
         await _dio.get(
-          '$cdnBase/ping',
-          options: Options(responseType: ResponseType.bytes),
+          pingUrl,
+          options: Options(
+            sendTimeout: const Duration(seconds: 2),
+            receiveTimeout: const Duration(seconds: 2),
+            responseType: ResponseType.bytes,
+          ),
           cancelToken: _currentCancelToken,
         );
         sw.stop();
@@ -440,10 +516,25 @@ class SpeedtestService {
         }
       } catch (_) {}
     }
-    if (bestPing == 9999) bestPing = 20;
+    final int finalPing = (bestPing == 9999) ? 0 : bestPing;
+
+    if (finalDownloadMbps <= 0.0 && finalUploadMbps <= 0.0) {
+      state = state.copyWith(
+        downloadMbps: 0.0,
+        uploadMbps: 0.0,
+        pingMs: 0,
+        currentSpeedMbps: 0.0,
+        phase: SpeedtestPhase.error,
+        errorMessage: null,
+      );
+      onUpdate(state);
+      return;
+    }
 
     state = state.copyWith(
-      pingMs: bestPing,
+      downloadMbps: finalDownloadMbps,
+      uploadMbps: finalUploadMbps,
+      pingMs: finalPing,
       currentSpeedMbps: 0.0,
       phase: SpeedtestPhase.completed,
     );

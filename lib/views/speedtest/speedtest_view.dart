@@ -78,15 +78,18 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
 
                     // Center Speedometer Gauge
                     _buildSpeedometerSection(context, state, colorScheme),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
 
                     // 3 Metric Cards: Download -> Upload -> Ping
                     _buildMetricCards(context, state, colorScheme),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
 
                     // Action Button
                     _buildActionButton(context, state, colorScheme),
                     const SizedBox(height: 12),
+
+                    // Disclaimer Note
+                    _buildDisclaimer(context, colorScheme),
                   ],
                 ),
               ),
@@ -191,7 +194,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         statusColor = const Color(0xFF10B981);
         break;
       case SpeedtestPhase.error:
-        statusText = state.errorMessage ?? appLocalizations.speedtestError;
+        statusText = state.errorMessage ?? appLocalizations.speedtestNoDataError;
         statusColor = colorScheme.error;
         break;
     }
@@ -226,14 +229,17 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                           animatedSpeed > 0.0
                               ? animatedSpeed.toStringAsFixed(1)
                               : (state.downloadMbps != null &&
-                                      state.phase == SpeedtestPhase.completed
+                                      (state.phase == SpeedtestPhase.completed ||
+                                          state.phase == SpeedtestPhase.error)
                                   ? state.downloadMbps!.toStringAsFixed(1)
                                   : '0.0'),
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
+                            color: state.phase == SpeedtestPhase.error
+                                ? colorScheme.error
+                                : colorScheme.onSurface,
                             letterSpacing: -1.5,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
@@ -278,6 +284,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     ColorScheme colorScheme,
   ) {
     final appLocalizations = context.appLocalizations;
+    final isError = state.phase == SpeedtestPhase.error;
+
     return Row(
       children: [
         // 1. Download
@@ -287,7 +295,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
             title: appLocalizations.speedtestDownload,
             value: state.downloadMbps != null
                 ? state.downloadMbps!.toStringAsFixed(1)
-                : '—',
+                : (isError ? '0.0' : '\u2014'),
             unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_downward_rounded,
             iconColor: colorScheme.primary,
@@ -303,7 +311,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
             title: appLocalizations.speedtestUpload,
             value: state.uploadMbps != null
                 ? state.uploadMbps!.toStringAsFixed(1)
-                : '—',
+                : (isError ? '0.0' : '\u2014'),
             unit: appLocalizations.speedtestUnitMbps,
             icon: Icons.arrow_upward_rounded,
             iconColor: colorScheme.tertiary,
@@ -317,7 +325,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           child: _buildMetricTile(
             colorScheme: colorScheme,
             title: appLocalizations.speedtestPing,
-            value: state.pingMs != null ? '${state.pingMs}' : '—',
+            value: state.pingMs != null
+                ? '${state.pingMs}'
+                : (isError ? '0' : '\u2014'),
             unit: appLocalizations.speedtestUnitMs,
             icon: Icons.timer_outlined,
             iconColor: const Color(0xFFF59E0B),
@@ -428,7 +438,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       );
     }
 
-    final isCompleted = state.phase == SpeedtestPhase.completed;
+    final isDone = state.phase == SpeedtestPhase.completed ||
+        state.phase == SpeedtestPhase.error;
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -443,13 +454,53 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         ),
         onPressed: _startTest,
         icon: Icon(
-          isCompleted ? Icons.replay_rounded : Icons.play_arrow_rounded,
+          isDone ? Icons.replay_rounded : Icons.play_arrow_rounded,
           size: 22,
         ),
         label: Text(
-          isCompleted ? appLocalizations.speedtestRunAgain : appLocalizations.speedtestStart,
+          isDone ? appLocalizations.speedtestRunAgain : appLocalizations.speedtestStart,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDisclaimer(BuildContext context, ColorScheme colorScheme) {
+    final appLocalizations = context.appLocalizations;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(AppCorner.md),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(
+              Icons.info_outline_rounded,
+              size: 16,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              appLocalizations.speedtestDisclaimer,
+              style: TextStyle(
+                fontSize: 11.5,
+                height: 1.35,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -550,6 +601,7 @@ class _SpeedGaugePainter extends CustomPainter {
     for (int i = 0; i <= 30; i++) {
       final frac = i / 30.0;
       final angle = startAngle + frac * sweepAngle;
+
       final p1 = Offset(
         center.dx + (radius + 8) * math.cos(angle),
         center.dy + (radius + 8) * math.sin(angle),

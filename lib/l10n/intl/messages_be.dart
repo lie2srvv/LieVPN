@@ -1290,11 +1290,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtestDesc": MessageLookupByLibrary.simpleMessage(
       "Праверце хуткасць вашай сеткі",
     ),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "Праверка хуткасці выконваецца праз староннія сэрвісы. Рэальная хуткасць можа адрознівацца або быць вымерана недакладна.",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage("Загрузка"),
     "speedtestError": MessageLookupByLibrary.simpleMessage(
       "Памылка соедіненія",
     ),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("МБІТ/С"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
+      "Не ўдалося вымераць хуткасць: няма адказу ад сервера",
+    ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Пінг"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage(
       "Ізмеріть ещё раз",

@@ -795,5 +795,7 @@
   "liveNotificationTypePing": "Server ping",
   "@liveNotificationTypePing": {
     "description": "liveNotificationTypePing"
-  }
+  },
+  "speedtestDisclaimer": "Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.",
+  "speedtestNoDataError": "Failed to measure speed: no response from server"
 }

@@ -1232,9 +1232,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtestDesc": MessageLookupByLibrary.simpleMessage(
       "Test connection speed",
     ),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage("Download"),
     "speedtestError": MessageLookupByLibrary.simpleMessage("Connection error"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
+      "Failed to measure speed: no response from server",
+    ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("Test Again"),
     "speedtestStart": MessageLookupByLibrary.simpleMessage("Start Test"),

@@ -1216,9 +1216,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Test completed successfully",
     ),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage("네트워크 속도를 측정합니다"),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "속도 측정은 서드파티 서비스를 통해 진행됩니다. 실제 속도는 다를 수 있으며 측정 결과가 부정확할 수 있습니다.",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage("Download"),
     "speedtestError": MessageLookupByLibrary.simpleMessage("Connection error"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
+      "속도를 측정하지 못했습니다: 서버 응답 없음",
+    ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("Test Again"),
     "speedtestStart": MessageLookupByLibrary.simpleMessage("Start Test"),

@@ -795,5 +795,7 @@
   "liveNotificationTypePing": "サーバーのping",
   "@liveNotificationTypePing": {
     "description": "liveNotificationTypePing"
-  }
+  },
+  "speedtestDisclaimer": "速度テストはサードパーティのサービスを利用して行われます。実際の速度とは異なる場合や正確に測定されない場合があります。",
+  "speedtestNoDataError": "速度を測定できませんでした：サーバーからの応答がありません"
 }

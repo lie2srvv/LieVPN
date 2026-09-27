@@ -880,9 +880,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtest": MessageLookupByLibrary.simpleMessage("测速"),
     "speedtestCompleted": MessageLookupByLibrary.simpleMessage("测速已完成"),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage("测试连接速度"),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "测速通过第三方服务进行。实际速度可能存在差异或测量不准确。",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage("下载"),
     "speedtestError": MessageLookupByLibrary.simpleMessage("连接错误"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage("无法测速：服务器无响应"),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("延迟"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("重新测速"),
     "speedtestStart": MessageLookupByLibrary.simpleMessage("开始测速"),

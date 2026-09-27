@@ -795,5 +795,7 @@
   "liveNotificationTypePing": "服务器延迟",
   "@liveNotificationTypePing": {
     "description": "liveNotificationTypePing"
-  }
+  },
+  "speedtestDisclaimer": "测速通过第三方服务进行。实际速度可能存在差异或测量不准确。",
+  "speedtestNoDataError": "无法测速：服务器无响应"
 }

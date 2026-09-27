@@ -1310,11 +1310,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtestDesc": MessageLookupByLibrary.simpleMessage(
       "Чекнуть ризз и замерить кондиции",
     ),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "Тизлекне тикшерү өченче як сервислары аша башкарыла. Чын тизлек үзгә булырга яки төгәл үлчәнмәскә мөмкин.",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage(
       "Скачка (Download)",
     ),
     "speedtestError": MessageLookupByLibrary.simpleMessage("Кринж соединения"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("МБИТ/С"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
+      "Тизлекне үлчәп булмады: сервердан җавап юк",
+    ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Пинг"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage(
       "Измерить ещё раз",

@@ -1032,9 +1032,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtest": MessageLookupByLibrary.simpleMessage("スピードテスト"),
     "speedtestCompleted": MessageLookupByLibrary.simpleMessage("テスト完了"),
     "speedtestDesc": MessageLookupByLibrary.simpleMessage("通信速度テスト"),
+    "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "速度テストはサードパーティのサービスを利用して行われます。実際の速度とは異なる場合や正確に測定されない場合があります。",
+    ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage("ダウンロード"),
     "speedtestError": MessageLookupByLibrary.simpleMessage("接続エラー"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("MBPS"),
+    "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
+      "速度を測定できませんでした：サーバーからの応答がありません",
+    ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Ping"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage("再測定"),
     "speedtestStart": MessageLookupByLibrary.simpleMessage("テスト開始"),

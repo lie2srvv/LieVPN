@@ -6319,6 +6319,26 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.`
+  String get speedtestDisclaimer {
+    return Intl.message(
+      'Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.',
+      name: 'speedtestDisclaimer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to measure speed: no response from server`
+  String get speedtestNoDataError {
+    return Intl.message(
+      'Failed to measure speed: no response from server',
+      name: 'speedtestNoDataError',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -822,5 +822,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "speedtestDisclaimer": "속도 측정은 서드파티 서비스를 통해 진행됩니다. 실제 속도는 다를 수 있으며 측정 결과가 부정확할 수 있습니다.",
+  "speedtestNoDataError": "속도를 측정하지 못했습니다: 서버 응답 없음"
 }

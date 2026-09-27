@@ -795,5 +795,7 @@
   "liveNotificationTypePing": "Пинг сервера",
   "@liveNotificationTypePing": {
     "description": "liveNotificationTypePing"
-  }
+  },
+  "speedtestDisclaimer": "Проверка скорости выполняется через сторонние сервисы. Реальная скорость может отличаться или быть измерена неточно.",
+  "speedtestNoDataError": "Не удалось измерить скорость: нет ответа от сервера"
 }
