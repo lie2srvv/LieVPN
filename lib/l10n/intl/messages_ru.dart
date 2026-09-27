@@ -98,14 +98,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "Работают ${up} из ${total}";
 
-  static String m32(label) => "Значение «${label}» должно быть URL";
+  static String m32(time) => "Подписка заканчивается через ${time}";
 
-  static String m33(count) =>
+  static String m33(label) => "Значение «${label}» должно быть URL";
+
+  static String m34(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("О программе"),
+    "aboutAppDesc": MessageLookupByLibrary.simpleMessage(
+      "Приватный VPN для защиты данных и анонимности в сети на протоколе VLESS и Hysteria2.",
+    ),
+    "aboutFork": MessageLookupByLibrary.simpleMessage("Форк FlClash"),
+    "aboutForkDesc": MessageLookupByLibrary.simpleMessage(
+      "Открыть оригинальный репозиторий FlClash",
+    ),
     "accessControl": MessageLookupByLibrary.simpleMessage("Контроль доступа"),
     "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
       "Через VPN проходят только выбранные приложения",
@@ -250,6 +259,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "Из-за системных ограничений во время работы невозможно корректно получить статус оптимизации батареи",
     ),
+    "be": MessageLookupByLibrary.simpleMessage("Беларуская"),
     "bind": MessageLookupByLibrary.simpleMessage("Привязать"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage(
       "Режим чёрного списка",
@@ -654,6 +664,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Интервал TCP keep-alive",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Ключ"),
+    "kk": MessageLookupByLibrary.simpleMessage("Қазақша"),
+    "ko": MessageLookupByLibrary.simpleMessage("한국어"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
     "latestVersionInstalled": MessageLookupByLibrary.simpleMessage(
       "У вас установлена последняя версия",
@@ -665,9 +677,55 @@ class MessageLookup extends MessageLookupByLibrary {
       "В прошлый раз приложение неожиданно завершилось во время запуска. Автоматическая настройка для этого запуска пропущена; вы можете запустить её вручную.",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Макет"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("Настройки LieVPN"),
+    "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "Параметры уведомлений и персонализации",
+    ),
     "light": MessageLookupByLibrary.simpleMessage("Светлая"),
     "list": MessageLookupByLibrary.simpleMessage("Список"),
     "listen": MessageLookupByLibrary.simpleMessage("Прослушивание"),
+    "liveNotification": MessageLookupByLibrary.simpleMessage(
+      "Live уведомление",
+    ),
+    "liveNotificationCustomText": MessageLookupByLibrary.simpleMessage(
+      "Свой текст",
+    ),
+    "liveNotificationCustomTextDesc": MessageLookupByLibrary.simpleMessage(
+      "Текст, отображаемый в Live-уведомлении",
+    ),
+    "liveNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "Отображать ник подписки и скорость в шторке",
+    ),
+    "liveNotificationType": MessageLookupByLibrary.simpleMessage(
+      "Отображение в Live-уведомлении",
+    ),
+    "liveNotificationTypeCustom": MessageLookupByLibrary.simpleMessage(
+      "Кастомный текст",
+    ),
+    "liveNotificationTypeDesc": MessageLookupByLibrary.simpleMessage(
+      "Выберите, что отображать в строке состояния и чипе",
+    ),
+    "liveNotificationTypePing": MessageLookupByLibrary.simpleMessage(
+      "Пинг сервера",
+    ),
+    "liveNotificationTypeServer": MessageLookupByLibrary.simpleMessage(
+      "Текущий сервер (страна)",
+    ),
+    "liveNotificationTypeSpeed": MessageLookupByLibrary.simpleMessage(
+      "Скорость сети (Download + Upload)",
+    ),
+    "liveNotificationTypeSpeedDown": MessageLookupByLibrary.simpleMessage(
+      "Скорость загрузки (Download)",
+    ),
+    "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
+      "Скорость отдачи (Upload)",
+    ),
+    "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
+      "Использовано данных",
+    ),
+    "liveNotificationTypeUsername": MessageLookupByLibrary.simpleMessage(
+      "Имя пользователя",
+    ),
     "loading": MessageLookupByLibrary.simpleMessage("Загрузка..."),
     "local": MessageLookupByLibrary.simpleMessage("Локально"),
     "localBackupDesc": MessageLookupByLibrary.simpleMessage(
@@ -942,6 +1000,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Удалённое назначение",
     ),
     "remove": MessageLookupByLibrary.simpleMessage("Убрать"),
+    "renew": MessageLookupByLibrary.simpleMessage("Продлить"),
+    "renewSubscription": MessageLookupByLibrary.simpleMessage(
+      "Продлить подписку",
+    ),
     "request": MessageLookupByLibrary.simpleMessage("Запрос"),
     "requests": MessageLookupByLibrary.simpleMessage("Запросы"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage(
@@ -1186,6 +1248,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Выбрано"),
     "selectedCountTitle": m29,
+    "serverNotRespondingReconnecting": MessageLookupByLibrary.simpleMessage(
+      "Сервер перестал отвечать. Переподключение...",
+    ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("Статус серверов"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "Состояние и аптайм серверов LieVPN",
@@ -1325,6 +1390,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
       "Срок действия вашей подписки LieVPN истёк. Продлите её в Telegram-боте или активируйте новую.",
     ),
+    "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
+      "Срок действия подписки истек",
+    ),
+    "subscriptionExpiringIn": m32,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Найдена подписка в буфере обмена",
     ),
@@ -1351,6 +1420,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Подписка обновлена",
+    ),
+    "supportEmail": MessageLookupByLibrary.simpleMessage("Электронная почта"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("Поддержка LieVPN"),
+    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
+      "Служба поддержки LieVPN",
+    ),
+    "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
+      "Мессенджер MAX",
+    ),
+    "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Написать в MAX",
     ),
     "supportProject": MessageLookupByLibrary.simpleMessage("Поддержать проект"),
     "suspended": MessageLookupByLibrary.simpleMessage("Приостановлено..."),
@@ -1402,12 +1482,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "totalTraffic": MessageLookupByLibrary.simpleMessage("Общий трафик"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("Порт TProxy"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Статистика трафика"),
+    "tsarOfDonations": MessageLookupByLibrary.simpleMessage("Царь Доната"),
+    "tt": MessageLookupByLibrary.simpleMessage("ТікТок / Мемы ⚡"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "Работает только в режиме администратора",
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
+    "uk": MessageLookupByLibrary.simpleMessage("Українська"),
     "undo": MessageLookupByLibrary.simpleMessage("Отменить"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("Единая задержка"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
@@ -1433,7 +1516,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("Отдача"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("Получить профиль по URL"),
-    "urlTip": m32,
+    "urlTip": m33,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системный hosts",
@@ -1465,7 +1548,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m33,
+    "yearsAgo": m34,
     "zhCN": MessageLookupByLibrary.simpleMessage("Упрощённый китайский"),
   };
 }

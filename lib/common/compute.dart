@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -111,4 +112,70 @@ DelayState computeProxyDelayState({
       delayMap[state.testUrl.takeFirstValid([testUrl])] ?? {};
   final delay = currentDelayMap[state.proxyName];
   return DelayState(delay: delay ?? 0, group: state.group);
+}
+
+
+String resolveConnectedServerName({
+  required List<Group> groups,
+  required Map<String, String> selectedMap,
+}) {
+  if (groups.isEmpty) {
+    return '';
+  }
+
+  // In Rule mode, never pick Clash internal groups (GLOBAL, DIRECT, REJECT)
+  final candidateGroups = groups.where((g) {
+    final upper = g.name.toUpperCase();
+    return upper != 'GLOBAL' && upper != 'DIRECT' && upper != 'REJECT' && g.hidden != true;
+  }).toList();
+
+  final effectiveGroups = candidateGroups.isNotEmpty ? candidateGroups : groups;
+
+  final root = effectiveGroups.firstWhereOrNull((g) => g.name == 'PROXY') ??
+      effectiveGroups.firstWhereOrNull((g) => g.type == GroupType.Selector || g.type.isComputedSelected) ??
+      effectiveGroups.first;
+
+  String current = root.type.isComputedSelected
+      ? (root.now?.isNotEmpty == true && root.now != root.name ? root.now! : (selectedMap[root.name] ?? ''))
+      : (selectedMap[root.name] ?? (root.now?.isNotEmpty == true && root.now != root.name ? root.now! : ''));
+
+  if (current.isEmpty || current == 'DIRECT' || current == 'REJECT') {
+    final validFirst = root.all.firstWhereOrNull(
+      (p) => p.name != 'DIRECT' && p.name != 'REJECT' && p.name != 'GLOBAL',
+    );
+    current = validFirst?.name ?? '';
+  }
+
+  final visited = <String>{};
+  while (current.isNotEmpty && !visited.contains(current)) {
+    visited.add(current);
+    if (current == 'DIRECT' || current == 'REJECT') {
+      return '';
+    }
+    final group = groups.firstWhereOrNull((g) => g.name == current);
+    if (group == null) {
+      return current;
+    }
+    final next = group.type.isComputedSelected
+        ? (group.now?.isNotEmpty == true && group.now != group.name ? group.now! : (selectedMap[group.name] ?? ''))
+        : (selectedMap[group.name] ?? (group.now?.isNotEmpty == true && group.now != group.name ? group.now! : ''));
+
+    if (next.isNotEmpty && next != current && next != 'DIRECT' && next != 'REJECT') {
+      current = next;
+    } else {
+      final validChild = group.all.firstWhereOrNull(
+        (p) => p.name != 'DIRECT' && p.name != 'REJECT' && p.name != 'GLOBAL' && !visited.contains(p.name),
+      );
+      if (validChild != null) {
+        current = validChild.name;
+      } else {
+        break;
+      }
+    }
+  }
+
+  if (current == 'DIRECT' || current == 'REJECT') {
+    return '';
+  }
+  return current;
 }

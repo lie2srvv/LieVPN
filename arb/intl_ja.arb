@@ -726,5 +726,74 @@
   "noAddedRulesYet": "追加されたルールはありません。上部からドメインまたはアプリを追加してください。",
   "ruleAlreadyExists": "このルールは既に存在します",
   "ruleInputEmpty": "入力フィールドを空にすることはできません",
-  "ruleAddedSuccess": "ルールが正常に追加されました"
+  "ruleAddedSuccess": "ルールが正常に追加されました",
+  "supportLieVpn": "LieVPN サポート",
+  "supportLieVpnTitle": "LieVPN カスタマーサポート",
+  "supportMessengerMax": "MAX メッセンジャー",
+  "supportMessengerMaxSubtitle": "MAXでお問い合わせ",
+  "supportEmail": "メールサポート",
+  "aboutAppDesc": "VLESSおよびHysteria2プロトコルに基づき、データの安全性とインターネットの匿名性を保護するプライベートVPN。",
+  "aboutFork": "FlClash フォーク",
+  "aboutForkDesc": "オリジナルのFlClashリポジトリを開く",
+  "liveNotification": "Live通知",
+  "liveNotificationDesc": "通知バーにサブスクリプション名と通信速度を表示",
+  "lieVpnSettings": "LieVPN 設定",
+  "lieVpnSettingsDesc": "通知とカスタマイズの設定",
+  "liveNotificationType": "Live通知の表示内容",
+  "liveNotificationTypeDesc": "ステータスバーのピルやLive通知に表示する項目を選択します",
+  "liveNotificationTypeUsername": "ユーザー名",
+  "liveNotificationTypeTraffic": "使用データ量",
+  "liveNotificationTypeSpeed": "ネットワーク速度 (ダウンロード + アップロード)",
+  "liveNotificationTypeServer": "現在のサーバー (国)",
+  "liveNotificationTypeCustom": "カスタムテキスト",
+  "liveNotificationCustomText": "カスタムテキスト",
+  "liveNotificationCustomTextDesc": "Live通知に表示するテキスト",
+  "uk": "ウクライナ語",
+  "ko": "韓国語",
+  "kk": "カザフ語",
+  "be": "ベラルーシ語",
+  "tt": "TikTok / ミーム ⚡",
+  "renew": "更新",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "サブスクリプションを更新",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "サーバーが応答を停止しました。再接続中...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "寄付の王",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "サブスクリプションの有効期限が切れました",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "サブスクリプションは{time}で期限切れになります",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "ダウンロード速度",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "アップロード速度",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "サーバーのping",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  }
 }

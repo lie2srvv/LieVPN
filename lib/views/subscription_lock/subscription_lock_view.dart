@@ -194,6 +194,54 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
     }
   }
 
+  Future<void> _showLanguageSelector(BuildContext context) async {
+    const options = [
+      Locale('en'),
+      Locale('ru'),
+      Locale('uk'),
+      Locale('be'),
+      Locale('kk'),
+      Locale('ko'),
+      Locale('ja'),
+      Locale('zh_CN'),
+      Locale('tt'),
+    ];
+    final currentLocaleStr = ref.read(appSettingProvider.select((s) => s.locale));
+    final currentLocale = getLocaleForString(currentLocaleStr) ?? const Locale('en');
+
+    final selected = await dialogs.showCommonDialog<Locale>(
+      context: context,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final locItem in options)
+              ListTile(
+                leading: Icon(
+                  locItem == currentLocale
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  color: locItem == currentLocale
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                title: Text(locItem.label),
+                onTap: () {
+                  Navigator.of(context).pop(locItem);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+
+    if (selected != null) {
+      ref.read(appSettingProvider.notifier).update(
+            (state) => state.copyWith(locale: selected.toString()),
+          );
+    }
+  }
+
   Future<void> _openTelegramBot() async {
     final uri = Uri.parse('https://t.me/liesubbot');
     if (await canLaunchUrl(uri)) {
@@ -223,6 +271,19 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_outlined),
+            tooltip: loc.language,
+            onPressed: () => _showLanguageSelector(context),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

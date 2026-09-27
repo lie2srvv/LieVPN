@@ -4034,7 +4034,7 @@ class $$ProfilesTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$ProfilesTable, RawProfile>(table),
                   $$ProfilesTableReferences(db, table, e),
                 ),
               )
@@ -4244,7 +4244,16 @@ class $$ScriptsTableTableManager
                 lastUpdateTime: lastUpdateTime,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$ScriptsTable, RawScript>(table),
+                  BaseReferences<_$Database, $ScriptsTable, RawScript>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),
@@ -4570,8 +4579,10 @@ class $$RulesTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$RulesTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable<$RulesTable, RawRule>(table),
+                  $$RulesTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({profileRuleLinksRefs = false}) {
@@ -4957,7 +4968,9 @@ class $$ProfileRuleLinksTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$ProfileRuleLinksTable, RawProfileRuleLink>(
+                    table,
+                  ),
                   $$ProfileRuleLinksTableReferences(db, table, e),
                 ),
               )
@@ -5626,7 +5639,7 @@ class $$ProxyGroupsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<$ProxyGroupsTable, RawProxyGroup>(table),
                   $$ProxyGroupsTableReferences(db, table, e),
                 ),
               )
@@ -5811,7 +5824,16 @@ class $$IconRecordsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$IconRecordsTable, IconRecord>(table),
+                  BaseReferences<_$Database, $IconRecordsTable, IconRecord>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),

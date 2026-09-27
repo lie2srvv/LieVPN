@@ -1,4 +1,6 @@
+export 'fallback_localizations.dart';
 export 'app_update_manager.dart';
+export 'proxy_country_resolver.dart';
 export 'app_localizations.dart';
 export 'app_ports.dart';
 export 'changelog.dart';

@@ -726,5 +726,74 @@
   "noAddedRulesYet": "Правил пока нет. Добавьте домен или приложение выше.",
   "ruleAlreadyExists": "Такое правило уже существует",
   "ruleInputEmpty": "Поле ввода не может быть пустым",
-  "ruleAddedSuccess": "Правило успешно добавлено"
+  "ruleAddedSuccess": "Правило успешно добавлено",
+  "supportLieVpn": "Поддержка LieVPN",
+  "supportLieVpnTitle": "Служба поддержки LieVPN",
+  "supportMessengerMax": "Мессенджер MAX",
+  "supportMessengerMaxSubtitle": "Написать в MAX",
+  "supportEmail": "Электронная почта",
+  "aboutAppDesc": "Приватный VPN для защиты данных и анонимности в сети на протоколе VLESS и Hysteria2.",
+  "aboutFork": "Форк FlClash",
+  "aboutForkDesc": "Открыть оригинальный репозиторий FlClash",
+  "liveNotification": "Live уведомление",
+  "liveNotificationDesc": "Отображать ник подписки и скорость в шторке",
+  "lieVpnSettings": "Настройки LieVPN",
+  "lieVpnSettingsDesc": "Параметры уведомлений и персонализации",
+  "liveNotificationType": "Отображение в Live-уведомлении",
+  "liveNotificationTypeDesc": "Выберите, что отображать в строке состояния и чипе",
+  "liveNotificationTypeUsername": "Имя пользователя",
+  "liveNotificationTypeTraffic": "Использовано данных",
+  "liveNotificationTypeSpeed": "Скорость сети (Download + Upload)",
+  "liveNotificationTypeServer": "Текущий сервер (страна)",
+  "liveNotificationTypeCustom": "Кастомный текст",
+  "liveNotificationCustomText": "Свой текст",
+  "liveNotificationCustomTextDesc": "Текст, отображаемый в Live-уведомлении",
+  "uk": "Українська",
+  "ko": "한국어",
+  "kk": "Қазақша",
+  "be": "Беларуская",
+  "tt": "ТікТок / Мемы ⚡",
+  "renew": "Продлить",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "Продлить подписку",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "Сервер перестал отвечать. Переподключение...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "Царь Доната",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "Срок действия подписки истек",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "Подписка заканчивается через {time}",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "Скорость загрузки (Download)",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "Скорость отдачи (Upload)",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "Пинг сервера",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  }
 }

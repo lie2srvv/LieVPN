@@ -87,13 +87,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up}/${total} 台が稼働中";
 
-  static String m32(label) => "${label}はURLである必要があります";
+  static String m32(time) => "サブスクリプションは${time}で期限切れになります";
 
-  static String m33(count) => "${count} 年前";
+  static String m33(label) => "${label}はURLである必要があります";
+
+  static String m34(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("アプリについて"),
+    "aboutAppDesc": MessageLookupByLibrary.simpleMessage(
+      "VLESSおよびHysteria2プロトコルに基づき、データの安全性とインターネットの匿名性を保護するプライベートVPN。",
+    ),
+    "aboutFork": MessageLookupByLibrary.simpleMessage("FlClash フォーク"),
+    "aboutForkDesc": MessageLookupByLibrary.simpleMessage(
+      "オリジナルのFlClashリポジトリを開く",
+    ),
     "accessControl": MessageLookupByLibrary.simpleMessage("アクセス制御"),
     "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
       "選択したアプリのみVPNを経由します",
@@ -198,6 +207,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "システムの制限により、実行中は電池の最適化の状態を正しく取得できません",
     ),
+    "be": MessageLookupByLibrary.simpleMessage("ベラルーシ語"),
     "bind": MessageLookupByLibrary.simpleMessage("連携"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("ブラックリストモード"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("接続をブロック"),
@@ -522,6 +532,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "TCPキープアライブ間隔",
     ),
     "key": MessageLookupByLibrary.simpleMessage("キー"),
+    "kk": MessageLookupByLibrary.simpleMessage("カザフ語"),
+    "ko": MessageLookupByLibrary.simpleMessage("韓国語"),
     "language": MessageLookupByLibrary.simpleMessage("言語"),
     "latestVersionInstalled": MessageLookupByLibrary.simpleMessage(
       "最新バージョンを使用しています",
@@ -531,9 +543,49 @@ class MessageLookup extends MessageLookupByLibrary {
       "前回、アプリは起動中に予期せず終了しました。今回の自動セットアップはスキップしました。手動で起動して再試行できます。",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("レイアウト"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN 設定"),
+    "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage("通知とカスタマイズの設定"),
     "light": MessageLookupByLibrary.simpleMessage("ライト"),
     "list": MessageLookupByLibrary.simpleMessage("リスト"),
     "listen": MessageLookupByLibrary.simpleMessage("リッスン"),
+    "liveNotification": MessageLookupByLibrary.simpleMessage("Live通知"),
+    "liveNotificationCustomText": MessageLookupByLibrary.simpleMessage(
+      "カスタムテキスト",
+    ),
+    "liveNotificationCustomTextDesc": MessageLookupByLibrary.simpleMessage(
+      "Live通知に表示するテキスト",
+    ),
+    "liveNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "通知バーにサブスクリプション名と通信速度を表示",
+    ),
+    "liveNotificationType": MessageLookupByLibrary.simpleMessage("Live通知の表示内容"),
+    "liveNotificationTypeCustom": MessageLookupByLibrary.simpleMessage(
+      "カスタムテキスト",
+    ),
+    "liveNotificationTypeDesc": MessageLookupByLibrary.simpleMessage(
+      "ステータスバーのピルやLive通知に表示する項目を選択します",
+    ),
+    "liveNotificationTypePing": MessageLookupByLibrary.simpleMessage(
+      "サーバーのping",
+    ),
+    "liveNotificationTypeServer": MessageLookupByLibrary.simpleMessage(
+      "現在のサーバー (国)",
+    ),
+    "liveNotificationTypeSpeed": MessageLookupByLibrary.simpleMessage(
+      "ネットワーク速度 (ダウンロード + アップロード)",
+    ),
+    "liveNotificationTypeSpeedDown": MessageLookupByLibrary.simpleMessage(
+      "ダウンロード速度",
+    ),
+    "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
+      "アップロード速度",
+    ),
+    "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
+      "使用データ量",
+    ),
+    "liveNotificationTypeUsername": MessageLookupByLibrary.simpleMessage(
+      "ユーザー名",
+    ),
     "loading": MessageLookupByLibrary.simpleMessage("読み込み中..."),
     "local": MessageLookupByLibrary.simpleMessage("ローカル"),
     "localBackupDesc": MessageLookupByLibrary.simpleMessage(
@@ -752,6 +804,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "remoteDestination": MessageLookupByLibrary.simpleMessage("リモート宛先"),
     "remove": MessageLookupByLibrary.simpleMessage("削除"),
+    "renew": MessageLookupByLibrary.simpleMessage("更新"),
+    "renewSubscription": MessageLookupByLibrary.simpleMessage("サブスクリプションを更新"),
     "request": MessageLookupByLibrary.simpleMessage("リクエスト"),
     "requests": MessageLookupByLibrary.simpleMessage("リクエスト"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage("最近のリクエスト記録を表示します"),
@@ -946,6 +1000,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectSubRule": MessageLookupByLibrary.simpleMessage("サブルールを選択してください"),
     "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
     "selectedCountTitle": m29,
+    "serverNotRespondingReconnecting": MessageLookupByLibrary.simpleMessage(
+      "サーバーが応答を停止しました。再接続中...",
+    ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("サーバー状況"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN サーバー状況と稼働時間",
@@ -1059,6 +1116,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
     ),
+    "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
+      "サブスクリプションの有効期限が切れました",
+    ),
+    "subscriptionExpiringIn": m32,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "クリップボードにサブスクリプションが見つかりました",
     ),
@@ -1081,6 +1142,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションを更新しました",
+    ),
+    "supportEmail": MessageLookupByLibrary.simpleMessage("メールサポート"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN サポート"),
+    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
+      "LieVPN カスタマーサポート",
+    ),
+    "supportMessengerMax": MessageLookupByLibrary.simpleMessage("MAX メッセンジャー"),
+    "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(
+      "MAXでお問い合わせ",
     ),
     "supportProject": MessageLookupByLibrary.simpleMessage("プロジェクトを支援"),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
@@ -1120,10 +1190,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "totalTraffic": MessageLookupByLibrary.simpleMessage("合計トラフィック"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxyポート"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("トラフィック統計"),
+    "tsarOfDonations": MessageLookupByLibrary.simpleMessage("寄付の王"),
+    "tt": MessageLookupByLibrary.simpleMessage("TikTok / ミーム ⚡"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフにする"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オンにする"),
+    "uk": MessageLookupByLibrary.simpleMessage("ウクライナ語"),
     "undo": MessageLookupByLibrary.simpleMessage("元に戻す"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("統一遅延"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
@@ -1145,7 +1218,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URLからプロファイルを取得します"),
-    "urlTip": m32,
+    "urlTip": m33,
     "useHosts": MessageLookupByLibrary.simpleMessage("Hostsを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムのHostsを使用"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("使用済みトラフィック"),
@@ -1165,7 +1238,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPNの再起動後に有効になります"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m33,
+    "yearsAgo": m34,
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

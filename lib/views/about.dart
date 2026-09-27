@@ -72,7 +72,7 @@ class AboutView extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Приватный VPN для защиты данных и анонимности в сети на протоколе VLESS и Hysteria2.',
+              appLocalizations.aboutAppDesc,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -86,8 +86,8 @@ class AboutView extends ConsumerWidget {
         items: [
           ListItem(
             leading: const Icon(Icons.fork_right_rounded),
-            title: const Text('Форк FlClash'),
-            subtitle: const Text('Открыть оригинальный репозиторий FlClash'),
+            title: Text(appLocalizations.aboutFork),
+            subtitle: Text(appLocalizations.aboutForkDesc),
             trailing: const Icon(Icons.launch),
             onTap: () {
               dialogs.openUrl('https://github.com/chen08209/FlClash');

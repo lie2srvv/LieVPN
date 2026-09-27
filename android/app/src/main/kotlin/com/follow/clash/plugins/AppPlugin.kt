@@ -201,6 +201,24 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 GlobalState.lastExitInfo()
             }
 
+            "requestNotificationsPermission", "requestNotificationPermission" -> {
+                requestNotificationPermission { granted ->
+                    result.success(granted)
+                }
+            }
+
+            "hasNotificationPermission", "hasNotificationsPermission" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val permission = ContextCompat.checkSelfPermission(
+                        GlobalState.application,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    )
+                    result.success(permission == PackageManager.PERMISSION_GRANTED)
+                } else {
+                    result.success(true)
+                }
+            }
+
             else -> {
                 result.notImplemented()
             }
@@ -500,8 +518,9 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         grantResults: IntArray,
     ): Boolean = when (requestCode) {
         NOTIFICATION_PERMISSION_REQUEST_CODE -> {
-            skipNotificationPermissionRequest = true
-            invokeRequestNotificationCallback(true)
+            val granted = grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            invokeRequestNotificationCallback(granted)
             true
         }
 

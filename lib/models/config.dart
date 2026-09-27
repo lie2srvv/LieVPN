@@ -90,6 +90,9 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool showTrayTitle,
     @Default(true) bool checkCertificate,
     @Default('') String customUserAgent,
+    @Default(false) bool liveNotification,
+    @Default(0) int liveNotificationType,
+    @Default('') String liveNotificationCustomText,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>

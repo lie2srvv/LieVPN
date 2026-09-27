@@ -98,14 +98,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up} of ${total} operational";
 
-  static String m32(label) => "${label} must be a URL";
+  static String m32(time) => "Subscription expires in ${time}";
 
-  static String m33(count) =>
+  static String m33(label) => "${label} must be a URL";
+
+  static String m34(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("About"),
+    "aboutAppDesc": MessageLookupByLibrary.simpleMessage(
+      "Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.",
+    ),
+    "aboutFork": MessageLookupByLibrary.simpleMessage("FlClash Fork"),
+    "aboutForkDesc": MessageLookupByLibrary.simpleMessage(
+      "Open original FlClash repository",
+    ),
     "accessControl": MessageLookupByLibrary.simpleMessage("Access control"),
     "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
       "Only selected apps go through the VPN",
@@ -246,6 +255,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "Due to system limitations, the battery optimization status cannot be read correctly while running",
     ),
+    "be": MessageLookupByLibrary.simpleMessage("Belarusian"),
     "bind": MessageLookupByLibrary.simpleMessage("Bind"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("Blacklist mode"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("Block connection"),
@@ -634,6 +644,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "TCP keep-alive interval",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Key"),
+    "kk": MessageLookupByLibrary.simpleMessage("Kazakh"),
+    "ko": MessageLookupByLibrary.simpleMessage("Korean"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
     "latestVersionInstalled": MessageLookupByLibrary.simpleMessage(
       "You are using the latest version",
@@ -645,9 +657,55 @@ class MessageLookup extends MessageLookupByLibrary {
       "The app exited unexpectedly while it was starting up last time. Automatic setup was skipped for this launch; you can start it manually to retry.",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Layout"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN Settings"),
+    "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "Notification and personalization options",
+    ),
     "light": MessageLookupByLibrary.simpleMessage("Light"),
     "list": MessageLookupByLibrary.simpleMessage("List"),
     "listen": MessageLookupByLibrary.simpleMessage("Listen"),
+    "liveNotification": MessageLookupByLibrary.simpleMessage(
+      "Live notification",
+    ),
+    "liveNotificationCustomText": MessageLookupByLibrary.simpleMessage(
+      "Custom text",
+    ),
+    "liveNotificationCustomTextDesc": MessageLookupByLibrary.simpleMessage(
+      "Text displayed in Live notification",
+    ),
+    "liveNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "Display username and real-time speed in notification",
+    ),
+    "liveNotificationType": MessageLookupByLibrary.simpleMessage(
+      "Live Notification Display",
+    ),
+    "liveNotificationTypeCustom": MessageLookupByLibrary.simpleMessage(
+      "Custom text",
+    ),
+    "liveNotificationTypeDesc": MessageLookupByLibrary.simpleMessage(
+      "Choose what is shown in the status bar pill and live notification",
+    ),
+    "liveNotificationTypePing": MessageLookupByLibrary.simpleMessage(
+      "Server ping",
+    ),
+    "liveNotificationTypeServer": MessageLookupByLibrary.simpleMessage(
+      "Current server (country)",
+    ),
+    "liveNotificationTypeSpeed": MessageLookupByLibrary.simpleMessage(
+      "Network speed (Download + Upload)",
+    ),
+    "liveNotificationTypeSpeedDown": MessageLookupByLibrary.simpleMessage(
+      "Download speed",
+    ),
+    "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
+      "Upload speed",
+    ),
+    "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
+      "Data used",
+    ),
+    "liveNotificationTypeUsername": MessageLookupByLibrary.simpleMessage(
+      "Username",
+    ),
     "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
     "local": MessageLookupByLibrary.simpleMessage("Local"),
     "localBackupDesc": MessageLookupByLibrary.simpleMessage(
@@ -900,6 +958,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Remote destination",
     ),
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+    "renew": MessageLookupByLibrary.simpleMessage("Renew"),
+    "renewSubscription": MessageLookupByLibrary.simpleMessage(
+      "Renew subscription",
+    ),
     "request": MessageLookupByLibrary.simpleMessage("Request"),
     "requests": MessageLookupByLibrary.simpleMessage("Requests"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage(
@@ -1132,6 +1194,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Selected"),
     "selectedCountTitle": m29,
+    "serverNotRespondingReconnecting": MessageLookupByLibrary.simpleMessage(
+      "Server stopped responding. Reconnecting...",
+    ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("Server Status"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN servers state and uptime",
@@ -1261,6 +1326,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
       "Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.",
     ),
+    "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
+      "Subscription has expired",
+    ),
+    "subscriptionExpiringIn": m32,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Subscription found in clipboard",
     ),
@@ -1287,6 +1356,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Subscription updated",
+    ),
+    "supportEmail": MessageLookupByLibrary.simpleMessage("Email Support"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN Support"),
+    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
+      "LieVPN Customer Support",
+    ),
+    "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
+      "MAX Messenger",
+    ),
+    "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Contact on MAX",
     ),
     "supportProject": MessageLookupByLibrary.simpleMessage("Support project"),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
@@ -1332,12 +1412,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "totalTraffic": MessageLookupByLibrary.simpleMessage("Total traffic"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy port"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Traffic usage"),
+    "tsarOfDonations": MessageLookupByLibrary.simpleMessage(
+      "Tsar of Donations",
+    ),
+    "tt": MessageLookupByLibrary.simpleMessage("TikTok / Memes ⚡"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "Only effective in administrator mode",
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Turn off"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Turn on"),
+    "uk": MessageLookupByLibrary.simpleMessage("Ukrainian"),
     "undo": MessageLookupByLibrary.simpleMessage("Undo"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("Unified delay"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
@@ -1365,7 +1450,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain a profile from a URL",
     ),
-    "urlTip": m32,
+    "urlTip": m33,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
@@ -1389,7 +1474,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m33,
+    "yearsAgo": m34,
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

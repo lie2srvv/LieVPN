@@ -1,3 +1,4 @@
+import 'package:fl_clash/plugins/app.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -38,40 +39,54 @@ class AppUpdateInfo {
       defaultUrl = 'https://clck.lie2srvv.com/files/lievpn.apk';
     }
 
+    // 1. If combined version.json with OS-specific subobjects (android, windows, linux)
     if (json[platformKey] is Map<String, dynamic>) {
       final pMap = json[platformKey] as Map<String, dynamic>;
+      final downloadUrl = pMap['url'] as String? ??
+          (Platform.isWindows
+              ? (pMap['windowsUrl'] as String? ?? defaultUrl)
+              : Platform.isLinux
+                  ? (pMap['linuxUrl'] as String? ?? defaultUrl)
+                  : (pMap['apkUrl'] as String? ?? defaultUrl));
       return AppUpdateInfo(
-        version: pMap['version'] as String? ?? '1.0.0',
-        downloadUrl: pMap['url'] as String? ?? pMap['apkUrl'] as String? ?? defaultUrl,
+        version: pMap['version'] as String? ?? '0.0.0',
+        downloadUrl: downloadUrl,
         releaseNotes: pMap['releaseNotes'] as String? ?? json['releaseNotes'] as String?,
       );
     }
 
-    // Direct platform payload (e.g. from version_android.json or version_linux.json)
-    if (json.containsKey('url') || json.containsKey('apkUrl') || json.containsKey('windowsUrl') || json.containsKey('linuxUrl')) {
-      final directUrl = json['url'] as String? ??
-          (Platform.isWindows
-              ? (json['windowsUrl'] as String? ?? defaultUrl)
-              : Platform.isLinux
-                  ? (json['linuxUrl'] as String? ?? defaultUrl)
-                  : (json['apkUrl'] as String? ?? defaultUrl));
+    // If json has other OS sections but missing current platformKey,
+    // NEVER fall back to top-level version (it belongs to a different OS)!
+    final isCombinedManifest = json.containsKey('android') ||
+        json.containsKey('windows') ||
+        json.containsKey('linux');
+    if (isCombinedManifest) {
       return AppUpdateInfo(
-        version: json['version'] as String? ?? '1.0.0',
-        downloadUrl: directUrl,
-        releaseNotes: json['releaseNotes'] as String?,
+        version: '0.0.0',
+        downloadUrl: defaultUrl,
+        releaseNotes: null,
       );
     }
 
-    // Legacy fallback
-    final legacyUrl = Platform.isWindows
-        ? (json['windowsUrl'] as String? ?? defaultUrl)
-        : Platform.isLinux
-            ? (json['linuxUrl'] as String? ?? defaultUrl)
-            : (json['apkUrl'] as String? ?? defaultUrl);
+    // 2. Direct dedicated platform JSON (e.g. version_linux.json or version_windows.json)
+    // Avoid reading another OS direct JSON if mismatched
+    if (Platform.isLinux && json.containsKey('apkUrl') && !json.containsKey('linuxUrl')) {
+      return AppUpdateInfo(version: '0.0.0', downloadUrl: defaultUrl, releaseNotes: null);
+    }
+    if (Platform.isWindows && json.containsKey('apkUrl') && !json.containsKey('windowsUrl')) {
+      return AppUpdateInfo(version: '0.0.0', downloadUrl: defaultUrl, releaseNotes: null);
+    }
+
+    final directUrl = json['url'] as String? ??
+        (Platform.isWindows
+            ? (json['windowsUrl'] as String? ?? defaultUrl)
+            : Platform.isLinux
+                ? (json['linuxUrl'] as String? ?? defaultUrl)
+                : (json['apkUrl'] as String? ?? defaultUrl));
 
     return AppUpdateInfo(
-      version: json['version'] as String? ?? '1.0.0',
-      downloadUrl: legacyUrl,
+      version: json['version'] as String? ?? '0.0.0',
+      downloadUrl: directUrl,
       releaseNotes: json['releaseNotes'] as String?,
     );
   }
@@ -125,7 +140,7 @@ class AppUpdateManager {
       ),
     );
 
-    // 1. First try platform-specific update endpoint
+    // 1. First try platform-specific update endpoint (e.g. version_linux.json / version_windows.json)
     try {
       final response = await dio.get<Map<String, dynamic>>(
         _platformVersionUrl,
@@ -141,7 +156,7 @@ class AppUpdateManager {
       }
     } catch (_) {}
 
-    // 2. Fallback to unified version.json
+    // 2. Fallback to combined version.json (strictly parsed for current OS only)
     try {
       final response = await dio.get<Map<String, dynamic>>(
         _fallbackVersionUrl,
@@ -153,24 +168,40 @@ class AppUpdateManager {
         if (isNewerVersion(updateInfo.version, currentVersion)) {
           return updateInfo;
         }
+        return null;
       }
     } catch (_) {}
 
     return null;
   }
 
-  /// Automatically triggered on application startup
+  static Timer? _periodicUpdateTimer;
+
+  /// Automatically triggered on application startup and every hour
   static Future<void> autoCheckUpdate(WidgetRef ref) async {
     final autoCheck = ref.read(appSettingProvider).autoCheckUpdate;
     if (!autoCheck) return;
 
     // Wait 3 seconds after startup to not compete with network initialization
     await Future.delayed(const Duration(seconds: 3));
+    await _checkAndNotifyUpdate();
 
+    // Start periodic 1-hour check
+    _periodicUpdateTimer?.cancel();
+    _periodicUpdateTimer = Timer.periodic(const Duration(hours: 1), (_) async {
+      final autoCheckEnabled = ref.read(appSettingProvider).autoCheckUpdate;
+      if (autoCheckEnabled) {
+        await _checkAndNotifyUpdate();
+      }
+    });
+  }
+
+  static Future<void> _checkAndNotifyUpdate() async {
     final update = await fetchUpdate();
     if (update != null) {
       final loc = currentAppLocalizations;
 
+      // 1. In-app banner notifier
       dialogs.showNotifier(
         loc.newVersionAvailable(update.version),
         level: MessageLevel.info,
@@ -184,6 +215,17 @@ class AppUpdateManager {
           },
         ),
       );
+
+      // 2. Android system notification
+      if (system.isAndroid) {
+        try {
+          await App().showNotification(
+            title: 'LieVPN',
+            message: loc.newVersionAvailable(update.version),
+            id: 1003,
+          );
+        } catch (_) {}
+      }
     }
   }
 

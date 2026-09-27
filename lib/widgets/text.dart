@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/proxy_country_resolver.dart';
 import 'package:emoji_regex/emoji_regex.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:material_ui/material_ui.dart';
@@ -111,16 +112,18 @@ class EmojiText extends StatelessWidget {
     this.style,
   });
 
-  List<TextSpan> _buildTextSpans(String emojis) {
+  List<TextSpan> _buildTextSpans(BuildContext context) {
+    final locale = Localizations.maybeLocaleOf(context);
+    final resolvedText = ProxyCountryResolver.resolve(text, locale);
     final List<TextSpan> spans = [];
-    final matches = emojiRegex().allMatches(text);
+    final matches = emojiRegex().allMatches(resolvedText);
 
     int lastMatchEnd = 0;
     for (final match in matches) {
       if (match.start > lastMatchEnd) {
         spans.add(
           TextSpan(
-            text: text.substring(lastMatchEnd, match.start),
+            text: resolvedText.substring(lastMatchEnd, match.start),
             style: style,
           ),
         );
@@ -133,8 +136,8 @@ class EmojiText extends StatelessWidget {
       );
       lastMatchEnd = match.end;
     }
-    if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastMatchEnd), style: style));
+    if (lastMatchEnd < resolvedText.length) {
+      spans.add(TextSpan(text: resolvedText.substring(lastMatchEnd), style: style));
     }
 
     return spans;
@@ -146,7 +149,7 @@ class EmojiText extends StatelessWidget {
       textScaler: MediaQuery.textScalerOf(context),
       maxLines: maxLines,
       overflow: overflow ?? TextOverflow.clip,
-      text: TextSpan(children: _buildTextSpans(text)),
+      text: TextSpan(children: _buildTextSpans(context)),
     );
   }
 }

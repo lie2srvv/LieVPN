@@ -726,5 +726,74 @@
   "noAddedRulesYet": "No rules added yet. Add a domain or app above.",
   "ruleAlreadyExists": "This rule already exists",
   "ruleInputEmpty": "Input field cannot be empty",
-  "ruleAddedSuccess": "Rule added successfully"
+  "ruleAddedSuccess": "Rule added successfully",
+  "supportLieVpn": "LieVPN Support",
+  "supportLieVpnTitle": "LieVPN Customer Support",
+  "supportMessengerMax": "MAX Messenger",
+  "supportMessengerMaxSubtitle": "Contact on MAX",
+  "supportEmail": "Email Support",
+  "aboutAppDesc": "Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.",
+  "aboutFork": "FlClash Fork",
+  "aboutForkDesc": "Open original FlClash repository",
+  "liveNotification": "Live notification",
+  "liveNotificationDesc": "Display username and real-time speed in notification",
+  "lieVpnSettings": "LieVPN Settings",
+  "lieVpnSettingsDesc": "Notification and personalization options",
+  "liveNotificationType": "Live Notification Display",
+  "liveNotificationTypeDesc": "Choose what is shown in the status bar pill and live notification",
+  "liveNotificationTypeUsername": "Username",
+  "liveNotificationTypeTraffic": "Data used",
+  "liveNotificationTypeSpeed": "Network speed (Download + Upload)",
+  "liveNotificationTypeServer": "Current server (country)",
+  "liveNotificationTypeCustom": "Custom text",
+  "liveNotificationCustomText": "Custom text",
+  "liveNotificationCustomTextDesc": "Text displayed in Live notification",
+  "uk": "Ukrainian",
+  "ko": "Korean",
+  "kk": "Kazakh",
+  "be": "Belarusian",
+  "tt": "TikTok / Memes ⚡",
+  "renew": "Renew",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "Renew subscription",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "Server stopped responding. Reconnecting...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "Tsar of Donations",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "Subscription has expired",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "Subscription expires in {time}",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "Download speed",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "Upload speed",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "Server ping",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  }
 }

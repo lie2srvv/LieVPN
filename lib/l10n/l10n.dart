@@ -6004,6 +6004,321 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `LieVPN Support`
+  String get supportLieVpn {
+    return Intl.message(
+      'LieVPN Support',
+      name: 'supportLieVpn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Customer Support`
+  String get supportLieVpnTitle {
+    return Intl.message(
+      'LieVPN Customer Support',
+      name: 'supportLieVpnTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MAX Messenger`
+  String get supportMessengerMax {
+    return Intl.message(
+      'MAX Messenger',
+      name: 'supportMessengerMax',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact on MAX`
+  String get supportMessengerMaxSubtitle {
+    return Intl.message(
+      'Contact on MAX',
+      name: 'supportMessengerMaxSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email Support`
+  String get supportEmail {
+    return Intl.message(
+      'Email Support',
+      name: 'supportEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.`
+  String get aboutAppDesc {
+    return Intl.message(
+      'Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.',
+      name: 'aboutAppDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FlClash Fork`
+  String get aboutFork {
+    return Intl.message('FlClash Fork', name: 'aboutFork', desc: '', args: []);
+  }
+
+  /// `Open original FlClash repository`
+  String get aboutForkDesc {
+    return Intl.message(
+      'Open original FlClash repository',
+      name: 'aboutForkDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live notification`
+  String get liveNotification {
+    return Intl.message(
+      'Live notification',
+      name: 'liveNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Display username and real-time speed in notification`
+  String get liveNotificationDesc {
+    return Intl.message(
+      'Display username and real-time speed in notification',
+      name: 'liveNotificationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Settings`
+  String get lieVpnSettings {
+    return Intl.message(
+      'LieVPN Settings',
+      name: 'lieVpnSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notification and personalization options`
+  String get lieVpnSettingsDesc {
+    return Intl.message(
+      'Notification and personalization options',
+      name: 'lieVpnSettingsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live Notification Display`
+  String get liveNotificationType {
+    return Intl.message(
+      'Live Notification Display',
+      name: 'liveNotificationType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose what is shown in the status bar pill and live notification`
+  String get liveNotificationTypeDesc {
+    return Intl.message(
+      'Choose what is shown in the status bar pill and live notification',
+      name: 'liveNotificationTypeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username`
+  String get liveNotificationTypeUsername {
+    return Intl.message(
+      'Username',
+      name: 'liveNotificationTypeUsername',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data used`
+  String get liveNotificationTypeTraffic {
+    return Intl.message(
+      'Data used',
+      name: 'liveNotificationTypeTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network speed (Download + Upload)`
+  String get liveNotificationTypeSpeed {
+    return Intl.message(
+      'Network speed (Download + Upload)',
+      name: 'liveNotificationTypeSpeed',
+      desc: 'liveNotificationTypeSpeed',
+      args: [],
+    );
+  }
+
+  /// `Current server (country)`
+  String get liveNotificationTypeServer {
+    return Intl.message(
+      'Current server (country)',
+      name: 'liveNotificationTypeServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom text`
+  String get liveNotificationTypeCustom {
+    return Intl.message(
+      'Custom text',
+      name: 'liveNotificationTypeCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom text`
+  String get liveNotificationCustomText {
+    return Intl.message(
+      'Custom text',
+      name: 'liveNotificationCustomText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Text displayed in Live notification`
+  String get liveNotificationCustomTextDesc {
+    return Intl.message(
+      'Text displayed in Live notification',
+      name: 'liveNotificationCustomTextDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ukrainian`
+  String get uk {
+    return Intl.message('Ukrainian', name: 'uk', desc: '', args: []);
+  }
+
+  /// `Korean`
+  String get ko {
+    return Intl.message('Korean', name: 'ko', desc: '', args: []);
+  }
+
+  /// `Kazakh`
+  String get kk {
+    return Intl.message('Kazakh', name: 'kk', desc: '', args: []);
+  }
+
+  /// `Belarusian`
+  String get be {
+    return Intl.message('Belarusian', name: 'be', desc: '', args: []);
+  }
+
+  /// `TikTok / Memes ⚡`
+  String get tt {
+    return Intl.message('TikTok / Memes ⚡', name: 'tt', desc: '', args: []);
+  }
+
+  /// `Renew`
+  String get renew {
+    return Intl.message('Renew', name: 'renew', desc: 'renew', args: []);
+  }
+
+  /// `Renew subscription`
+  String get renewSubscription {
+    return Intl.message(
+      'Renew subscription',
+      name: 'renewSubscription',
+      desc: 'renewSubscription',
+      args: [],
+    );
+  }
+
+  /// `Server stopped responding. Reconnecting...`
+  String get serverNotRespondingReconnecting {
+    return Intl.message(
+      'Server stopped responding. Reconnecting...',
+      name: 'serverNotRespondingReconnecting',
+      desc: 'serverNotRespondingReconnecting',
+      args: [],
+    );
+  }
+
+  /// `Tsar of Donations`
+  String get tsarOfDonations {
+    return Intl.message(
+      'Tsar of Donations',
+      name: 'tsarOfDonations',
+      desc: 'tsarOfDonations',
+      args: [],
+    );
+  }
+
+  /// `Subscription has expired`
+  String get subscriptionExpiredWarning {
+    return Intl.message(
+      'Subscription has expired',
+      name: 'subscriptionExpiredWarning',
+      desc: 'subscriptionExpiredWarning',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in {time}`
+  String subscriptionExpiringIn(String time) {
+    return Intl.message(
+      'Subscription expires in $time',
+      name: 'subscriptionExpiringIn',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Download speed`
+  String get liveNotificationTypeSpeedDown {
+    return Intl.message(
+      'Download speed',
+      name: 'liveNotificationTypeSpeedDown',
+      desc: 'liveNotificationTypeSpeedDown',
+      args: [],
+    );
+  }
+
+  /// `Upload speed`
+  String get liveNotificationTypeSpeedUp {
+    return Intl.message(
+      'Upload speed',
+      name: 'liveNotificationTypeSpeedUp',
+      desc: 'liveNotificationTypeSpeedUp',
+      args: [],
+    );
+  }
+
+  /// `Server ping`
+  String get liveNotificationTypePing {
+    return Intl.message(
+      'Server ping',
+      name: 'liveNotificationTypePing',
+      desc: 'liveNotificationTypePing',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -6012,8 +6327,13 @@ class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'be'),
       Locale.fromSubtags(languageCode: 'ja'),
+      Locale.fromSubtags(languageCode: 'kk'),
+      Locale.fromSubtags(languageCode: 'ko'),
       Locale.fromSubtags(languageCode: 'ru'),
+      Locale.fromSubtags(languageCode: 'tt'),
+      Locale.fromSubtags(languageCode: 'uk'),
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
     ];
   }

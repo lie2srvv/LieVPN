@@ -726,5 +726,74 @@
   "noAddedRulesYet": "暂无添加的规则。请在上方添加域名或应用。",
   "ruleAlreadyExists": "该规则已存在",
   "ruleInputEmpty": "输入内容不能为空",
-  "ruleAddedSuccess": "规则已成功添加"
+  "ruleAddedSuccess": "规则已成功添加",
+  "supportLieVpn": "LieVPN 支持",
+  "supportLieVpnTitle": "LieVPN 客户支持",
+  "supportMessengerMax": "MAX 消息",
+  "supportMessengerMaxSubtitle": "在 MAX 上联系",
+  "supportEmail": "电子邮件",
+  "aboutAppDesc": "基于 VLESS 和 Hysteria2 协议的私密 VPN，保障数据安全与网络匿名。",
+  "aboutFork": "FlClash 分支",
+  "aboutForkDesc": "打开原版 FlClash 仓库",
+  "liveNotification": "Live 通知",
+  "liveNotificationDesc": "在通知栏显示订阅昵称和实时速率",
+  "lieVpnSettings": "LieVPN 设置",
+  "lieVpnSettingsDesc": "通知与个性化设置",
+  "liveNotificationType": "Live 通知显示内容",
+  "liveNotificationTypeDesc": "选择在状态栏胶囊和 Live 通知中显示的项目",
+  "liveNotificationTypeUsername": "用户名",
+  "liveNotificationTypeTraffic": "已用流量",
+  "liveNotificationTypeSpeed": "网络速度 (下载 + 上传)",
+  "liveNotificationTypeServer": "当前服务器 (国家)",
+  "liveNotificationTypeCustom": "自定义文本",
+  "liveNotificationCustomText": "自定义文本",
+  "liveNotificationCustomTextDesc": "Live 通知中显示的自定义文本",
+  "uk": "乌克兰语",
+  "ko": "韩语",
+  "kk": "哈萨克语",
+  "be": "白俄罗斯语",
+  "tt": "TikTok / 梗模式 ⚡",
+  "renew": "续订",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "续订订阅",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "服务器无响应，正在重新连接...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "赞助之王",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "订阅已过期",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "订阅将在 {time} 后过期",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "下载速度",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "上传速度",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "服务器延迟",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  }
 }

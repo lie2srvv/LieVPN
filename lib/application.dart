@@ -165,6 +165,11 @@ class ApplicationState extends ConsumerState<Application> {
           onNavigationNotification: (_) => true,
           localizationsDelegates: const [
             AppLocalizations.delegate,
+            ModernFallbackMaterialLocalizationsDelegate(),
+            ModernFallbackCupertinoLocalizationsDelegate(),
+            FallbackMaterialLocalizationsDelegate(),
+            FallbackCupertinoLocalizationsDelegate(),
+            FallbackWidgetsLocalizationsDelegate(),
             ...GlobalMaterialLocalizations.delegates,
           ],
           builder: (context, child) {
@@ -172,6 +177,11 @@ class ApplicationState extends ConsumerState<Application> {
             // which material_ui IconButton.filled reads as custom and loses onPrimary.
             // ignore: deprecated_member_use
             return MaterialUiCompatibilityBridge(
+              delegates: const [
+                FallbackMaterialLocalizationsDelegate(),
+                FallbackCupertinoLocalizationsDelegate(),
+                FallbackWidgetsLocalizationsDelegate(),
+              ],
               child: IconTheme(
                 data: Theme.of(context).iconTheme,
                 child: buildManagerStack(
@@ -184,7 +194,7 @@ class ApplicationState extends ConsumerState<Application> {
           },
           scrollBehavior: const BaseScrollBehavior(),
           title: appName,
-          locale: getLocaleForString(locale) ?? const Locale('ru'),
+          locale: getLocaleForString(locale) ?? const Locale('en'),
           supportedLocales: AppLocalizations.delegate.supportedLocales,
           themeMode: themeProps.themeMode,
           theme: ThemeData(

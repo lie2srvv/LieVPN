@@ -41,12 +41,13 @@ class LieVpnToggleWidgetProvider : AppWidgetProvider() {
         ) {
             val views = RemoteViews(context.packageName, R.layout.widget_toggle_icon)
 
-            val dotRes = when (state) {
-                RunState.STARTED -> R.drawable.widget_dot_connected
-                RunState.STARTING, RunState.STOPPING -> R.drawable.widget_dot_connecting
-                RunState.STOPPED -> R.drawable.widget_dot_disconnected
+            // Red fox when inactive (STOPPED), green fox when active (STARTED/STARTING/STOPPING)
+            val foxRes = when (state) {
+                RunState.STARTED -> R.drawable.ic_widget_fox_green
+                RunState.STARTING, RunState.STOPPING -> R.drawable.ic_widget_fox_green
+                RunState.STOPPED -> R.drawable.ic_widget_fox_red
             }
-            views.setImageViewResource(R.id.widget_status_dot, dotRes)
+            views.setImageViewResource(R.id.widget_fox, foxRes)
 
             val toggleIntent = Intent(context, QuickActionActivity::class.java).apply {
                 action = QuickAction.TOGGLE.action

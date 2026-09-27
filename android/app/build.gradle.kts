@@ -38,7 +38,7 @@ android {
         applicationId = "com.lie2srvv.vpn"
         minSdk = flutter.minSdkVersion
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = flutter.versionCode
+        versionCode = 2008
         versionName = flutter.versionName
     }
 

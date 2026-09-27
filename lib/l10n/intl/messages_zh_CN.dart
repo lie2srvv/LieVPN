@@ -87,13 +87,20 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up} / ${total} 节点正常";
 
-  static String m32(label) => "${label}必须为URL";
+  static String m32(time) => "订阅将在 ${time} 后过期";
 
-  static String m33(count) => "${count} 年前";
+  static String m33(label) => "${label}必须为URL";
+
+  static String m34(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("关于"),
+    "aboutAppDesc": MessageLookupByLibrary.simpleMessage(
+      "基于 VLESS 和 Hysteria2 协议的私密 VPN，保障数据安全与网络匿名。",
+    ),
+    "aboutFork": MessageLookupByLibrary.simpleMessage("FlClash 分支"),
+    "aboutForkDesc": MessageLookupByLibrary.simpleMessage("打开原版 FlClash 仓库"),
     "accessControl": MessageLookupByLibrary.simpleMessage("访问控制"),
     "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
       "只允许选中应用进入VPN",
@@ -184,6 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "由于系统限制，运行状态下无法正确获取电池优化状态",
     ),
+    "be": MessageLookupByLibrary.simpleMessage("白俄罗斯语"),
     "bind": MessageLookupByLibrary.simpleMessage("绑定"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("黑名单模式"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("阻止连接"),
@@ -452,6 +460,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP保持活动间隔"),
     "key": MessageLookupByLibrary.simpleMessage("键"),
+    "kk": MessageLookupByLibrary.simpleMessage("哈萨克语"),
+    "ko": MessageLookupByLibrary.simpleMessage("韩语"),
     "language": MessageLookupByLibrary.simpleMessage("语言"),
     "latestVersionInstalled": MessageLookupByLibrary.simpleMessage("当前已是最新版本"),
     "launchInterrupted": MessageLookupByLibrary.simpleMessage("启动未完成"),
@@ -459,9 +469,37 @@ class MessageLookup extends MessageLookupByLibrary {
       "应用上次在启动过程中意外退出。已跳过本次自动配置，你可以手动启动重试。",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("布局"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN 设置"),
+    "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage("通知与个性化设置"),
     "light": MessageLookupByLibrary.simpleMessage("浅色"),
     "list": MessageLookupByLibrary.simpleMessage("列表"),
     "listen": MessageLookupByLibrary.simpleMessage("监听"),
+    "liveNotification": MessageLookupByLibrary.simpleMessage("Live 通知"),
+    "liveNotificationCustomText": MessageLookupByLibrary.simpleMessage("自定义文本"),
+    "liveNotificationCustomTextDesc": MessageLookupByLibrary.simpleMessage(
+      "Live 通知中显示的自定义文本",
+    ),
+    "liveNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "在通知栏显示订阅昵称和实时速率",
+    ),
+    "liveNotificationType": MessageLookupByLibrary.simpleMessage("Live 通知显示内容"),
+    "liveNotificationTypeCustom": MessageLookupByLibrary.simpleMessage("自定义文本"),
+    "liveNotificationTypeDesc": MessageLookupByLibrary.simpleMessage(
+      "选择在状态栏胶囊和 Live 通知中显示的项目",
+    ),
+    "liveNotificationTypePing": MessageLookupByLibrary.simpleMessage("服务器延迟"),
+    "liveNotificationTypeServer": MessageLookupByLibrary.simpleMessage(
+      "当前服务器 (国家)",
+    ),
+    "liveNotificationTypeSpeed": MessageLookupByLibrary.simpleMessage(
+      "网络速度 (下载 + 上传)",
+    ),
+    "liveNotificationTypeSpeedDown": MessageLookupByLibrary.simpleMessage(
+      "下载速度",
+    ),
+    "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage("上传速度"),
+    "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
+    "liveNotificationTypeUsername": MessageLookupByLibrary.simpleMessage("用户名"),
     "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
     "local": MessageLookupByLibrary.simpleMessage("本地"),
     "localBackupDesc": MessageLookupByLibrary.simpleMessage("备份数据到本地"),
@@ -644,6 +682,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage("备份数据到WebDAV"),
     "remoteDestination": MessageLookupByLibrary.simpleMessage("远程目标"),
     "remove": MessageLookupByLibrary.simpleMessage("移除"),
+    "renew": MessageLookupByLibrary.simpleMessage("续订"),
+    "renewSubscription": MessageLookupByLibrary.simpleMessage("续订订阅"),
     "request": MessageLookupByLibrary.simpleMessage("请求"),
     "requests": MessageLookupByLibrary.simpleMessage("请求"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage("查看最近请求记录"),
@@ -808,6 +848,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectSubRule": MessageLookupByLibrary.simpleMessage("请选择子规则"),
     "selected": MessageLookupByLibrary.simpleMessage("已选择"),
     "selectedCountTitle": m29,
+    "serverNotRespondingReconnecting": MessageLookupByLibrary.simpleMessage(
+      "服务器无响应，正在重新连接...",
+    ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("服务器状态"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
       "LieVPN 服务器状态与正常运行时间",
@@ -915,6 +958,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
       "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
     ),
+    "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage("订阅已过期"),
+    "subscriptionExpiringIn": m32,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "在剪贴板中找到订阅",
     ),
@@ -932,6 +977,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "使用 LieVPN 应用需要有效订阅。通过链接或二维码激活访问。",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage("订阅已更新"),
+    "supportEmail": MessageLookupByLibrary.simpleMessage("电子邮件"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN 支持"),
+    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage("LieVPN 客户支持"),
+    "supportMessengerMax": MessageLookupByLibrary.simpleMessage("MAX 消息"),
+    "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(
+      "在 MAX 上联系",
+    ),
     "supportProject": MessageLookupByLibrary.simpleMessage("支持项目"),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),
@@ -966,10 +1018,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "totalTraffic": MessageLookupByLibrary.simpleMessage("总流量"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("Tproxy端口"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("流量统计"),
+    "tsarOfDonations": MessageLookupByLibrary.simpleMessage("赞助之王"),
+    "tt": MessageLookupByLibrary.simpleMessage("TikTok / 梗模式 ⚡"),
     "tun": MessageLookupByLibrary.simpleMessage("虚拟网卡"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
+    "uk": MessageLookupByLibrary.simpleMessage("乌克兰语"),
     "undo": MessageLookupByLibrary.simpleMessage("撤销"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage("去除握手等额外延迟"),
@@ -987,7 +1042,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m32,
+    "urlTip": m33,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
@@ -1007,7 +1062,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m33,
+    "yearsAgo": m34,
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

@@ -35,8 +35,20 @@ class _ConnectionHealthManagerState
         _stopHealthTimer();
         _consecutiveFailures = 0;
         _connectedAt = null;
+        ref.read(currentServerPingProvider.notifier).updatePing(0);
       }
     });
+
+    ref.listenManual(
+      appSettingProvider.select(
+        (s) => (s.liveNotification, s.liveNotificationType),
+      ),
+      (prev, next) {
+        if (ref.read(isStartProvider)) {
+          _startHealthTimer();
+        }
+      },
+    );
 
     if (ref.read(isStartProvider)) {
       _connectedAt = DateTime.now();
@@ -46,10 +58,15 @@ class _ConnectionHealthManagerState
 
   void _startHealthTimer() {
     _healthTimer?.cancel();
-    _healthTimer = Timer.periodic(
-      const Duration(seconds: 15),
-      (_) => _checkConnectionHealth(),
+    final isPingType = ref.read(
+      appSettingProvider.select(
+        (s) => s.liveNotification && s.liveNotificationType == 6,
+      ),
     );
+    final interval = isPingType
+        ? const Duration(seconds: 4)
+        : const Duration(seconds: 15);
+    _healthTimer = Timer.periodic(interval, (_) => _checkConnectionHealth());
   }
 
   void _stopHealthTimer() {
@@ -61,9 +78,16 @@ class _ConnectionHealthManagerState
     if (!mounted || _isChecking) return;
     if (!ref.read(isStartProvider)) return;
 
-    // Give connection at least 10 seconds to stabilize before checking
+    final isPingType = ref.read(
+      appSettingProvider.select(
+        (s) => s.liveNotification && s.liveNotificationType == 6,
+      ),
+    );
+
+    // Give connection at least 4 seconds (or 10s if default) to stabilize
+    final minSeconds = isPingType ? 4 : 10;
     if (_connectedAt != null &&
-        DateTime.now().difference(_connectedAt!).inSeconds < 10) {
+        DateTime.now().difference(_connectedAt!).inSeconds < minSeconds) {
       return;
     }
 
@@ -73,24 +97,26 @@ class _ConnectionHealthManagerState
         appSettingProvider.select((state) => state.testUrl),
       );
       final groups = ref.read(groupsProvider);
-      String proxyName = 'GLOBAL';
-      if (groups.isNotEmpty) {
-        final firstGroup = groups.first;
-        final selected = ref.read(selectedMapProvider)[firstGroup.name];
-        if (selected != null && selected.isNotEmpty) {
-          proxyName = selected;
-        } else if (firstGroup.all.isNotEmpty) {
-          proxyName = firstGroup.all.first.name;
-        }
+      final selectedMap = ref.read(selectedMapProvider);
+      final proxyName = resolveConnectedServerName(
+        groups: groups,
+        selectedMap: selectedMap,
+      );
+
+      if (proxyName.isEmpty) {
+        ref.read(currentServerPingProvider.notifier).updatePing(0);
+        _isChecking = false;
+        return;
       }
 
       final delay = await coreController.getDelay(testUrl, proxyName);
-
       final isAlive = delay != null && (delay.value ?? 0) > 0;
       if (isAlive) {
         _consecutiveFailures = 0;
+        ref.read(currentServerPingProvider.notifier).updatePing(delay.value ?? 0);
       } else {
         _consecutiveFailures++;
+        ref.read(currentServerPingProvider.notifier).updatePing(0);
         commonPrint.log(
           'Health check: proxy $proxyName ping failed (failure #$_consecutiveFailures)',
           logLevel: LogLevel.warning,
@@ -103,7 +129,7 @@ class _ConnectionHealthManagerState
               logLevel: LogLevel.info,
             );
             dialogs.showNotifier(
-              'Сервер перестал отвечать. Переподключение...',
+              currentAppLocalizations.serverNotRespondingReconnecting,
               level: MessageLevel.warning,
             );
             final setupAction = ref.read(setupActionProvider.notifier);

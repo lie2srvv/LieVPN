@@ -1,3 +1,4 @@
+import 'lievpn_settings.dart';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
@@ -56,6 +57,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.other,
       items: [
+        if (system.isAndroid) const _LieVpnSettingsItem(),
         const _SupportItem(),
         const _DonatorsItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
@@ -124,7 +126,7 @@ class _LocaleItem extends ConsumerWidget {
   const _LocaleItem();
 
   String _getLocaleString(BuildContext context, Locale? locale) {
-    if (locale == null) return const Locale('ru').label;
+    if (locale == null) return const Locale('en').label;
     return locale.label;
   }
 
@@ -133,13 +135,13 @@ class _LocaleItem extends ConsumerWidget {
     final locale = ref.watch(
       appSettingProvider.select((state) => state.locale),
     );
-    final currentLocale = getLocaleForString(locale) ?? const Locale('ru');
+    final currentLocale = getLocaleForString(locale) ?? const Locale('en');
     return ListItem<Locale>.options(
       leading: const Icon(Icons.language_outlined),
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: const [Locale('ru'), Locale('en'), Locale('ja')],
+      options: const [Locale('ru'), Locale('en'), Locale('uk'), Locale('be'), Locale('kk'), Locale('ko'), Locale('ja'), Locale('zh_CN'), Locale('tt')],
       onChanged: (Locale? locale) {
         if (locale != null) {
           ref
@@ -318,10 +320,11 @@ class _SupportItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = context.appLocalizations;
     return ListItem(
       leading: const Icon(Icons.support_agent_rounded),
-      title: const Text('Поддержка LieVPN'),
-      subtitle: const Text('Telegram, MAX, Почта'),
+      title: Text(loc.supportLieVpn),
+      subtitle: const Text('Telegram, MAX, Email'),
       trailing: const Icon(Icons.chevron_right),
       onTap: () {
         showModalBottomSheet(
@@ -337,7 +340,7 @@ class _SupportItem extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
-                      'Служба поддержки LieVPN',
+                      loc.supportLieVpnTitle,
                       style: Theme.of(sheetContext).textTheme.titleLarge,
                     ),
                   ),
@@ -354,8 +357,8 @@ class _SupportItem extends StatelessWidget {
                   ),
                   ListItem(
                     leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
-                    title: const Text('Мессенджер MAX'),
-                    subtitle: const Text('Написать в MAX'),
+                    title: Text(loc.supportMessengerMax),
+                    subtitle: Text(loc.supportMessengerMaxSubtitle),
                     trailing: const Icon(Icons.launch),
                     onTap: () {
                       Navigator.pop(sheetContext);
@@ -366,7 +369,7 @@ class _SupportItem extends StatelessWidget {
                   ),
                   ListItem(
                     leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
-                    title: const Text('Электронная почта'),
+                    title: Text(loc.supportEmail),
                     subtitle: const Text('vpn@lie2srvv.com'),
                     trailing: const Icon(Icons.launch),
                     onTap: () {
@@ -425,6 +428,22 @@ class _DonatorsItem extends StatelessWidget {
       widget: const DonatorsView(),
       maxWidth: 400,
       forceFull: false,
+    );
+  }
+}
+
+
+
+class _LieVpnSettingsItem extends StatelessWidget {
+  const _LieVpnSettingsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.open(
+      leading: const Icon(Icons.tune_rounded),
+      title: Text(context.appLocalizations.lieVpnSettings),
+      subtitle: Text(context.appLocalizations.lieVpnSettingsDesc),
+      widget: const LieVpnSettingsView(),
     );
   }
 }

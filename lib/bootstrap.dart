@@ -153,7 +153,7 @@ class Bootstrap {
     }
     container.read(profilesProvider.notifier).setAndReorder(profiles);
     await AppLocalizations.load(
-      getLocaleForString(config.appSettingProps.locale) ?? const Locale('ru'),
+      getLocaleForString(config.appSettingProps.locale) ?? const Locale('en'),
     );
     await window?.init(version, config.windowProps);
     if (system.isAndroid) {
