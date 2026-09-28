@@ -797,5 +797,69 @@
     "description": "liveNotificationTypePing"
   },
   "speedtestDisclaimer": "Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.",
-  "speedtestNoDataError": "Failed to measure speed: no response from server"
+  "speedtestNoDataError": "Failed to measure speed: no response from server",
+  "liveNotificationTypeStreak": "Streak flame",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Fire Streak",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} day} other{{count} days}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Streak is burning! Connected today.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Restore streak",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Restores remaining this month: {count} of 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Streak restored successfully!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "No restores left for this month (maximum 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Fire Streak Rules",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Streak progress is stored locally and will only reset if the app is uninstalled.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• You can restore your broken streak up to 3 times per calendar month.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Awesome! {count} days streak milestone reached!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Your streak is about to go out!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "You haven't connected to LieVPN today. Connect before 00:00 MSK to keep your {count}-day streak!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

@@ -343,6 +343,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             liveNotificationCustomText = state.liveNotificationCustomText,
             currentServerName = state.currentServerName,
             currentServerPing = state.currentServerPing,
+            streakCount = state.streakCount,
         )
     }
 }

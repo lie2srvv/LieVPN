@@ -824,5 +824,69 @@
     }
   },
   "speedtestDisclaimer": "Жылдамдықты тексеру үшінші тарап сервистері арқылы орындалады. Нақты жылдамдық өзгеше болуы немесе қате өлшенуі мүмкін.",
-  "speedtestNoDataError": "Жылдамдықты өлшеу мүмкін болмады: серверден жауап жоқ"
+  "speedtestNoDataError": "Жылдамдықты өлшеу мүмкін болмады: серверден жауап жоқ",
+  "liveNotificationTypeStreak": "Стрик жалыны",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Жалынды стрик",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count} күн}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Жалын жанып тұр! Бүгін қосылым жасалды.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Жалын сөнді. Жағу үшін МСК 00:00-ге дейін қосылыңыз!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Жалынды қалпына келтіру",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Осы айда қалған қалпына келтірулер: {count} / 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Жалын сәтті қалпына келтірілді!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "Осы айдағы қалпына келтіру шегі таусылды (ең көбі 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Жалынды стрик ережелері",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Жалын күн сайын МСК уақыты бойынша 00:00-де (12:00 AM UTC+3) жаңарады.",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Стрик деректері құрылғыда сақталады және тек қолданба өшірілгенде ғана жойылады.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• Күнді өткізіп алған жағдайда, күнтізбелік бір айда стрикті 3 ретке дейін қалпына келтіруге болады.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Керемет! Қатарынан {count} күн стрикке жеттіңіз!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Жалын сөніп қалуға жақын!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "Бүгін LieVPN-ге әлі қосылмадыңыз. {count} күндік стрикті сақтау үшін МСК 00:00-ге дейін қосылыңыз!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

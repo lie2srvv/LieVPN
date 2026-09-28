@@ -132,6 +132,7 @@ internal class NotificationModule(
                     5 -> CountryHelper.getChipServerText(params.currentServerName)
                     6 -> CountryHelper.getChipPingText(params.currentServerName, params.currentServerPing)
                     7 -> params.liveNotificationCustomText.ifEmpty { "LieVPN" }.take(8)
+                    8 -> "🔥 ${params.streakCount}".take(8)
                     else -> userTitle.take(8)
                 }
 

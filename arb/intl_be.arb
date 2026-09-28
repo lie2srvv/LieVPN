@@ -824,5 +824,69 @@
     }
   },
   "speedtestDisclaimer": "Праверка хуткасці выконваецца праз староннія сэрвісы. Рэальная хуткасць можа адрознівацца або быць вымерана недакладна.",
-  "speedtestNoDataError": "Не ўдалося вымераць хуткасць: няма адказу ад сервера"
+  "speedtestNoDataError": "Не ўдалося вымераць хуткасць: няма адказу ад сервера",
+  "liveNotificationTypeStreak": "Агеньчык стрыку",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Вогненны стрык",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} дзень} few{{count} дні} many{{count} дзён} other{{count} дзён}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Агеньчык гарыць! Падключэнне сёння выканана.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Агеньчык патух. Падключыцеся да 00:00 МСК, каб запаліць яго!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Аднавіць агеньчык",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Засталося аднаўленняў у гэтым месяцы: {count} з 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Агеньчык паспяхова адноўлены!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "Ліміт аднаўленняў на гэты месяц вычарпаны (максімум 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Правілы вогненнага стрыку",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Агеньчык абнаўляецца штодня ў 00:00 па МСК (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Агеньчык захоўваецца лакальна на вашай прыладзе і выдаліцца толькі пры выдаленні праграмы.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• За адзін каляндарны месяц стрык можна аднавіць да 3 разоў у выпадку пропуску дня.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Ура! {count} дзён стрыку запар!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Агеньчык хутка патухне!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "Вы яшчэ не заходзілі ў LieVPN сёння. Падключыцеся да 00:00 МСК, каб захаваць стрык у {count} дзён!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

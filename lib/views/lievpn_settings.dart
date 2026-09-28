@@ -16,6 +16,7 @@ String _getTypeLabel(BuildContext context, int type) {
     5 => l.liveNotificationTypeServer,
     6 => l.liveNotificationTypePing,
     7 => l.liveNotificationTypeCustom,
+    8 => l.liveNotificationTypeStreak,
     _ => l.liveNotificationTypeUsername,
   };
 }
@@ -56,7 +57,7 @@ class LieVpnSettingsView extends ConsumerWidget {
             title: Text(context.appLocalizations.liveNotificationType),
             subtitle: Text(_getTypeLabel(context, liveNotificationType)),
             dialogTitle: context.appLocalizations.liveNotificationType,
-            options: const [0, 1, 2, 3, 4, 5, 6, 7],
+            options: const [0, 1, 2, 3, 4, 5, 6, 7, 8],
             value: liveNotificationType,
             textBuilder: (type) => _getTypeLabel(context, type),
             onChanged: (val) {

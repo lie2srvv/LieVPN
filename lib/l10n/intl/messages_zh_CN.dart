@@ -87,11 +87,20 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up} / ${total} 节点正常";
 
-  static String m32(time) => "订阅将在 ${time} 后过期";
+  static String m32(count) => "${Intl.plural(count, other: '${count}天')}";
 
-  static String m33(label) => "${label}必须为URL";
+  static String m33(count) => "太棒了！已达成连续 ${count} 天连胜里程碑！";
 
-  static String m34(count) => "${count} 年前";
+  static String m34(count) =>
+      "您今天尚未连接 LieVPN。请在 00:00 MSK 之前连接以保持您的 ${count} 天连胜！";
+
+  static String m35(count) => "本月剩余恢复次数: ${count} / 3";
+
+  static String m36(time) => "订阅将在 ${time} 后过期";
+
+  static String m37(label) => "${label}必须为URL";
+
+  static String m38(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -498,6 +507,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "下载速度",
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage("上传速度"),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage("连胜火苗"),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
     "liveNotificationTypeUsername": MessageLookupByLibrary.simpleMessage("用户名"),
     "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
@@ -937,6 +947,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("已更新"),
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止VPN..."),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage("火苗正在燃烧！今日已连接。"),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("火焰连胜"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "火苗熄灭了。在莫斯科时间00:00（UTC+3 12:00 AM）前连接即可点亮！",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "本月恢复次数已达上限（最多3次）。",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 连胜火苗即将熄灭！",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage("恢复连胜"),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage("连胜已成功恢复！"),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• 若遗漏连接，每个自然月内最多可恢复连胜3次。",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• 连胜记录保存在本地设备中，仅在卸载应用时清除。",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• 连胜于每日莫斯科时间00:00（12:00 AM UTC+3）重置更新。",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage("火焰连胜规则"),
     "style": MessageLookupByLibrary.simpleMessage("风格"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "订阅还有 1 天到期。如果您已续费，请更新订阅。",
@@ -963,7 +1000,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
     ),
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage("订阅已过期"),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "在剪贴板中找到订阅",
     ),
@@ -1046,7 +1083,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
@@ -1066,7 +1103,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

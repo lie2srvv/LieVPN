@@ -26,6 +26,7 @@ _SharedState _$SharedStateFromJson(Map<String, dynamic> json) => _SharedState(
       json['liveNotificationCustomText'] as String? ?? '',
   currentServerName: json['currentServerName'] as String? ?? '',
   currentServerPing: (json['currentServerPing'] as num?)?.toInt() ?? 0,
+  streakCount: (json['streakCount'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
@@ -44,4 +45,5 @@ Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
       'liveNotificationCustomText': instance.liveNotificationCustomText,
       'currentServerName': instance.currentServerName,
       'currentServerPing': instance.currentServerPing,
+      'streakCount': instance.streakCount,
     };

@@ -828,5 +828,69 @@
   "sortProxies": "Сортування вузлів",
   "testUrlDesc": "Адреса для перевірки доступності",
   "speedtestDisclaimer": "Перевірка швидкості виконується через сторонні сервіси. Реальна швидкість може відрізнятися або бути виміряна неточно.",
-  "speedtestNoDataError": "Не вдалося виміряти швидкість: немає відповіді від сервера"
+  "speedtestNoDataError": "Не вдалося виміряти швидкість: немає відповіді від сервера",
+  "liveNotificationTypeStreak": "Вогник стріку",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Вогняний стрік",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} день} few{{count} дні} many{{count} днів} other{{count} днів}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Вогник палає! Підключення сьогодні виконано.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Вогник згас. Підключіться до 00:00 МСК, щоб запалити його!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Відновити вогник",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Залишилося відновлень цього місяця: {count} з 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Вогник успішно відновлено!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "Ліміт відновлень на цей місяць вичерпано (максимум 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Правила вогняного стріку",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Вогник оновлюється щодня о 00:00 за МСК (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Вогник зберігається локально на вашому пристрої і видалиться лише при видаленні застосунку.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• За один календарний місяць стрік можна відновити до 3 разів у разі пропуску дня.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Ура! {count} днів стріку поспіль!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Вогник скоро згасне!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "Ви ще не заходили в LieVPN сьогодні. Підключіться до 00:00 МСК, щоб зберегти стрік у {count} дн.!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

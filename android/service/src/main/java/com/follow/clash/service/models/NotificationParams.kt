@@ -10,4 +10,5 @@ data class NotificationParams(
     val liveNotificationCustomText: String = "",
     val currentServerName: String = "",
     val currentServerPing: Int = 0,
+    val streakCount: Int = 0,
 )

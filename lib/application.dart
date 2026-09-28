@@ -91,6 +91,7 @@ class ApplicationState extends ConsumerState<Application> {
         ),
       );
       unawaited(AppUpdateManager.autoCheckUpdate(ref));
+      unawaited(StreakManager.instance.init());
       _initLink();
       unawaited(app?.initShortcuts());
     });

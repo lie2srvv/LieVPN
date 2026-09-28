@@ -87,11 +87,20 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up}/${total} 台が稼働中";
 
-  static String m32(time) => "サブスクリプションは${time}で期限切れになります";
+  static String m32(count) => "${Intl.plural(count, other: '${count}日')}";
 
-  static String m33(label) => "${label}はURLである必要があります";
+  static String m33(count) => "おめでとうございます！${count}日連続ストリーク達成！";
 
-  static String m34(count) => "${count} 年前";
+  static String m34(count) =>
+      "本日まだLieVPNに接続していません。${count}日連続記録を維持するため、00:00 MSKまでに接続してください！";
+
+  static String m35(count) => "今月の残り復元回数: ${count} / 3";
+
+  static String m36(time) => "サブスクリプションは${time}で期限切れになります";
+
+  static String m37(label) => "${label}はURLである必要があります";
+
+  static String m38(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -579,6 +588,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "アップロード速度",
+    ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "ストリークの炎",
     ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "使用データ量",
@@ -1095,6 +1107,37 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("更新済み"),
     "stop": MessageLookupByLibrary.simpleMessage("停止"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPNを停止しています..."),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "炎が燃えています！本日接続完了。",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("ファイアーストリーク"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "炎が消えています。モスクワ時間00:00（12:00 AM UTC+3）までに接続して点火しましょう！",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "今月の復元上限（最大3回）に達しました。",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 ストリークの炎が消えそうです！",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage("ストリークを復元"),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "ストリークを復元しました！",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• 日付を逃した場合でも、1か月に最大3回までストリークを復元できます。",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• ストリークは端末内に保存され、アプリをアンインストールした場合のみ削除されます。",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• ストリークは毎日モスクワ時間00:00（12:00 AM UTC+3）にリセットされます。",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage("ファイアーストリークのルール"),
     "style": MessageLookupByLibrary.simpleMessage("スタイル"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションの期限まで残り1日です。更新済みの場合はサブスクリプションを更新してください。",
@@ -1125,7 +1168,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションの有効期限が切れました",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "クリップボードにサブスクリプションが見つかりました",
     ),
@@ -1224,7 +1267,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URLからプロファイルを取得します"),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Hostsを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムのHostsを使用"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("使用済みトラフィック"),
@@ -1244,7 +1287,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPNの再起動後に有効になります"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

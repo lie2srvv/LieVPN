@@ -797,5 +797,69 @@
     "description": "liveNotificationTypePing"
   },
   "speedtestDisclaimer": "测速通过第三方服务进行。实际速度可能存在差异或测量不准确。",
-  "speedtestNoDataError": "无法测速：服务器无响应"
+  "speedtestNoDataError": "无法测速：服务器无响应",
+  "liveNotificationTypeStreak": "连胜火苗",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "火焰连胜",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count}天}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "火苗正在燃烧！今日已连接。",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "火苗熄灭了。在莫斯科时间00:00（UTC+3 12:00 AM）前连接即可点亮！",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "恢复连胜",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "本月剩余恢复次数: {count} / 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "连胜已成功恢复！",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "本月恢复次数已达上限（最多3次）。",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "火焰连胜规则",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• 连胜于每日莫斯科时间00:00（12:00 AM UTC+3）重置更新。",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• 连胜记录保存在本地设备中，仅在卸载应用时清除。",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• 若遗漏连接，每个自然月内最多可恢复连胜3次。",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "太棒了！已达成连续 {count} 天连胜里程碑！",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 连胜火苗即将熄灭！",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "您今天尚未连接 LieVPN。请在 00:00 MSK 之前连接以保持您的 {count} 天连胜！",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

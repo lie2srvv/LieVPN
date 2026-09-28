@@ -16,6 +16,7 @@ data class SharedState(
     val liveNotificationCustomText: String = "",
     val currentServerName: String = "",
     val currentServerPing: Int = 0,
+    val streakCount: Int = 0,
     val vpnOptions: VpnOptions? = null,
     val setupParams: SetupParams? = null,
 )

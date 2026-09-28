@@ -98,11 +98,20 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up} of ${total} operational";
 
-  static String m32(time) => "구독이 ${time} 후에 만료됩니다";
+  static String m32(count) => "${Intl.plural(count, other: '${count}일')}";
 
-  static String m33(label) => "${label} must be a URL";
+  static String m33(count) => "축하합니다! ${count}일 연속 스트릭 달성!";
 
   static String m34(count) =>
+      "오늘 아직 LieVPN에 연결하지 않았습니다. ${count}일 연속 스트릭을 유지하려면 00:00 MSK 전에 연결하세요!";
+
+  static String m35(count) => "이번 달 남은 복구 횟수: ${count}/3";
+
+  static String m36(time) => "구독이 ${time} 후에 만료됩니다";
+
+  static String m37(label) => "${label} must be a URL";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -690,6 +699,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "업로드 속도",
     ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage("연속 불꽃"),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "사용된 데이터",
     ),
@@ -1285,6 +1295,37 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Updated"),
     "stop": MessageLookupByLibrary.simpleMessage("정지"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPN 정지"),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "불꽃이 타오르고 있습니다! 오늘 연결 완료.",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("연속 스트릭"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "불꽃이 꺼졌습니다. 모스크바 시간 00:00(UTC+3 12:00 AM) 전에 연결하여 켜세요!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "이번 달 복구 한도를 모두 사용했습니다(최대 3회).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 연속 불꽃이 곧 꺼집니다!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage("스트릭 복구"),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "스트릭이 성공적으로 복구되었습니다!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• 하루를 놓쳤을 경우 한 달에 최대 3회까지 스트릭을 복구할 수 있습니다.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• 스트릭은 기기에 로컬로 저장되며 앱을 삭제할 때만 초기화됩니다.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• 스트릭은 매일 모스크바 시간 00:00(12:00 AM UTC+3)에 갱신됩니다.",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage("불꽃 스트릭 규칙"),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Subscription expires in 1 day. If you have already renewed, please update your subscription.",
@@ -1319,7 +1360,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "구독이 만료되었습니다",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Subscription found in clipboard",
     ),
@@ -1434,7 +1475,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain a profile from a URL",
     ),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
@@ -1458,7 +1499,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("简体中文"),
   };
 }

@@ -797,5 +797,69 @@
     "description": "liveNotificationTypePing"
   },
   "speedtestDisclaimer": "Проверка скорости выполняется через сторонние сервисы. Реальная скорость может отличаться или быть измерена неточно.",
-  "speedtestNoDataError": "Не удалось измерить скорость: нет ответа от сервера"
+  "speedtestNoDataError": "Не удалось измерить скорость: нет ответа от сервера",
+  "liveNotificationTypeStreak": "Огонёк стрика",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Огненный стрик",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дней}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Огонёк горит! Подключение сегодня выполнено.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Огонёк погас. Подключитесь до 00:00 МСК, чтобы зажечь его!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Восстановить огонёк",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Осталось восстановлений в этом месяце: {count} из 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Огонёк успешно восстановлен!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "Лимит восстановлений на этот месяц исчерпан (максимум 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Правила огненного стрика",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Огонёк обновляется ежедневно в 00:00 по МСК (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Огонёк хранится локально на вашем устройстве и удалится только при удалении приложения.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• За один календарный месяц стрик можно восстановить до 3 раз в случае пропуска дня.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Ура! {count} дней стрика подряд!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Огонёк скоро погаснет!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "Вы ещё не заходили в LieVPN сегодня. Подключитесь до 00:00 МСК, чтобы сохранить стрик в {count} дн.!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'widget_registry.dart';
 import 'widgets/core_status_button.dart';
-import 'widgets/start_button.dart';
+import 'widgets/dashboard_flame_fab.dart';
 import 'widgets/subscription_status_card.dart';
 import 'widgets/server_status_card.dart';
 
@@ -210,7 +210,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       (isEdit) => CommonScaffold(
         title: context.appLocalizations.dashboardLieVpn,
         actions: _buildActions(isEdit),
-        floatingActionButton: const StartButton(),
+        floatingActionButton: const DashboardFlameFab(),
         body: Align(
           alignment: Alignment.topCenter,
           child: Builder(

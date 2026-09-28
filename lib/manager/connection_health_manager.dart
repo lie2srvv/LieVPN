@@ -1,3 +1,4 @@
+import 'streak_manager.dart';
 import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
@@ -114,6 +115,7 @@ class _ConnectionHealthManagerState
       if (isAlive) {
         _consecutiveFailures = 0;
         ref.read(currentServerPingProvider.notifier).updatePing(delay.value ?? 0);
+        unawaited(StreakManager.instance.onSuccessfulConnection());
       } else {
         _consecutiveFailures++;
         ref.read(currentServerPingProvider.notifier).updatePing(0);

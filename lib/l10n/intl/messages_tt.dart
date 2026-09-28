@@ -98,11 +98,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "Работают ${up} из ${total}";
 
-  static String m32(time) => "Сабке жить осталось жить ${time}";
+  static String m32(count) =>
+      "${Intl.plural(count, one: '${count} день', few: '${count} дня', many: '${count} дней', other: '${count} дней')}";
 
-  static String m33(label) => "Закинь нормальный валидный URL";
+  static String m33(count) =>
+      "Лютейший флекс! ${count} дней подряд на кондициях!";
 
   static String m34(count) =>
+      "Ты сегодня ещё не врубал LieVPN. Залетай до 00:00 МСК на кондициях, а то стрик в ${count} дн. сгорит к чертям!";
+
+  static String m35(count) => "Осталось ресов в этом месяце: ${count} из 3";
+
+  static String m36(time) => "Сабке жить осталось жить ${time}";
+
+  static String m37(label) => "Закинь нормальный валидный URL";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -736,6 +747,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "Скорость флекса (Upload)",
     ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "Огонёчек стрика",
+    ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "Слитый трафик (гиги)",
     ),
@@ -1311,7 +1325,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Чекнуть ризз и замерить кондиции",
     ),
     "speedtestDisclaimer": MessageLookupByLibrary.simpleMessage(
-      "Тизлекне тикшерү өченче як сервислары аша башкарыла. Чын тизлек үзгә булырга яки төгәл үлчәнмәскә мөмкин.",
+      "Замеры через сторонние серваки, инфа не 100%, скорость может просесть или наврать на кондициях.",
     ),
     "speedtestDownload": MessageLookupByLibrary.simpleMessage(
       "Скачка (Download)",
@@ -1319,7 +1333,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "speedtestError": MessageLookupByLibrary.simpleMessage("Кринж соединения"),
     "speedtestGaugeUnit": MessageLookupByLibrary.simpleMessage("МБИТ/С"),
     "speedtestNoDataError": MessageLookupByLibrary.simpleMessage(
-      "Тизлекне үлчәп булмады: сервердан җавап юк",
+      "Тюбик не ответил: сервак ушёл в тильт, скорость по нулям",
     ),
     "speedtestPing": MessageLookupByLibrary.simpleMessage("Пинг"),
     "speedtestRunAgain": MessageLookupByLibrary.simpleMessage(
@@ -1391,6 +1405,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "stopVpn": MessageLookupByLibrary.simpleMessage(
       "Потушить LieVPN (ушел в тильт)",
     ),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "Огонёчек горит, чисто гигачад на чиле!",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage(
+      "Огненный стрик на кондициях",
+    ),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "Огонёк потух, не будь тюбиком! Вруби VPN до 00:00 МСК, чтобы зажечь!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "Все ресы на этот месяц профуканы (макс 3 шт).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 Огонёчек на грани кринжа!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage(
+      "Реснуть огонёчек",
+    ),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "Огонёк воскрес! Красава, магнул систему!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• За месяц можно ровно 3 раза реснуть огонёк, если поймал тильт и забыл зайти.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• Стрик сейвится чисто на твоей трубке и удалится, только если снести приложуху.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• Огонёк обновляется строго в 00:00 по МСК (12:00 AM UTC+3).",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage("База по огонёчку"),
     "style": MessageLookupByLibrary.simpleMessage("Стиль"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Остался 1 день. Если вы уже продлили, то обновите сабку.",
@@ -1425,7 +1474,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Сабка сдулась, пора донатить",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Найдена сабка в буфере обмена",
     ),
@@ -1554,7 +1603,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("Турбо-тяга яппинга"),
     "url": MessageLookupByLibrary.simpleMessage("URL ссылка"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("Получить конфиг по URL"),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системный hosts",
@@ -1584,7 +1633,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("简体中文"),
   };
 }

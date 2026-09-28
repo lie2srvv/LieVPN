@@ -98,11 +98,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "Рабвідают ${up} із ${total}";
 
-  static String m32(time) => "Підпізка закінчуєтьзя через ${time}";
+  static String m32(count) =>
+      "${Intl.plural(count, one: '${count} день', few: '${count} дні', many: '${count} днів', other: '${count} днів')}";
 
-  static String m33(label) => "Введіть коректну адресу";
+  static String m33(count) => "Ура! ${count} днів стріку поспіль!";
 
   static String m34(count) =>
+      "Ви ще не заходили в LieVPN сьогодні. Підключіться до 00:00 МСК, щоб зберегти стрік у ${count} дн.!";
+
+  static String m35(count) =>
+      "Залишилося відновлень цього місяця: ${count} з 3";
+
+  static String m36(time) => "Підпізка закінчуєтьзя через ${time}";
+
+  static String m37(label) => "Введіть коректну адресу";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '${count} рік назад', few: '${count} ріка назад', many: '${count} років назад', other: '${count} ріка назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -729,6 +740,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "Швидкість віддачі (Upload)",
+    ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "Вогник стріку",
     ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "Використано даних",
@@ -1379,6 +1393,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Обновлено"),
     "stop": MessageLookupByLibrary.simpleMessage("Відключити"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Зупинити VPN"),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "Вогник палає! Підключення сьогодні виконано.",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("Вогняний стрік"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "Вогник згас. Підключіться до 00:00 МСК, щоб запалити його!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "Ліміт відновлень на цей місяць вичерпано (максимум 3).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 Вогник скоро згасне!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage(
+      "Відновити вогник",
+    ),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "Вогник успішно відновлено!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• За один календарний місяць стрік можна відновити до 3 разів у разі пропуску дня.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• Вогник зберігається локально на вашому пристрої і видалиться лише при видаленні застосунку.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• Вогник оновлюється щодня о 00:00 за МСК (12:00 AM UTC+3).",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage(
+      "Правила вогняного стріку",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("Зтіль"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Озталзя 1 день. Езлі вы уже продлабо, то обновіте підпізку.",
@@ -1413,7 +1462,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Термін дії підписки закінчився",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Найдена підпізка в буфере обмена",
     ),
@@ -1536,7 +1585,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("Відвантаження"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("Получіть профіль по URL"),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Вікорізтовуваті hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Вікорізтовуваті зізтемній hosts",
@@ -1566,7 +1615,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режім белого зпізка",
     ),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("简体中文"),
   };
 }

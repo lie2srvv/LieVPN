@@ -207,6 +207,7 @@ SharedState sharedState(Ref ref) {
       selectedMap: selectedMap,
     ),
     currentServerPing: ref.watch(currentServerPingProvider),
+    streakCount: StreakManager.instance.streakNotifier.value.count,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),

@@ -882,6 +882,70 @@
   "supportFaq": "База ответов на тупые вопросы",
   "supportTelegram": "Телега поддержки",
   "appDesc": "Ультимативный VPN, чтоб могать цензуру и быть на чиле",
-  "speedtestDisclaimer": "Тизлекне тикшерү өченче як сервислары аша башкарыла. Чын тизлек үзгә булырга яки төгәл үлчәнмәскә мөмкин.",
-  "speedtestNoDataError": "Тизлекне үлчәп булмады: сервердан җавап юк"
+  "speedtestDisclaimer": "Замеры через сторонние серваки, инфа не 100%, скорость может просесть или наврать на кондициях.",
+  "speedtestNoDataError": "Тюбик не ответил: сервак ушёл в тильт, скорость по нулям",
+  "liveNotificationTypeStreak": "Огонёчек стрика",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Огненный стрик на кондициях",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дней}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Огонёчек горит, чисто гигачад на чиле!",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Огонёк потух, не будь тюбиком! Вруби VPN до 00:00 МСК, чтобы зажечь!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Реснуть огонёчек",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Осталось ресов в этом месяце: {count} из 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Огонёк воскрес! Красава, магнул систему!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "Все ресы на этот месяц профуканы (макс 3 шт).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "База по огонёчку",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Огонёк обновляется строго в 00:00 по МСК (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Стрик сейвится чисто на твоей трубке и удалится, только если снести приложуху.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• За месяц можно ровно 3 раза реснуть огонёк, если поймал тильт и забыл зайти.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Лютейший флекс! {count} дней подряд на кондициях!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Огонёчек на грани кринжа!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "Ты сегодня ещё не врубал LieVPN. Залетай до 00:00 МСК на кондициях, а то стрик в {count} дн. сгорит к чертям!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

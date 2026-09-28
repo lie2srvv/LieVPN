@@ -98,11 +98,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "Работают ${up} из ${total}";
 
-  static String m32(time) => "Подписка заканчивается через ${time}";
+  static String m32(count) =>
+      "${Intl.plural(count, one: '${count} день', few: '${count} дня', many: '${count} дней', other: '${count} дней')}";
 
-  static String m33(label) => "Значение «${label}» должно быть URL";
+  static String m33(count) => "Ура! ${count} дней стрика подряд!";
 
   static String m34(count) =>
+      "Вы ещё не заходили в LieVPN сегодня. Подключитесь до 00:00 МСК, чтобы сохранить стрик в ${count} дн.!";
+
+  static String m35(count) =>
+      "Осталось восстановлений в этом месяце: ${count} из 3";
+
+  static String m36(time) => "Подписка заканчивается через ${time}";
+
+  static String m37(label) => "Значение «${label}» должно быть URL";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -719,6 +730,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "Скорость отдачи (Upload)",
+    ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "Огонёк стрика",
     ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "Использовано данных",
@@ -1365,6 +1379,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Обновлено"),
     "stop": MessageLookupByLibrary.simpleMessage("Стоп"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Остановка VPN..."),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "Огонёк горит! Подключение сегодня выполнено.",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("Огненный стрик"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "Огонёк погас. Подключитесь до 00:00 МСК, чтобы зажечь его!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "Лимит восстановлений на этот месяц исчерпан (максимум 3).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 Огонёк скоро погаснет!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage(
+      "Восстановить огонёк",
+    ),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "Огонёк успешно восстановлен!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• За один календарный месяц стрик можно восстановить до 3 раз в случае пропуска дня.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• Огонёк хранится локально на вашем устройстве и удалится только при удалении приложения.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• Огонёк обновляется ежедневно в 00:00 по МСК (12:00 AM UTC+3).",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage(
+      "Правила огненного стрика",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("Стиль"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Остался 1 день. Если вы уже продлили, то обновите подписку.",
@@ -1399,7 +1448,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Срок действия подписки истек",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Найдена подписка в буфере обмена",
     ),
@@ -1522,7 +1571,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("Отдача"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("Получить профиль по URL"),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системный hosts",
@@ -1554,7 +1603,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("Упрощённый китайский"),
   };
 }

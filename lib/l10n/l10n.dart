@@ -6339,6 +6339,168 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Streak flame`
+  String get liveNotificationTypeStreak {
+    return Intl.message(
+      'Streak flame',
+      name: 'liveNotificationTypeStreak',
+      desc: 'liveNotificationTypeStreak',
+      args: [],
+    );
+  }
+
+  /// `Fire Streak`
+  String get streakFlameTitle {
+    return Intl.message(
+      'Fire Streak',
+      name: 'streakFlameTitle',
+      desc: 'streakFlameTitle',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, one{{count} day} other{{count} days}}`
+  String streakDaysCount(num count) {
+    return Intl.plural(
+      count,
+      one: '$count day',
+      other: '$count days',
+      name: 'streakDaysCount',
+      desc: 'streakDaysCount',
+      args: [count],
+    );
+  }
+
+  /// `Streak is burning! Connected today.`
+  String get streakActiveToday {
+    return Intl.message(
+      'Streak is burning! Connected today.',
+      name: 'streakActiveToday',
+      desc: 'streakActiveToday',
+      args: [],
+    );
+  }
+
+  /// `Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!`
+  String get streakInactiveToday {
+    return Intl.message(
+      'Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!',
+      name: 'streakInactiveToday',
+      desc: 'streakInactiveToday',
+      args: [],
+    );
+  }
+
+  /// `Restore streak`
+  String get streakRestoreButton {
+    return Intl.message(
+      'Restore streak',
+      name: 'streakRestoreButton',
+      desc: 'streakRestoreButton',
+      args: [],
+    );
+  }
+
+  /// `Restores remaining this month: {count} of 3`
+  String streakRestoresLeft(Object count) {
+    return Intl.message(
+      'Restores remaining this month: $count of 3',
+      name: 'streakRestoresLeft',
+      desc: 'streakRestoresLeft',
+      args: [count],
+    );
+  }
+
+  /// `Streak restored successfully!`
+  String get streakRestoredSuccess {
+    return Intl.message(
+      'Streak restored successfully!',
+      name: 'streakRestoredSuccess',
+      desc: 'streakRestoredSuccess',
+      args: [],
+    );
+  }
+
+  /// `No restores left for this month (maximum 3).`
+  String get streakNoRestoresLeft {
+    return Intl.message(
+      'No restores left for this month (maximum 3).',
+      name: 'streakNoRestoresLeft',
+      desc: 'streakNoRestoresLeft',
+      args: [],
+    );
+  }
+
+  /// `Fire Streak Rules`
+  String get streakRuleTitle {
+    return Intl.message(
+      'Fire Streak Rules',
+      name: 'streakRuleTitle',
+      desc: 'streakRuleTitle',
+      args: [],
+    );
+  }
+
+  /// `• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).`
+  String get streakRuleTime {
+    return Intl.message(
+      '• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).',
+      name: 'streakRuleTime',
+      desc: 'streakRuleTime',
+      args: [],
+    );
+  }
+
+  /// `• Streak progress is stored locally and will only reset if the app is uninstalled.`
+  String get streakRuleStorage {
+    return Intl.message(
+      '• Streak progress is stored locally and will only reset if the app is uninstalled.',
+      name: 'streakRuleStorage',
+      desc: 'streakRuleStorage',
+      args: [],
+    );
+  }
+
+  /// `• You can restore your broken streak up to 3 times per calendar month.`
+  String get streakRuleRestore {
+    return Intl.message(
+      '• You can restore your broken streak up to 3 times per calendar month.',
+      name: 'streakRuleRestore',
+      desc: 'streakRuleRestore',
+      args: [],
+    );
+  }
+
+  /// `Awesome! {count} days streak milestone reached!`
+  String streakMilestoneCongrats(Object count) {
+    return Intl.message(
+      'Awesome! $count days streak milestone reached!',
+      name: 'streakMilestoneCongrats',
+      desc: 'streakMilestoneCongrats',
+      args: [count],
+    );
+  }
+
+  /// `🔥 Your streak is about to go out!`
+  String get streakNotificationTitle {
+    return Intl.message(
+      '🔥 Your streak is about to go out!',
+      name: 'streakNotificationTitle',
+      desc: 'streakNotificationTitle',
+      args: [],
+    );
+  }
+
+  /// `You haven't connected to LieVPN today. Connect before 00:00 MSK to keep your {count}-day streak!`
+  String streakNotificationBody(Object count) {
+    return Intl.message(
+      'You haven\'t connected to LieVPN today. Connect before 00:00 MSK to keep your $count-day streak!',
+      name: 'streakNotificationBody',
+      desc: 'streakNotificationBody',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -797,5 +797,69 @@
     "description": "liveNotificationTypePing"
   },
   "speedtestDisclaimer": "速度テストはサードパーティのサービスを利用して行われます。実際の速度とは異なる場合や正確に測定されない場合があります。",
-  "speedtestNoDataError": "速度を測定できませんでした：サーバーからの応答がありません"
+  "speedtestNoDataError": "速度を測定できませんでした：サーバーからの応答がありません",
+  "liveNotificationTypeStreak": "ストリークの炎",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "ファイアーストリーク",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count}日}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "炎が燃えています！本日接続完了。",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "炎が消えています。モスクワ時間00:00（12:00 AM UTC+3）までに接続して点火しましょう！",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "ストリークを復元",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "今月の残り復元回数: {count} / 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "ストリークを復元しました！",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "今月の復元上限（最大3回）に達しました。",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "ファイアーストリークのルール",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• ストリークは毎日モスクワ時間00:00（12:00 AM UTC+3）にリセットされます。",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• ストリークは端末内に保存され、アプリをアンインストールした場合のみ削除されます。",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• 日付を逃した場合でも、1か月に最大3回までストリークを復元できます。",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "おめでとうございます！{count}日連続ストリーク達成！",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 ストリークの炎が消えそうです！",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "本日まだLieVPNに接続していません。{count}日連続記録を維持するため、00:00 MSKまでに接続してください！",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

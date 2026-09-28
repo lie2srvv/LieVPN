@@ -325,6 +325,7 @@ abstract class SharedState with _$SharedState {
     @Default('') String liveNotificationCustomText,
     @Default('') String currentServerName,
     @Default(0) int currentServerPing,
+    @Default(0) int streakCount,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>

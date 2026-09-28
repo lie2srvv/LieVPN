@@ -98,11 +98,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "Раббастапают ${up} жәнез ${total}";
 
-  static String m32(time) => "Жазылым ${time} кейін аяқталады";
+  static String m32(count) => "${Intl.plural(count, other: '${count} күн')}";
 
-  static String m33(label) => "Дұрыс мекенжайды енгізіңіз";
+  static String m33(count) =>
+      "Керемет! Қатарынан ${count} күн стрикке жеттіңіз!";
 
   static String m34(count) =>
+      "Бүгін LieVPN-ге әлі қосылмадыңыз. ${count} күндік стрикті сақтау үшін МСК 00:00-ге дейін қосылыңыз!";
+
+  static String m35(count) =>
+      "Осы айда қалған қалпына келтірулер: ${count} / 3";
+
+  static String m36(time) => "Жазылым ${time} кейін аяқталады";
+
+  static String m37(label) => "Дұрыс мекенжайды енгізіңіз";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -779,6 +790,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "Жүктеу жылдамдығы (Upload)",
+    ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "Стрик жалыны",
     ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "Қолданылған деректер",
@@ -1459,6 +1473,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Обновлено"),
     "stop": MessageLookupByLibrary.simpleMessage("Ажырату"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPN тоқтату"),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "Жалын жанып тұр! Бүгін қосылым жасалды.",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("Жалынды стрик"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "Жалын сөнді. Жағу үшін МСК 00:00-ге дейін қосылыңыз!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "Осы айдағы қалпына келтіру шегі таусылды (ең көбі 3).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 Жалын сөніп қалуға жақын!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage(
+      "Жалынды қалпына келтіру",
+    ),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "Жалын сәтті қалпына келтірілді!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• Күнді өткізіп алған жағдайда, күнтізбелік бір айда стрикті 3 ретке дейін қалпына келтіруге болады.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• Стрик деректері құрылғыда сақталады және тек қолданба өшірілгенде ғана жойылады.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• Жалын күн сайын МСК уақыты бойынша 00:00-де (12:00 AM UTC+3) жаңарады.",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage(
+      "Жалынды стрик ережелері",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("Стжәнель"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Остался 1 день. Еслжәне вы уже продлнемесе, то обновжәнете жазылымды.",
@@ -1491,7 +1540,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Жазылым мерзімі аяқталды",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Найдена жазылым в буфере обмена",
     ),
@@ -1624,7 +1673,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Получжәнеть профжәнель по URL",
     ),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Қолдану hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Қолдану жүйелік hosts",
@@ -1654,7 +1703,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режжәнем белого спжәнеска",
     ),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("简体中文"),
   };
 }

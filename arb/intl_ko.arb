@@ -824,5 +824,69 @@
     }
   },
   "speedtestDisclaimer": "속도 측정은 서드파티 서비스를 통해 진행됩니다. 실제 속도는 다를 수 있으며 측정 결과가 부정확할 수 있습니다.",
-  "speedtestNoDataError": "속도를 측정하지 못했습니다: 서버 응답 없음"
+  "speedtestNoDataError": "속도를 측정하지 못했습니다: 서버 응답 없음",
+  "liveNotificationTypeStreak": "연속 불꽃",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "연속 스트릭",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count}일}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "불꽃이 타오르고 있습니다! 오늘 연결 완료.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "불꽃이 꺼졌습니다. 모스크바 시간 00:00(UTC+3 12:00 AM) 전에 연결하여 켜세요!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "스트릭 복구",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "이번 달 남은 복구 횟수: {count}/3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "스트릭이 성공적으로 복구되었습니다!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "이번 달 복구 한도를 모두 사용했습니다(최대 3회).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "불꽃 스트릭 규칙",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• 스트릭은 매일 모스크바 시간 00:00(12:00 AM UTC+3)에 갱신됩니다.",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• 스트릭은 기기에 로컬로 저장되며 앱을 삭제할 때만 초기화됩니다.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• 하루를 놓쳤을 경우 한 달에 최대 3회까지 스트릭을 복구할 수 있습니다.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "축하합니다! {count}일 연속 스트릭 달성!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 연속 불꽃이 곧 꺼집니다!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "오늘 아직 LieVPN에 연결하지 않았습니다. {count}일 연속 스트릭을 유지하려면 00:00 MSK 전에 연결하세요!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

@@ -98,11 +98,22 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m31(up, total) => "${up} of ${total} operational";
 
-  static String m32(time) => "Subscription expires in ${time}";
+  static String m32(count) =>
+      "${Intl.plural(count, one: '${count} day', other: '${count} days')}";
 
-  static String m33(label) => "${label} must be a URL";
+  static String m33(count) =>
+      "Awesome! ${count} days streak milestone reached!";
 
   static String m34(count) =>
+      "You haven\'t connected to LieVPN today. Connect before 00:00 MSK to keep your ${count}-day streak!";
+
+  static String m35(count) => "Restores remaining this month: ${count} of 3";
+
+  static String m36(time) => "Subscription expires in ${time}";
+
+  static String m37(label) => "${label} must be a URL";
+
+  static String m38(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -699,6 +710,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "liveNotificationTypeSpeedUp": MessageLookupByLibrary.simpleMessage(
       "Upload speed",
+    ),
+    "liveNotificationTypeStreak": MessageLookupByLibrary.simpleMessage(
+      "Streak flame",
     ),
     "liveNotificationTypeTraffic": MessageLookupByLibrary.simpleMessage(
       "Data used",
@@ -1301,6 +1315,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Updated"),
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
+    "streakActiveToday": MessageLookupByLibrary.simpleMessage(
+      "Streak is burning! Connected today.",
+    ),
+    "streakDaysCount": m32,
+    "streakFlameTitle": MessageLookupByLibrary.simpleMessage("Fire Streak"),
+    "streakInactiveToday": MessageLookupByLibrary.simpleMessage(
+      "Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!",
+    ),
+    "streakMilestoneCongrats": m33,
+    "streakNoRestoresLeft": MessageLookupByLibrary.simpleMessage(
+      "No restores left for this month (maximum 3).",
+    ),
+    "streakNotificationBody": m34,
+    "streakNotificationTitle": MessageLookupByLibrary.simpleMessage(
+      "🔥 Your streak is about to go out!",
+    ),
+    "streakRestoreButton": MessageLookupByLibrary.simpleMessage(
+      "Restore streak",
+    ),
+    "streakRestoredSuccess": MessageLookupByLibrary.simpleMessage(
+      "Streak restored successfully!",
+    ),
+    "streakRestoresLeft": m35,
+    "streakRuleRestore": MessageLookupByLibrary.simpleMessage(
+      "• You can restore your broken streak up to 3 times per calendar month.",
+    ),
+    "streakRuleStorage": MessageLookupByLibrary.simpleMessage(
+      "• Streak progress is stored locally and will only reset if the app is uninstalled.",
+    ),
+    "streakRuleTime": MessageLookupByLibrary.simpleMessage(
+      "• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).",
+    ),
+    "streakRuleTitle": MessageLookupByLibrary.simpleMessage(
+      "Fire Streak Rules",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
     "subExpireReminder1d": MessageLookupByLibrary.simpleMessage(
       "Subscription expires in 1 day. If you have already renewed, please update your subscription.",
@@ -1335,7 +1384,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Subscription has expired",
     ),
-    "subscriptionExpiringIn": m32,
+    "subscriptionExpiringIn": m36,
     "subscriptionFoundInClipboard": MessageLookupByLibrary.simpleMessage(
       "Subscription found in clipboard",
     ),
@@ -1456,7 +1505,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain a profile from a URL",
     ),
-    "urlTip": m33,
+    "urlTip": m37,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
@@ -1480,7 +1529,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m34,
+    "yearsAgo": m38,
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }
