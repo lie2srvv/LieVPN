@@ -208,7 +208,7 @@ class AppUpdateManager {
 
   static Timer? _periodicUpdateTimer;
 
-  /// Automatically triggered on application startup and every hour
+  /// Automatically triggered on application startup and every 1 minute
   static Future<void> autoCheckUpdate(WidgetRef ref) async {
     final autoCheck = ref.read(appSettingProvider).autoCheckUpdate;
     if (!autoCheck) return;
@@ -217,9 +217,9 @@ class AppUpdateManager {
     await Future.delayed(const Duration(seconds: 3));
     await _checkAndNotifyUpdate();
 
-    // Start periodic 1-hour check
+    // Start periodic 1-minute check
     _periodicUpdateTimer?.cancel();
-    _periodicUpdateTimer = Timer.periodic(const Duration(hours: 1), (_) async {
+    _periodicUpdateTimer = Timer.periodic(const Duration(minutes: 1), (_) async {
       final autoCheckEnabled = ref.read(appSettingProvider).autoCheckUpdate;
       if (autoCheckEnabled) {
         await _checkAndNotifyUpdate();
@@ -227,9 +227,15 @@ class AppUpdateManager {
     });
   }
 
+  static String? _lastNotifiedVersion;
+
   static Future<void> _checkAndNotifyUpdate() async {
     final update = await fetchUpdate();
     if (update != null) {
+      if (_lastNotifiedVersion == update.version) {
+        return;
+      }
+      _lastNotifiedVersion = update.version;
       final loc = currentAppLocalizations;
 
       // 1. In-app banner notifier
