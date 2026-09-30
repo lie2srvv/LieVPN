@@ -1,25 +1,25 @@
 {
-  "version": "1.0.10",
+  "version": "1.1.0",
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.0.10:\n• Windows & Linux: добавлен кулдаун 1.5 секунды на переключение VPN во избежание сбоев при быстром спаме вкл/выкл\n• Android: исправлены внутренние баги, обновление на этой ОС необязательное",
+  "releaseNotes": "LieVPN 1.1.0 (Крупное обновление!):\n• Полная бесшовная система In-App обновления для всех платформ!\n• Загрузка новой версии прямо в приложении с индикатором прогресса и скорости\n• Установка и перезапуск в один клик без перехода на сайт\n• Windows & Linux: плавный перезапуск и автозамена бинарника без сбоев\n• Android: мгновенный запуск системного окна установки поверх приложения\n• Windows & Linux: кулдаун 1.5 сек на тумблер вкл/выкл VPN для защиты от сбоев",
   "android": {
-    "version": "1.0.10",
+    "version": "1.1.0",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.0.10 для Android:\n• Исправлены мелкие внутренние баги\n• Обновление на этой ОС необязательное"
+    "releaseNotes": "LieVPN 1.1.0 для Android:\n• Встроенная загрузка обновлений прямо в приложении с прогресс-баром\n• Автоматический вызов системной установки без перехода в браузер\n• Системное push-уведомление при выходе новой версии"
   },
   "windows": {
-    "version": "1.0.10",
+    "version": "1.1.0",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.0.10 для Windows:\n• Добавлен кулдаун (1.5 сек) на переключение VPN во избежание сбоев при частом клике вкл/выкл\n• Повышена надёжность Helper службы при быстрых переподключениях"
+    "releaseNotes": "LieVPN 1.1.0 для Windows:\n• Встроенная загрузка обновлений в приложении с прогресс-баром\n• Бесшовная кнопка «Перезапустить» с автоматической подменой exe\n• Кулдаун 1.5 сек на переключение VPN во избежание сбоев ядра"
   },
   "linux": {
-    "version": "1.0.10",
+    "version": "1.1.0",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.0.10 для Linux:\n• Добавлен кулдаун (1.5 сек) на переключение VPN во избежание сбоев при частом клике вкл/выкл\n• Защита сетевого стека и правил маршрутизации от спама переключений"
+    "releaseNotes": "LieVPN 1.1.0 для Linux:\n• Встроенная загрузка AppImage в приложении с прогресс-баром\n• Бесшовная кнопка «Перезапустить» с авто-заменой AppImage и рестартом\n• Кулдаун 1.5 сек на переключение VPN во избежание сбоев сети"
   }
 }

@@ -22,7 +22,8 @@ import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.FileProvider
+import java.io.File
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -219,9 +220,43 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 }
             }
 
+            "installApk" -> {
+                val filePath = call.argument<String>("filePath")
+                if (filePath == null) {
+                    result.error("INVALID_ARGUMENT", "filePath is required", null)
+                } else {
+                    val success = installApk(filePath)
+                    result.success(success)
+                }
+            }
+
             else -> {
                 result.notImplemented()
             }
+        }
+    }
+
+    private fun installApk(filePath: String): Boolean {
+        return try {
+            val context = GlobalState.application
+            val file = File(filePath)
+            if (!file.exists()) {
+                return false
+            }
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            } else {
+                android.net.Uri.fromFile(file)
+            }
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

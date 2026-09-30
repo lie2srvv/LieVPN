@@ -82,6 +82,11 @@ class App {
         false;
   }
 
+  Future<bool> installApk(String filePath) async {
+    return await methodChannel.invokeMethod<bool>('installApk', {'filePath': filePath}) ??
+        false;
+  }
+
   final Map<String, ImageProvider?> _packageIcons = {};
   final Map<String, Future<ImageProvider?>> _packageIconTasks = {};
 
