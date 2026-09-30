@@ -23,6 +23,7 @@ class SetupAction extends _$SetupAction {
   final _listenerScheduler = SerialTaskScheduler();
   _RunRequest? _latestRunRequest;
   DateTime? _startTime;
+  DateTime? _lastToggleTime;
 
   bool get _isRunning => _startTime != null && _startTime!.isBeforeNow;
 
@@ -111,6 +112,15 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<bool> setRunning(bool running, {bool initialize = false}) {
+    if (!initialize && (Platform.isWindows || Platform.isLinux)) {
+      final now = DateTime.now();
+      if (_lastToggleTime != null &&
+          now.difference(_lastToggleTime!) < const Duration(milliseconds: 1500)) {
+        commonPrint.log('setRunning debounced (cooldown 1.5s)');
+        return Future.value(ref.read(isStartProvider));
+      }
+      _lastToggleTime = now;
+    }
     if (running && !ref.read(hasActiveSubscriptionProvider)) {
       dialogs.showNotifier(
         currentAppLocalizations.subscriptionRequiredDesc,
