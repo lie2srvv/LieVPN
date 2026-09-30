@@ -3,7 +3,7 @@
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "Обновление LieVPN 1.0.9: совместимость с любыми процессорами Linux (CPU ISA fix), исправление переподключения VPN без зависания сети, скачивание обновлений напрямую с GitHub Releases.",
+  "releaseNotes": "LieVPN 1.0.9:\n• Linux: 1-time root запуск без пароля, CPU ISA fix, устранение зависания сети при переподключении\n• Windows: прямая загрузка LieVPN.exe с GitHub, надёжный DNS/Helper fallback\n• Android: мгновенное обновление LieVPN.apk с GitHub, повышенная стабильность\n• Общее: автопроверка версий раз в минуту",
   "android": {
     "version": "1.0.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
