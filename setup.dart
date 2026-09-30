@@ -154,6 +154,32 @@ void _showHelp(ArgParser parser) {
   stderr.writeln(parser.usage);
 }
 
+/// Removes .note.gnu.property section from Linux ELF binaries so they run on older CPUs/LTS kernels
+Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
+  if (!Platform.isLinux) return;
+  final bundleDir = Directory(p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'));
+  if (!bundleDir.existsSync()) return;
+
+  final elfPaths = <String>[];
+  for (final entity in bundleDir.listSync(recursive: true)) {
+    if (entity is File) {
+      final name = p.basename(entity.path);
+      if (name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
+        elfPaths.add(entity.path);
+      }
+    }
+  }
+
+  for (final elfPath in elfPaths) {
+    try {
+      final res = await Process.run('objcopy', ['--remove-section=.note.gnu.property', elfPath]);
+      if (res.exitCode == 0) {
+        stdout.writeln('Sanitized CPU ISA constraints for ${p.basename(elfPath)}');
+      }
+    } catch (_) {}
+  }
+}
+
 Future<int> _package(
   String platform,
   String env,
@@ -177,6 +203,27 @@ Future<int> _package(
 
   final depExit = await _ensureDependencies(platform);
   if (depExit != 0) return depExit;
+
+  // On Linux: build bundle first if packaging AppImage/deb to sanitize binaries before packaging
+  if (platform == 'linux') {
+    stdout.writeln('Pre-building Linux bundle to sanitize CPU architecture requirements...');
+    final buildBundleArgs = [
+      'build',
+      'linux',
+      '--release',
+      if (flutterBuildArgs.isNotEmpty)
+        for (final arg in flutterBuildArgs)
+          if (arg == 'verbose') '-v' else '--$arg',
+    ];
+    final buildProcess = await Process.start('flutter', buildBundleArgs, runInShell: true);
+    buildProcess.stdout.listen((data) => stdout.write(utf8.decode(data)));
+    buildProcess.stderr.listen((data) => stderr.write(utf8.decode(data)));
+    final buildExit = await buildProcess.exitCode;
+    if (buildExit != 0) {
+      return buildExit;
+    }
+    await _sanitizeLinuxElfBinaries(rootDir);
+  }
 
   String distributorCmd = 'flutter_distributor';
   if (!await _hasCommand(distributorCmd)) {
@@ -260,173 +307,12 @@ Future<bool> _hasCommand(String cmd) async {
 }
 
 Future<int> _ensureDependencies(String platform) async {
-  switch (platform) {
-    case 'macos':
-      return _ensureMacosDependencies();
-    case 'linux':
-      return _ensureLinuxDependencies();
-    default:
-      return 0;
-  }
-}
-
-Future<int> _ensureMacosDependencies() async {
-  if (await _hasCommand('appdmg')) {
-    stdout.writeln('appdmg already installed, skipping.');
-    return 0;
-  }
-  stdout.writeln('Installing appdmg (DMG creator)...');
-  final result = await Process.run('npm', ['install', '-g', 'appdmg']);
-  if (result.exitCode != 0) {
-    stderr.write(result.stderr);
-  }
-  return result.exitCode;
-}
-
-Future<int> _ensureLinuxDependencies() async {
-  if (!await _hasCommand('apt-get')) {
-    stdout.writeln('Non-Debian system detected, skipping apt dependency checks.');
-    if (await _hasCommand('appimagetool')) {
-      stdout.writeln('appimagetool is available.');
-      return 0;
-    }
-  }
-
-  const pkgGroups = <List<String>>[
-    ['ninja-build', 'libgtk-3-dev'],
-    ['libayatana-appindicator3-dev'],
-    ['libsecret-1-dev'],
-    ['locate'],
-    ['rpm', 'patchelf'],
-    ['libfuse2'],
-  ];
-
-  final missingGroups = <List<String>>[];
-  for (final group in pkgGroups) {
-    final missingPkgs = <String>[];
-    for (final pkg in group) {
-      if (!await _isDebianPackageInstalled(pkg)) {
-        missingPkgs.add(pkg);
-      }
-    }
-    if (missingPkgs.isNotEmpty) {
-      missingGroups.add(missingPkgs);
-    }
-  }
-
-  if (missingGroups.isEmpty) {
-    stdout.writeln('All Linux build dependencies already installed, skipping.');
-  } else {
-    stdout.writeln('Updating apt package lists...');
-    final updateExit = await _runLinuxDependencyCommand([
-      'apt-get',
-      'update',
-      '-y',
-    ]);
-    if (updateExit != 0) {
-      stderr.writeln(
-        'apt-get update exited with $updateExit; continuing and verifying '
-        'dependency installation directly.',
-      );
-    }
-
-    for (final missingPkgs in missingGroups) {
-      stdout.writeln(
-        'Installing Linux build dependencies: ${missingPkgs.join(', ')}...',
-      );
-      final installExit = await _installLinuxPackages(missingPkgs);
-      if (installExit != 0) return installExit;
-    }
-  }
-
-  const appimagetool = '/usr/local/bin/appimagetool';
-  if (File(appimagetool).existsSync() || await _hasCommand('appimagetool')) {
-    stdout.writeln('appimagetool already installed, skipping.');
-    return 0;
-  }
-  stdout.writeln('Downloading appimagetool...');
-  final downloadName =
-      'appimagetool-${appImageToolArch(_detectArch())}.AppImage';
-  final dlResult = await Process.run('wget', [
-    '-O',
-    appimagetool,
-    'https://github.com/AppImage/AppImageKit/releases/download/continuous/$downloadName',
-  ]);
-  if (dlResult.exitCode != 0) {
-    stderr.write(dlResult.stderr);
-    return dlResult.exitCode;
-  }
-  await Process.run('chmod', ['+x', appimagetool]);
-  return 0;
-}
-
-String appImageToolArch(String arch) {
-  return arch == 'arm64' ? 'aarch64' : 'x86_64';
-}
-
-/// Ubuntu 24.04 ships libfuse2 under its time64 name, which `dpkg -s libfuse2` cannot see.
-const _debianPackageAliases = <String, List<String>>{
-  'libfuse2': ['libfuse2t64'],
-};
-
-Future<bool> _isDebianPackageInstalled(String pkg) async {
-  for (final name in [pkg, ...?_debianPackageAliases[pkg]]) {
-    final result = await Process.run('dpkg', ['-s', name]);
-    if (result.exitCode == 0 &&
-        (result.stdout as String).contains('Status: install ok installed')) {
-      return true;
-    }
-  }
-  return false;
-}
-
-Future<bool> _areDebianPackagesInstalled(List<String> pkgs) async {
-  for (final pkg in pkgs) {
-    if (!await _isDebianPackageInstalled(pkg)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-Future<int> _installLinuxPackages(List<String> pkgs) async {
-  final exitCode = await _runLinuxDependencyCommand([
-    'apt-get',
-    'install',
-    '-y',
-    ...pkgs,
-  ]);
-  if (exitCode == 0) return 0;
-
-  if (await _areDebianPackagesInstalled(pkgs)) {
+  if (platform != 'linux') return 0;
+  final appimagetool = await _hasCommand('appimagetool');
+  if (!appimagetool) {
     stderr.writeln(
-      'apt-get install exited with $exitCode, but all requested packages are '
-      'installed; continuing.',
+      'Warning: appimagetool not found in PATH. Make sure it is installed if building AppImage.',
     );
-    return 0;
   }
-
-  return exitCode;
-}
-
-Future<int> _runLinuxDependencyCommand(List<String> command) async {
-  final sudoCommand = [
-    'env',
-    'DEBIAN_FRONTEND=noninteractive',
-    'NEEDRESTART_MODE=a',
-    ...command,
-  ];
-  stdout.writeln('exec: sudo ${sudoCommand.join(' ')}');
-  final result = await Process.start('sudo', sudoCommand);
-  result.stdout.listen((data) {
-    stdout.write(utf8.decode(data));
-  });
-  result.stderr.listen((data) {
-    stderr.write(utf8.decode(data));
-  });
-  final exitCode = await result.exitCode;
-  if (exitCode != 0) {
-    stderr.writeln('Linux dependency command failed with exit code $exitCode.');
-  }
-  return exitCode;
+  return 0;
 }

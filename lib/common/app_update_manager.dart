@@ -21,23 +21,33 @@ class AppUpdateInfo {
     this.releaseNotes,
   });
 
+  /// Default GitHub release assets per platform
+  static String get defaultDownloadUrl {
+    if (Platform.isAndroid) {
+      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk';
+    } else if (Platform.isWindows) {
+      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe';
+    } else if (Platform.isLinux) {
+      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage';
+    } else {
+      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk';
+    }
+  }
+
   /// Parses platform-specific update info with fallback to legacy flat format
   factory AppUpdateInfo.fromPlatformJson(Map<String, dynamic> json) {
     String platformKey;
-    String defaultUrl;
     if (Platform.isAndroid) {
       platformKey = 'android';
-      defaultUrl = 'https://clck.lie2srvv.com/files/lievpn.apk';
     } else if (Platform.isWindows) {
       platformKey = 'windows';
-      defaultUrl = 'https://clck.lie2srvv.com/files/LieVPN-Windows.zip';
     } else if (Platform.isLinux) {
       platformKey = 'linux';
-      defaultUrl = 'https://clck.lie2srvv.com/files/LieVPN-Linux.AppImage';
     } else {
       platformKey = 'other';
-      defaultUrl = 'https://clck.lie2srvv.com/files/lievpn.apk';
     }
+
+    final defaultUrl = defaultDownloadUrl;
 
     // 1. If combined version.json with OS-specific subobjects (android, windows, linux)
     if (json[platformKey] is Map<String, dynamic>) {
@@ -69,7 +79,6 @@ class AppUpdateInfo {
     }
 
     // 2. Direct dedicated platform JSON (e.g. version_linux.json or version_windows.json)
-    // Avoid reading another OS direct JSON if mismatched
     if (Platform.isLinux && json.containsKey('apkUrl') && !json.containsKey('linuxUrl')) {
       return AppUpdateInfo(version: '0.0.0', downloadUrl: defaultUrl, releaseNotes: null);
     }
@@ -93,9 +102,15 @@ class AppUpdateInfo {
 }
 
 class AppUpdateManager {
-  static const String _fallbackVersionUrl = 'https://clck.lie2srvv.com/files/version.json';
+  // Primary update manifest on GitHub
+  static const String _primaryGitHubVersionUrl =
+      'https://raw.githubusercontent.com/lie2srvv/LieVPN/main/version.json';
 
-  static String get _platformVersionUrl {
+  // Fallbacks on personal server
+  static const String _fallbackServerVersionUrl =
+      'https://clck.lie2srvv.com/files/version.json';
+
+  static String get _platformServerVersionUrl {
     if (Platform.isAndroid) {
       return 'https://clck.lie2srvv.com/files/version_android.json';
     } else if (Platform.isWindows) {
@@ -103,7 +118,7 @@ class AppUpdateManager {
     } else if (Platform.isLinux) {
       return 'https://clck.lie2srvv.com/files/version_linux.json';
     }
-    return _fallbackVersionUrl;
+    return _fallbackServerVersionUrl;
   }
 
   static bool isNewerVersion(String latest, String current) {
@@ -140,10 +155,10 @@ class AppUpdateManager {
       ),
     );
 
-    // 1. First try platform-specific update endpoint (e.g. version_linux.json / version_windows.json)
+    // 1. Primary: check latest versions manifest from GitHub
     try {
       final response = await dio.get<Map<String, dynamic>>(
-        _platformVersionUrl,
+        _primaryGitHubVersionUrl,
         options: Options(responseType: ResponseType.json),
       );
       if (response.statusCode == 200 && response.data != null) {
@@ -156,10 +171,26 @@ class AppUpdateManager {
       }
     } catch (_) {}
 
-    // 2. Fallback to combined version.json (strictly parsed for current OS only)
+    // 2. Secondary fallback: check platform-specific endpoint on personal server
     try {
       final response = await dio.get<Map<String, dynamic>>(
-        _fallbackVersionUrl,
+        _platformServerVersionUrl,
+        options: Options(responseType: ResponseType.json),
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
+        final currentVersion = globalState.packageInfo.version;
+        if (isNewerVersion(updateInfo.version, currentVersion)) {
+          return updateInfo;
+        }
+        return null;
+      }
+    } catch (_) {}
+
+    // 3. Tertiary fallback: check combined version.json on personal server
+    try {
+      final response = await dio.get<Map<String, dynamic>>(
+        _fallbackServerVersionUrl,
         options: Options(responseType: ResponseType.json),
       );
       if (response.statusCode == 200 && response.data != null) {

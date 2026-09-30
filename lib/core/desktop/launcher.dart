@@ -81,12 +81,26 @@ final class DirectCoreLease implements CoreProcessLease {
   }
 
   Future<CoreProcessStopResult> _stop(Duration timeout) async {
-    final stopped = _process.kill();
+    // Send SIGTERM on Unix-like systems so Clash core cleans up TUN routing rules and tables before exit
+    final bool signaled;
+    if (Platform.isLinux || Platform.isMacOS) {
+      signaled = _process.kill(ProcessSignal.sigterm);
+    } else {
+      signaled = _process.kill();
+    }
+
     try {
       await _process.exitCode.timeout(timeout);
-      return CoreProcessStopResult(stopped: stopped, exitConfirmed: true);
+      return CoreProcessStopResult(stopped: signaled, exitConfirmed: true);
     } on TimeoutException {
-      return CoreProcessStopResult(stopped: stopped, exitConfirmed: false);
+      // If graceful termination timed out, forcibly kill
+      final killed = _process.kill(ProcessSignal.sigkill);
+      try {
+        await _process.exitCode.timeout(const Duration(milliseconds: 1500));
+        return CoreProcessStopResult(stopped: killed, exitConfirmed: true);
+      } on TimeoutException {
+        return CoreProcessStopResult(stopped: killed, exitConfirmed: false);
+      }
     }
   }
 }

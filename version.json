@@ -1,0 +1,25 @@
+{
+  "version": "1.0.9",
+  "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+  "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+  "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+  "releaseNotes": "Обновление LieVPN 1.0.9: совместимость с любыми процессорами Linux (CPU ISA fix), исправление переподключения VPN без зависания сети, скачивание обновлений напрямую с GitHub Releases.",
+  "android": {
+    "version": "1.0.9",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+    "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+    "releaseNotes": "Обновление LieVPN 1.0.9 для Android:\n• Скачивание обновлений напрямую с GitHub Releases\n• Повышена стабильность сетевого стека и фонового переподключения"
+  },
+  "windows": {
+    "version": "1.0.9",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+    "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+    "releaseNotes": "Обновление LieVPN 1.0.9 для Windows:\n• Скачивание обновлений напрямую с GitHub Releases\n• Повышена стабильность службы и маршрутизации"
+  },
+  "linux": {
+    "version": "1.0.9",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+    "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+    "releaseNotes": "Обновление LieVPN 1.0.9 для Linux:\n• Исправлена ошибка 'CPU ISA level is lower than required' на старых процессорах и LTS ядрах\n• Исправлено зависание сети ПК при выключении/включении VPN (чистое удаление ip rule и routing tables через graceful SIGTERM)\n• Скачивание обновлений напрямую с GitHub Releases"
+  }
+}

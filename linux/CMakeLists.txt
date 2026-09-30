@@ -43,6 +43,7 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_features(${TARGET} PUBLIC cxx_std_14)
   target_compile_options(${TARGET} PRIVATE -Wall -Werror)
   target_compile_options(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:-O3>")
+  target_compile_options(${TARGET} PRIVATE "-march=x86-64" "-mtune=generic")
   target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
 endfunction()
 
@@ -137,3 +138,16 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+# Strip GNU property section on Linux to ensure compatibility across all x86-64 CPUs and kernels
+install(CODE "
+  find_program(OBJCOPY objcopy)
+  if(OBJCOPY)
+    message(STATUS \"Sanitizing .note.gnu.property from installed bundle binaries\")
+    execute_process(COMMAND \${OBJCOPY} --remove-section=.note.gnu.property \"${CMAKE_INSTALL_PREFIX}/${BINARY_NAME}\")
+    file(GLOB_RECURSE BUNDLED_SOS \"${INSTALL_BUNDLE_LIB_DIR}/*.so\")
+    foreach(SO_FILE \${BUNDLED_SOS})
+      execute_process(COMMAND \${OBJCOPY} --remove-section=.note.gnu.property \"\${SO_FILE}\")
+    endforeach()
+  endif()
+" COMPONENT Runtime)
