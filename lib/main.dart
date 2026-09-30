@@ -12,7 +12,13 @@ import 'bootstrap.dart';
 import 'common/common.dart';
 import 'common/window.dart';
 
-void main(List<String> args) {
+void main(List<String> args) async {
+  if (Platform.isLinux && !isLinuxRoot()) {
+    final handled = await handleLinuxElevation(args);
+    if (handled) {
+      return;
+    }
+  }
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
@@ -54,4 +60,5 @@ void main(List<String> args) {
       );
     },
   );
+  window?.show();
 }

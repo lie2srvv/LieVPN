@@ -350,15 +350,22 @@ abstract class Dns with _$Dns {
       () => Dns.fromJson(json),
       () => const Dns(),
     );
-    if (parsed.nameserver.any((s) => s.contains('doh.pub') || s.contains('alidns.com'))) {
+    final hasChineseDns = parsed.nameserver.any((s) => s.contains('doh.pub') || s.contains('alidns.com'));
+    final proxyDnsNeedsUpdate = parsed.proxyServerNameserver.isEmpty ||
+        parsed.proxyServerNameserver.first == 'https://dns.google/dns-query' ||
+        parsed.proxyServerNameserver.any((s) => s.contains('doh.pub'));
+    if (hasChineseDns || proxyDnsNeedsUpdate) {
       return parsed.copyWith(
         nameserver: const [
+          '77.88.8.8',
+          '1.1.1.1',
           'https://dns.google/dns-query',
           'https://1.1.1.1/dns-query',
         ],
         proxyServerNameserver: const [
-          'https://dns.google/dns-query',
           '77.88.8.8',
+          '1.1.1.1',
+          'https://dns.google/dns-query',
         ],
         defaultNameserver: const ['77.88.8.8', '1.1.1.1', '8.8.8.8'],
       );

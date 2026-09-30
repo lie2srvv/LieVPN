@@ -70,6 +70,9 @@ class AppPath {
 
   String get corePath {
     if (system.isLinux) {
+      if (isLinuxRoot()) {
+        return bundledCorePath;
+      }
       if (File(linuxExternalCorePath).existsSync()) {
         return linuxExternalCorePath;
       }

@@ -122,6 +122,9 @@ class System {
       );
     }
     if (system.isLinux) {
+      if (isLinuxRoot()) {
+        return true;
+      }
       final targetPath = File(AppPath.linuxExternalCorePath).existsSync()
           ? AppPath.linuxExternalCorePath
           : appPath.corePath;
@@ -219,56 +222,11 @@ class System {
       }
       return AuthorizeCode.success;
     } else if (system.isLinux) {
-      final targetPath = AppPath.linuxExternalCorePath;
-      final sourcePath = appPath.bundledCorePath;
-
-      // When running inside an AppImage, sourcePath is inside a user-owned FUSE mount.
-      // FUSE mounts without allow_other are inaccessible to root (pkexec).
-      // We stage the core binary in the system temporary directory first.
-      final stagePath = '/tmp/.flclash_core_stage_$pid';
-      try {
-        await File(sourcePath).copy(stagePath);
-      } catch (e) {
-        commonPrint.log(
-          'Failed to copy core to staging: $e',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
+      if (isLinuxRoot()) {
+        return AuthorizeCode.none;
       }
-
-      final escapedTarget = _shellEscape(targetPath);
-      final escapedStage = _shellEscape(stagePath);
-      final shellCommand =
-          'mkdir -p /opt/flclash && mv -f $escapedStage $escapedTarget && chown root:root $escapedTarget && chmod 4755 $escapedTarget && (setcap cap_net_admin,cap_net_bind_service,cap_dac_override,cap_dac_read_search+ep $escapedTarget 2>/dev/null || true)';
-      final ProcessResult result;
-      try {
-        result = await runProcess('pkexec', [
-          '/bin/sh',
-          '-c',
-          shellCommand,
-        ]);
-      } on ProcessException catch (error) {
-        commonPrint.log(
-          'pkexec is unavailable: ${compactError(error)}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      } finally {
-        final stageFile = File(stagePath);
-        if (stageFile.existsSync()) {
-          try {
-            stageFile.deleteSync();
-          } catch (_) {}
-        }
-      }
-      if (result.exitCode != 0) {
-        commonPrint.log(
-          'pkexec refused to elevate the Core: ${result.exitCode}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      }
-      return AuthorizeCode.success;
+      final ok = await setupPasswordlessRootOnce();
+      return ok ? AuthorizeCode.success : AuthorizeCode.error;
     }
     return AuthorizeCode.error;
   }

@@ -49,25 +49,24 @@ class LinuxProtocolRegistrationPlan {
 
   String get exec => '"${_quoteExecArgument(executable)}" %u';
 
-  String get desktopEntry => [
-    '[Desktop Entry]',
-    'Type=Application',
-    'Name=LieVPN',
-    'NoDisplay=true',
-    'Exec=$exec',
-    'MimeType=${mimeTypes.join(';')};',
-    '',
-  ].join('\n');
+  List<String> get xdgMimeArguments => [
+    'default',
+    desktopId,
+    ...mimeTypes,
+  ];
 
-  List<String> get xdgMimeArguments => ['default', desktopId, ...mimeTypes];
+  String get desktopEntry => '''
+[Desktop Entry]
+Type=Application
+Name=LieVPN URL Handler
+Exec=$exec
+Terminal=false
+NoDisplay=true
+MimeType=${mimeTypes.join(';')};
+''';
 
   static String _quoteExecArgument(String value) {
-    return value
-        .replaceAll(r'\', r'\\')
-        .replaceAll('"', r'\"')
-        .replaceAll(r'$', r'\$')
-        .replaceAll('`', r'\`')
-        .replaceAll('%', '%%');
+    return value.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
   }
 }
 
@@ -110,9 +109,12 @@ class Protocol {
       return;
     }
     final dataHome = env['XDG_DATA_HOME'];
+    final executable = File('/usr/local/bin/lievpn').existsSync()
+        ? '/usr/local/bin/lievpn'
+        : (env['APPIMAGE'] ?? Platform.resolvedExecutable);
     final plan = LinuxProtocolRegistrationPlan(
       schemes: schemes,
-      executable: env['APPIMAGE'] ?? Platform.resolvedExecutable,
+      executable: executable,
       applicationsDir:
           '${dataHome?.isNotEmpty == true ? dataHome : '$home/.local/share'}/applications',
     );
@@ -125,7 +127,7 @@ class Protocol {
         commonPrint.log('xdg-mime default failed: ${result.stderr}'.trim());
       }
     } catch (e) {
-      commonPrint.log('linux protocol registration failed: $e');
+      commonPrint.log('registerLinux error: $e');
     }
   }
 }
