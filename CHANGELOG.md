@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.0 (2026-10-05)
+
+**Features**
+
+- Upgrade base to FlClash v0.8.99 with LieVPN UI, routing, and streak adaptations (0a84258)
+
+**Bug Fixes**
+
+- **ci** Fix Windows runner plugin includes, format code, and improve update parsing (798b314)
+- **ui** Restore speedtest layout and theme, fix dock overlap, specify FlClash fork in about (9020c2f)
+- **ui** Remove PRE ribbon, restore LieVPN logo everywhere, squircle dock buttons, streak flame in dock, and fix dark theme contrast (3de05ac)
+- **setup** Improve distributor and dependency checks on Arch/Linux (1dd6db1)
+
 ## v0.8.99 (2026-10-03)
 
 **Features**

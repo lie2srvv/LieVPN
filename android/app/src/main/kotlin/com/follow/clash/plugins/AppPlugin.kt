@@ -546,16 +546,40 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             if (!file.exists()) {
                 return false
             }
+
+            // Android 8.0+ (API 26+) up to Android 17: check unknown sources permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (!context.packageManager.canRequestPackageInstalls()) {
+                    val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = android.net.Uri.parse("package:${context.packageName}")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    val targetContext = activity ?: context
+                    targetContext.startActivity(settingsIntent)
+                    return false
+                }
+            }
+
             val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
             } else {
                 android.net.Uri.fromFile(file)
             }
+
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "application/vnd.android.package-archive")
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
-            context.startActivity(intent)
+
+            // Explicitly grant URI permission to any resolving installer package
+            val resolveInfos = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            for (resolveInfo in resolveInfos) {
+                val pkg = resolveInfo.activityInfo.packageName
+                context.grantUriPermission(pkg, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            val targetContext = activity ?: context
+            targetContext.startActivity(intent)
             true
         } catch (e: Exception) {
             e.printStackTrace()

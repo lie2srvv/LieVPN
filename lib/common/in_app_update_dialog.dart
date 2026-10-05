@@ -139,7 +139,8 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       if (!success && mounted) {
         setState(() {
           _status = UpdateStatus.error;
-          _errorMessage = 'Не удалось запустить установщик пакета';
+          _errorMessage =
+              'Разрешите установку приложений для LieVPN в открывшихся настройках и нажмите «Повторить»';
         });
       }
     } catch (e) {
@@ -174,10 +175,20 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
         // 2. If running from AppImage, replace the current AppImage file
         final envAppImage = Platform.environment['APPIMAGE'];
         if (envAppImage != null && envAppImage.isNotEmpty) {
-          // In Linux, we can overwrite or rename over a running AppImage
           final target = File(envAppImage);
+          final backup = File('${target.path}.old');
+          if (await backup.exists()) {
+            await backup.delete();
+          }
+          // Move currently running AppImage (atomic rename avoids ETXTBSY / errno 26)
+          if (await target.exists()) {
+            await target.rename(backup.path);
+          }
           await File(filePath).copy(target.path);
           await Process.run('chmod', ['+x', target.path]);
+          try {
+            await backup.delete();
+          } catch (_) {}
 
           // Detach and launch updated AppImage
           await Process.start(target.path, [], mode: ProcessStartMode.detached);

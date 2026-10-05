@@ -9,7 +9,6 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
 import 'package:fl_clash/widgets/icon.dart';
 import 'package:fl_clash/widgets/sidebar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -120,9 +119,6 @@ class AppEnvManager extends ConsumerWidget {
   String? _bannerMessage({required bool safeMode}) {
     if (safeMode) {
       return 'SAFE MODE';
-    }
-    if (kDebugMode) {
-      return 'DEBUG';
     }
     return null;
   }

@@ -2,6 +2,48 @@
   "schemaVersion": 2,
   "versions": [
     {
+      "version": "1.2.0",
+      "tag": "v1.2.0",
+      "date": "2026-10-05",
+      "prerelease": false,
+      "groups": [
+        {
+          "type": "feat",
+          "entries": [
+            {
+              "id": "0a84258",
+              "text": "Upgrade base to FlClash v0.8.99 with LieVPN UI, routing, and streak adaptations"
+            }
+          ]
+        },
+        {
+          "type": "fix",
+          "entries": [
+            {
+              "id": "798b314",
+              "scope": "ci",
+              "text": "Fix Windows runner plugin includes, format code, and improve update parsing"
+            },
+            {
+              "id": "9020c2f",
+              "scope": "ui",
+              "text": "Restore speedtest layout and theme, fix dock overlap, specify FlClash fork in about"
+            },
+            {
+              "id": "3de05ac",
+              "scope": "ui",
+              "text": "Remove PRE ribbon, restore LieVPN logo everywhere, squircle dock buttons, streak flame in dock, and fix dark theme contrast"
+            },
+            {
+              "id": "1dd6db1",
+              "scope": "setup",
+              "text": "Improve distributor and dependency checks on Arch/Linux"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.8.99",
       "tag": "v0.8.99",
       "date": "2026-10-03",
