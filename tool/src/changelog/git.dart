@@ -121,11 +121,11 @@ class Git {
   String head() => _run(['rev-parse', 'HEAD']).trim();
 
   bool revExists(String revision) {
-    final result = Process.runSync(
-      'git',
-      ['rev-parse', '--verify', revision],
-      workingDirectory: workingDirectory,
-    );
+    final result = Process.runSync('git', [
+      'rev-parse',
+      '--verify',
+      revision,
+    ], workingDirectory: workingDirectory);
     return result.exitCode == 0;
   }
 
