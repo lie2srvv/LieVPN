@@ -574,7 +574,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteMultipTip": m5,
     "deleteTip": m6,
     "desc": MessageLookupByLibrary.simpleMessage(
-      "Многоплатформенный проксжәне-клжәнеент на основе ClashMeta: простой және удейінбный, с бастапкрытым жәнесходным кодейінм және без рекламы.",
+      "LieVPN — FlClash форкы, ClashMeta негізінде: қарапайым және ыңғайлы, ашық бастапқы коды бар және жарнамасыз.",
     ),
     "destination": MessageLookupByLibrary.simpleMessage("Назначенжәнее"),
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage(

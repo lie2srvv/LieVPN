@@ -116,7 +116,7 @@
   "project": "Project",
   "core": "Core",
   "tabAnimation": "Tab animation",
-  "desc": "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
+  "desc": "LieVPN is a fork of FlClash based on ClashMeta: simple and easy to use, open-source and ad-free.",
   "startVpn": "Starting VPN…",
   "stopVpn": "Stopping VPN…",
   "localNetworkDeniedTip": "Local network permission denied: using the gvisor stack, LAN is unreachable.",

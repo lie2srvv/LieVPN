@@ -1,3 +1,4 @@
+package com.follow.clash.plugins
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -5,7 +6,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import java.io.File
-package com.follow.clash.plugins
 
 import android.Manifest
 import android.annotation.SuppressLint

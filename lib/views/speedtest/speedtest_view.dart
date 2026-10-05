@@ -62,12 +62,15 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            final bottomInset = 36.0 + BottomInsetScope.of(context);
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16).copyWith(
+                bottom: bottomInset,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - 32,
+                  minHeight: math.max(0.0, constraints.maxHeight - 32 - bottomInset),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,7 +242,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                             fontWeight: FontWeight.bold,
                             color: state.phase == SpeedtestPhase.error
                                 ? colorScheme.error
-                                : colorScheme.onSurface,
+                                : Colors.white,
                             letterSpacing: -1.5,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
@@ -350,23 +353,14 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppCorner.md),
+        color: const Color(0xFF1E1C1C),
+        borderRadius: BorderRadius.circular(AppCorner.lg),
         border: Border.all(
           color: isActive
-              ? iconColor
-              : colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ? iconColor.withValues(alpha: 0.8)
+              : const Color(0xFF2C2A2A),
           width: isActive ? 1.5 : 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: isActive
-                ? iconColor.withValues(alpha: 0.25)
-                : Colors.black.withValues(alpha: 0.15),
-            blurRadius: isActive ? 12 : 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         children: [
@@ -377,10 +371,10 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
               const SizedBox(width: 4),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                  color: Color(0xFF9E9E9E),
                 ),
               ),
             ],
@@ -388,21 +382,21 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'monospace',
-              fontSize: 17,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-              fontFeatures: const [FontFeature.tabularFigures()],
+              color: Colors.white,
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 2),
           Text(
             unit,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 10,
               fontFamily: 'monospace',
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: Color(0xFF757575),
             ),
           ),
         ],
@@ -443,11 +437,10 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     return SizedBox(
       width: double.infinity,
       height: 52,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          elevation: 2,
+      child: FilledButton.icon(
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFFF7D8D9),
+          foregroundColor: const Color(0xFF2E1517),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppCorner.md),
           ),
@@ -456,10 +449,15 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         icon: Icon(
           isDone ? Icons.replay_rounded : Icons.play_arrow_rounded,
           size: 22,
+          color: const Color(0xFF2E1517),
         ),
         label: Text(
           isDone ? appLocalizations.speedtestRunAgain : appLocalizations.speedtestStart,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2E1517),
+          ),
         ),
       ),
     );
@@ -469,34 +467,34 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     final appLocalizations = context.appLocalizations;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
+        color: const Color(0xFF1E1C1C),
         borderRadius: BorderRadius.circular(AppCorner.md),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+          color: const Color(0xFF2C2A2A),
           width: 1,
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
+          const Padding(
+            padding: EdgeInsets.only(top: 2),
             child: Icon(
               Icons.info_outline_rounded,
               size: 16,
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              color: Color(0xFF9E9E9E),
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               appLocalizations.speedtestDisclaimer,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11.5,
                 height: 1.35,
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                color: Color(0xFF9E9E9E),
               ),
             ),
           ),
@@ -541,9 +539,9 @@ class _SpeedGaugePainter extends CustomPainter {
 
     // 1. Background Arc Track
     final bgPaint = Paint()
-      ..color = colorScheme.surfaceContainerHighest.withValues(alpha: 0.6)
+      ..color = const Color(0xFF262424)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 10
+      ..strokeWidth = 8
       ..strokeCap = StrokeCap.round;
 
     final rect = Rect.fromCircle(center: center, radius: radius);
