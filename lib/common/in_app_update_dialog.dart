@@ -136,7 +136,7 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       if (!success && mounted) {
         setState(() {
           _status = UpdateStatus.error;
-          _errorMessage = 'Не удалось запустить установщик пакета';
+          _errorMessage = 'Не удалось запустить установщик пакета. Разрешите установку из неизвестных источников в настройках устройства.';
         });
       }
     } catch (e) {
@@ -165,25 +165,30 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
 
     if (Platform.isLinux) {
       try {
-        // 1. Give executable permissions to downloaded file
         await Process.run('chmod', ['+x', filePath]);
 
-        // 2. If running from AppImage, replace the current AppImage file
         final envAppImage = Platform.environment['APPIMAGE'];
         if (envAppImage != null && envAppImage.isNotEmpty) {
-          // In Linux, we can overwrite or rename over a running AppImage
           final target = File(envAppImage);
+          final backup = File('${target.path}.old');
+          if (backup.existsSync()) {
+            backup.deleteSync();
+          }
+          await target.rename(backup.path);
           await File(filePath).copy(target.path);
           await Process.run('chmod', ['+x', target.path]);
+          if (backup.existsSync()) {
+            try {
+              backup.deleteSync();
+            } catch (_) {}
+          }
 
-          // Detach and launch updated AppImage
           await Process.start(
             target.path,
             [],
             mode: ProcessStartMode.detached,
           );
         } else {
-          // If running raw binary, launch the new AppImage detached
           await Process.start(
             filePath,
             [],
@@ -191,7 +196,6 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
           );
         }
 
-        // Exit immediately so only the new instance remains
         exit(0);
       } catch (e) {
         if (mounted) {
@@ -203,34 +207,27 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       }
     } else if (Platform.isWindows) {
       try {
-        final currentExePath = Platform.resolvedExecutable;
-
-        // Batch script to wait 1 second, copy new exe over old exe, and restart
-        final updaterScriptPath = p.join(p.dirname(filePath), 'lievpn_update.bat');
-        final scriptContent = '''
-@echo off
-timeout /t 1 /nobreak > NUL
-copy /y "$filePath" "$currentExePath" > NUL
-start "" "$currentExePath"
-del "%~f0"
-''';
-        await File(updaterScriptPath).writeAsString(scriptContent);
-
-        // Run batch script detached via cmd.exe
         await Process.start(
-          'cmd.exe',
-          ['/c', updaterScriptPath],
+          filePath,
+          ['/SILENT'],
           mode: ProcessStartMode.detached,
         );
-
-        // Exit immediately to release file lock on LieVPN.exe
         exit(0);
       } catch (e) {
-        if (mounted) {
-          setState(() {
-            _status = UpdateStatus.error;
-            _errorMessage = 'Ошибка установки обновления: $e';
-          });
+        try {
+          await Process.start(
+            filePath,
+            [],
+            mode: ProcessStartMode.detached,
+          );
+          exit(0);
+        } catch (err) {
+          if (mounted) {
+            setState(() {
+              _status = UpdateStatus.error;
+              _errorMessage = 'Ошибка установки обновления: $err';
+            });
+          }
         }
       }
     }
