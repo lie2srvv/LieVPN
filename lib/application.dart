@@ -11,6 +11,8 @@ import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
 import 'package:fl_clash/plugins/app.dart';
+import 'package:fl_clash/manager/streak_manager.dart';
+import 'package:fl_clash/manager/connection_health_manager.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/focus.dart';
@@ -98,6 +100,13 @@ class ApplicationState extends ConsumerState<Application> {
         exit(0);
       }
       _autoUpdateProfilesTask();
+      unawaited(
+        SubscriptionReminderManager.checkSubscriptionExpiry(
+          ref.read(currentProfileProvider),
+        ),
+      );
+      unawaited(AppUpdateManager.autoCheckUpdate(ref));
+      unawaited(StreakManager.instance.init());
       _initLink();
       if (!safeModeBuild) {
         unawaited(app?.initShortcuts());
@@ -135,8 +144,10 @@ class ApplicationState extends ConsumerState<Application> {
   }
 
   void _autoUpdateProfilesTask() {
-    _autoUpdateProfilesTaskTimer = Timer(const Duration(minutes: 20), () async {
+    _autoUpdateProfilesTaskTimer = Timer(const Duration(minutes: 15), () async {
       await ref.read(profilesActionProvider.notifier).autoUpdateProfiles();
+      final currentProfile = ref.read(currentProfileProvider);
+      await SubscriptionReminderManager.checkSubscriptionExpiry(currentProfile);
       if (!mounted) {
         return;
       }
@@ -197,7 +208,7 @@ class ApplicationState extends ConsumerState<Application> {
             actionIconTheme: _actionIconTheme,
             colorScheme: _getAppColorScheme(brightness: Brightness.dark),
           ).withAppShapes,
-          home: KeyboardInsetHold(child: child!),
+          home: ConnectionHealthManager(child: KeyboardInsetHold(child: child!)),
         );
       },
       child: const HomePage(),

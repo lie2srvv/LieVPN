@@ -22,6 +22,13 @@ class Navigation implements NavigationPort {
             const DashboardView(key: GlobalObjectKey(PageLabel.dashboard)),
       ),
       NavigationItem(
+        glyph: AppGlyphs.speed,
+        label: PageLabel.speedtest,
+        builder: (_) =>
+            const SpeedtestView(key: GlobalObjectKey(PageLabel.speedtest)),
+        modes: const [NavigationItemMode.mobile, NavigationItemMode.desktop],
+      ),
+      NavigationItem(
         glyph: AppGlyphs.proxies,
         label: PageLabel.proxies,
         builder: (_) =>
@@ -35,6 +42,7 @@ class Navigation implements NavigationPort {
         label: PageLabel.profiles,
         builder: (_) =>
             const ProfilesView(key: GlobalObjectKey(PageLabel.profiles)),
+        modes: const [],
       ),
       NavigationItem(
         glyph: AppGlyphs.requests,
@@ -51,6 +59,13 @@ class Navigation implements NavigationPort {
         modes: [NavigationItemMode.desktop, NavigationItemMode.moreFull],
       ),
       NavigationItem(
+        glyph: AppGlyphs.rules,
+        label: PageLabel.addRules,
+        builder: (_) =>
+            const AddRulesView(key: GlobalObjectKey(PageLabel.addRules)),
+        modes: const [NavigationItemMode.desktop, NavigationItemMode.more],
+      ),
+      NavigationItem(
         glyph: AppGlyphs.dns,
         label: PageLabel.dns,
         builder: (_) =>
@@ -62,7 +77,7 @@ class Navigation implements NavigationPort {
         label: PageLabel.resources,
         builder: (_) =>
             const ResourcesView(key: GlobalObjectKey(PageLabel.resources)),
-        modes: [NavigationItemMode.more],
+        modes: const [],
       ),
       NavigationItem(
         glyph: AppGlyphs.logs,

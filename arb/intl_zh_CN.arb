@@ -777,5 +777,312 @@
   "large": "大",
   "extraLarge": "超大",
   "switchProfile": "切换配置",
-  "lastUpdated": "上次更新"
+  "lastUpdated": "上次更新",
+  "logsDesc": "日志捕获记录",
+  "resourcesDesc": "外部资源相关信息",
+  "allowLanDesc": "允许通过局域网访问代理",
+  "minimizeOnExitDesc": "修改系统默认退出事件",
+  "autoCheckUpdateDesc": "应用启动时自动检查更新",
+  "application": "应用程序",
+  "applicationDesc": "修改应用程序相关设置",
+  "allowBypassDesc": "开启后部分应用可绕过VPN",
+  "systemProxyDesc": "设置系统代理",
+  "unifiedDelayDesc": "去除握手等额外延迟",
+  "tcpConcurrentDesc": "开启后允许TCP并发",
+  "geodataLoaderDesc": "开启将使用Geo低内存加载器",
+  "requestsDesc": "查看最近请求记录",
+  "connectionsDesc": "查看当前连接数据",
+  "onlyStatisticsProxyDesc": "开启后，将只统计代理流量",
+  "showNotificationStopActionDesc": "在常驻通知上显示停止按钮。若系统因此总是展开通知，可关闭",
+  "remoteBackupDesc": "备份数据到WebDAV",
+  "localBackupDesc": "备份数据到本地",
+  "dnsDesc": "更新DNS相关设置",
+  "hostsDesc": "追加Hosts",
+  "loopbackDesc": "用于UWP回环解锁",
+  "overrideDnsDesc": "开启后将覆盖配置中的DNS选项",
+  "preferH3Desc": "优先使用DOH的http/3",
+  "defaultNameserver": "默认域名服务器",
+  "defaultNameserverDesc": "用于解析DNS服务器",
+  "nameserver": "域名服务器",
+  "nameserverDesc": "用于解析域名",
+  "nameserverPolicy": "域名服务器策略",
+  "nameserverPolicyDesc": "指定对应域名服务器策略",
+  "proxyNameserver": "代理域名服务器",
+  "proxyNameserverDesc": "用于解析代理节点的域名",
+  "fallback": "Fallback",
+  "fallbackDesc": "一般情况下使用境外DNS",
+  "geoipCode": "Geoip代码",
+  "ipcidr": "IP/掩码",
+  "hotkeyManagementDesc": "使用键盘控制应用程序",
+  "inputCorrectHotkey": "请输入正确的快捷键",
+  "hotkeyConflict": "快捷键冲突",
+  "noHotKey": "暂无快捷键",
+  "onlyIcon": "仅图标",
+  "networkDesc": "修改网络相关设置",
+  "routeAddressDesc": "配置监听路由地址",
+  "basicConfig": "基础配置",
+  "basicConfigDesc": "全局修改基础配置",
+  "matchTargetTitle": "匹配目标",
+  "matchTargetDesc": "目标为 MATCH-TARGET 的规则路由到这里，默认取本配置末尾 MATCH 规则的目标。",
+  "selectMatchTarget": "选择 MATCH-TARGET",
+  "findProcessModeDesc": "开启后会有一定性能损耗",
+  "tabAnimationDesc": "仅在移动视图中有效",
+  "multipleValuesTip": "多个值使用逗号分隔",
+  "appendSystemDnsTip": "强制为配置附加系统DNS",
+  "externalFetch": "外部获取",
+  "restoreException": "恢复异常",
+  "networkException": "网络异常，请检查连接后重试",
+  "restoreFromWebDAVDesc": "通过WebDAV恢复数据",
+  "restoreFromFileDesc": "通过文件恢复数据",
+  "proxyGroupNameEmpty": "策略组名称不能为空",
+  "proxyGroupDetectedAbnormal": "检测到当前策略组异常",
+  "proxyProviderDetectedAbnormal": "检测到选中的代理集存在异常",
+  "proxyDetectedAbnormal": "检测到选中的代理存在异常",
+  "createProfile": "创建配置",
+  "entriesCount": "{count} 个条目",
+  "toggleLabel": "切换标签",
+  "dashboardLieVpn": "LieVPN 仪表盘",
+  "personalAccount": "个人中心",
+  "userProfileHeader": "// 用户",
+  "accountStatus": "状态",
+  "statusActive": "激活",
+  "statusExpired": "已过期",
+  "dataLimit": "数据上限",
+  "dataUsed": "已用流量",
+  "unlimited": "∞ 无限制",
+  "expirationDate": "到期时间",
+  "noExpiration": "∞ 永久有效",
+  "updateSubscription": "更新订阅",
+  "subscriptionUpdated": "订阅已更新",
+  "subscriptionNoChanges": "订阅无变化",
+  "notLieVpnSubscription": "这不是 LieVPN 订阅",
+  "donators": "赞助者",
+  "hallOfFameHeader": "// 名人堂 — 总赞助",
+  "supportProject": "支持项目",
+  "subExpireReminder3d": "订阅还有 3 天到期。如果您已续费，请更新订阅。",
+  "subExpireReminder1d": "订阅还有 1 天到期。如果您已续费，请更新订阅。",
+  "subExpireReminder1h": "订阅还有 1 小时到期。如果您已续费，请更新订阅。",
+  "subExpiredNotice": "您的订阅已到期。如果您已续费，请更新订阅。",
+  "subExpiringTitle": "订阅即将到期",
+  "subExpiredTitle": "订阅已到期",
+  "accountUsername": "用户名",
+  "tapToInsertSubscription": "点击粘贴订阅",
+  "subscriptionFromClipboardHint": "从剪贴板、链接或二维码导入",
+  "subscriptionActivating": "正在激活剪贴板中的订阅...",
+  "addSubscription": "添加订阅",
+  "changeSubscription": "更换订阅",
+  "noSubscriptionFound": "未添加订阅",
+  "change": "更换",
+  "subscriptionRequired": "需要订阅",
+  "subscriptionInactive": "订阅未激活",
+  "subscriptionRequiredDesc": "使用 LieVPN 应用需要有效订阅。通过链接或二维码激活访问。",
+  "subscriptionExpiredDesc": "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
+  "insertSubscriptionUrl": "粘贴链接",
+  "scanQrCode": "扫描二维码",
+  "buyInTelegram": "在 Telegram 购买",
+  "checkUpdateStatus": "检查续订",
+  "subscriptionInvalidOrEmpty": "订阅不包含服务器或无效",
+  "subscriptionFoundInClipboard": "在剪贴板中找到订阅",
+  "enterSubscriptionUrl": "输入 LieVPN 订阅链接",
+  "speedtest": "测速",
+  "speedtestDesc": "测试连接速度",
+  "serverStatus": "服务器状态",
+  "serverStatusDesc": "LieVPN 服务器状态与正常运行时间",
+  "vpnConnected": "VPN 已连接",
+  "vpnDisconnected": "VPN 已断开",
+  "readyToTest": "准备测速",
+  "speedtestTestingDownload": "正在测试下载速度...",
+  "speedtestTestingUpload": "正在测试上传速度...",
+  "speedtestTestingPing": "正在测量延迟 (Ping)...",
+  "speedtestCompleted": "测速已完成",
+  "speedtestError": "连接错误",
+  "speedtestDownload": "下载",
+  "speedtestUpload": "上传",
+  "speedtestPing": "延迟",
+  "speedtestStop": "停止",
+  "speedtestStart": "开始测速",
+  "speedtestRunAgain": "重新测速",
+  "speedtestUnitMbps": "Mbps",
+  "speedtestUnitMs": "ms",
+  "speedtestGaugeUnit": "MBPS",
+  "statusAllSystemsOperational": "所有系统运行正常",
+  "statusAllSystemsOperationalDesc": "所有节点均处于可用状态",
+  "statusPartialOutages": "部分节点异常",
+  "statusPartialOutagesDesc": "{up} / {total} 节点正常",
+  "statusAllDown": "所有节点均不可用",
+  "statusAllDownDesc": "所有监控均报告错误",
+  "statusMonitors": "// 监控节点",
+  "statusChecking": "正在检查服务器...",
+  "statusAllAvailable": "所有节点可用 ({count})",
+  "statusUpdated": "已更新",
+  "statusOperational": "可用",
+  "statusDown": "不可用",
+  "statusCheckHistory": "监控历史",
+  "statusNoMonitors": "暂无监控数据",
+  "checkUpdates": "检查更新",
+  "checkUpdatesDesc": "检查是否有新版本可用",
+  "newVersionAvailable": "发现新版本 {version}",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "当前已是最新版本",
+  "updateLater": "稍后",
+  "updateNow": "立即更新",
+  "updateCheckError": "检查更新失败",
+  "addRules": "添加规则",
+  "addRulesDesc": "自定义直连路由规则 (DIRECT)",
+  "ruleDomain": "域名",
+  "ruleApp": "应用",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "进程名或包名 (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "选择应用或进程",
+  "selectAppTitle": "选择应用 / 进程",
+  "searchAppHint": "搜索应用或进程...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "类型",
+  "ruleContent": "规则",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "暂无添加的规则。请在上方添加域名或应用。",
+  "ruleAlreadyExists": "该规则已存在",
+  "ruleInputEmpty": "输入内容不能为空",
+  "ruleAddedSuccess": "规则已成功添加",
+  "supportLieVpn": "LieVPN 支持",
+  "supportLieVpnTitle": "LieVPN 客户支持",
+  "supportMessengerMax": "MAX 消息",
+  "supportMessengerMaxSubtitle": "在 MAX 上联系",
+  "supportEmail": "电子邮件",
+  "aboutAppDesc": "基于 VLESS 和 Hysteria2 协议的私密 VPN，保障数据安全与网络匿名。",
+  "aboutFork": "FlClash 分支",
+  "aboutForkDesc": "打开原版 FlClash 仓库",
+  "liveNotification": "Live 通知",
+  "liveNotificationDesc": "在通知栏显示订阅昵称和实时速率",
+  "lieVpnSettings": "LieVPN 设置",
+  "lieVpnSettingsDesc": "通知与个性化设置",
+  "liveNotificationType": "Live 通知显示内容",
+  "liveNotificationTypeDesc": "选择在状态栏胶囊和 Live 通知中显示的项目",
+  "liveNotificationTypeUsername": "用户名",
+  "liveNotificationTypeTraffic": "已用流量",
+  "liveNotificationTypeSpeed": "网络速度 (下载 + 上传)",
+  "liveNotificationTypeServer": "当前服务器 (国家)",
+  "liveNotificationTypeCustom": "自定义文本",
+  "liveNotificationCustomText": "自定义文本",
+  "liveNotificationCustomTextDesc": "Live 通知中显示的自定义文本",
+  "uk": "乌克兰语",
+  "ko": "韩语",
+  "kk": "哈萨克语",
+  "be": "白俄罗斯语",
+  "tt": "TikTok / 梗模式 ⚡",
+  "renew": "续订",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "续订订阅",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "服务器无响应，正在重新连接...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "赞助之王",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "订阅已过期",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "订阅将在 {time} 后过期",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "下载速度",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "上传速度",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "服务器延迟",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  },
+  "speedtestDisclaimer": "测速通过第三方服务进行。实际速度可能存在差异或测量不准确。",
+  "speedtestNoDataError": "无法测速：服务器无响应",
+  "liveNotificationTypeStreak": "连胜火苗",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "火焰连胜",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count}天}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "火苗正在燃烧！今日已连接。",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "火苗熄灭了。在莫斯科时间00:00（UTC+3 12:00 AM）前连接即可点亮！",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "恢复连胜",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "本月剩余恢复次数: {count} / 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "连胜已成功恢复！",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "本月恢复次数已达上限（最多3次）。",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "火焰连胜规则",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• 连胜于每日莫斯科时间00:00（12:00 AM UTC+3）重置更新。",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• 连胜记录保存在本地设备中，仅在卸载应用时清除。",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• 若遗漏连接，每个自然月内最多可恢复连胜3次。",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "太棒了！已达成连续 {count} 天连胜里程碑！",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 连胜火苗即将熄灭！",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "您今天尚未连接 LieVPN。请在 00:00 MSK 之前连接以保持您的 {count} 天连胜！",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

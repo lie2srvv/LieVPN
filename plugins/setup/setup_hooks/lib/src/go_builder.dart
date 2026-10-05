@@ -113,6 +113,9 @@ class GoBuilder {
 
   Map<String, String> _buildEnvironment(Target target) {
     final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
+    if (target.goarch == 'amd64') {
+      env['GOAMD64'] = 'v1';
+    }
     if (target.isLib) {
       env
         ..['CGO_ENABLED'] = '1'

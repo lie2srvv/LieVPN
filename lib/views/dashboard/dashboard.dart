@@ -13,7 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widget_metrics.dart';
 import 'widget_registry.dart';
 import 'widgets/core_status_button.dart';
-import 'widgets/start_button.dart';
+import 'widgets/dashboard_flame_fab.dart';
+import 'widgets/server_status_card.dart';
+import 'widgets/subscription_status_card.dart';
 
 typedef _IsEditWidgetBuilder = Widget Function(bool isEdit);
 
@@ -194,9 +196,9 @@ class _DashboardViewState extends ConsumerState<DashboardView>
     ];
     return _buildIsEdit(
       (isEdit) => CommonScaffold(
-        title: context.appLocalizations.dashboard,
+        title: context.appLocalizations.dashboardLieVpn,
         actions: _buildActions(isEdit),
-        floatingActionButton: hasProfile ? const StartButton() : null,
+        floatingActionButton: hasProfile ? const DashboardFlameFab() : null,
         body: Align(
           alignment: Alignment.topCenter,
           // SingleChildScrollView snaps a bounce back to its edge whenever a
@@ -219,7 +221,14 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                           constraints: BoxConstraints(
                             maxWidth: dashboardMaxGridWidth,
                           ),
-                          child: LayoutBuilder(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SubscriptionStatusCard(),
+                              SizedBox(height: spacing),
+                              const ServerStatusCard(),
+                              SizedBox(height: spacing),
+                              LayoutBuilder(
                             builder: (_, constraints) {
                               final band = DashboardGridBand.of(
                                 constraints.maxWidth,
@@ -250,6 +259,8 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                                     : grid,
                               );
                             },
+                          ),
+                            ],
                           ),
                         ),
                       ),

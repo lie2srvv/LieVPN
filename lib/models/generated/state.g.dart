@@ -21,6 +21,13 @@ _SharedState _$SharedStateFromJson(Map<String, dynamic> json) => _SharedState(
   onlyStatisticsProxy: json['onlyStatisticsProxy'] as bool,
   showStopAction: json['showStopAction'] as bool? ?? true,
   crashlytics: json['crashlytics'] as bool,
+  liveNotification: json['liveNotification'] as bool? ?? false,
+  liveNotificationType: (json['liveNotificationType'] as num?)?.toInt() ?? 0,
+  liveNotificationCustomText:
+      json['liveNotificationCustomText'] as String? ?? '',
+  currentServerName: json['currentServerName'] as String? ?? '',
+  currentServerPing: (json['currentServerPing'] as num?)?.toInt() ?? 0,
+  streakCount: (json['streakCount'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
@@ -35,4 +42,10 @@ Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
       'onlyStatisticsProxy': instance.onlyStatisticsProxy,
       'showStopAction': instance.showStopAction,
       'crashlytics': instance.crashlytics,
+      'liveNotification': instance.liveNotification,
+      'liveNotificationType': instance.liveNotificationType,
+      'liveNotificationCustomText': instance.liveNotificationCustomText,
+      'currentServerName': instance.currentServerName,
+      'currentServerPing': instance.currentServerPing,
+      'streakCount': instance.streakCount,
     };

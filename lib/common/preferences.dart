@@ -151,6 +151,21 @@ class Preferences {
     await sharedPreferencesIns?.setString(bootRecordKey, json.encode(record));
   }
 
+  Future<String?> getSubNotifyStage(int profileId) async {
+    final sharedPreferencesIns = await sharedPreferencesCompleter.future;
+    return sharedPreferencesIns?.getString('sub_notify_stage_$profileId');
+  }
+
+  Future<void> saveSubNotifyStage(int profileId, String stage) async {
+    final sharedPreferencesIns = await sharedPreferencesCompleter.future;
+    await sharedPreferencesIns?.setString('sub_notify_stage_$profileId', stage);
+  }
+
+  Future<void> clearSubNotifyStage(int profileId) async {
+    final sharedPreferencesIns = await sharedPreferencesCompleter.future;
+    await sharedPreferencesIns?.remove('sub_notify_stage_$profileId');
+  }
+
   Future<void> clearPreferences() async {
     final sharedPreferencesIns = await sharedPreferencesCompleter.future;
     await sharedPreferencesIns?.clear();

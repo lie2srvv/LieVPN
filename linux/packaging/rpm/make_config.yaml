@@ -1,4 +1,4 @@
-display_name: FlClash
+display_name: LieVPN
 
 packager: chen08209
 packagerEmail: chen08209@gmail.com
@@ -36,12 +36,12 @@ supported_mime_type:
   - x-scheme-handler/flclash
 
 keywords:
-  - FlClash
+  - LieVPN
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: FlClash
+generic_name: LieVPN
 
 group: Applications/Internet
 

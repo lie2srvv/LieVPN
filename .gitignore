@@ -77,3 +77,6 @@ devtools_options.yaml
 .fvm/
 .fvmrc
 /coverage/lcov.info
+
+gh_logs/
+design_tokens.json

@@ -1313,6 +1313,58 @@ abstract class _$SortNum extends $Notifier<int> {
   }
 }
 
+@ProviderFor(CurrentServerPing)
+final currentServerPingProvider = CurrentServerPingProvider._();
+
+final class CurrentServerPingProvider
+    extends $NotifierProvider<CurrentServerPing, int> {
+  CurrentServerPingProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentServerPingProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentServerPingHash();
+
+  @$internal
+  @override
+  CurrentServerPing create() => CurrentServerPing();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$currentServerPingHash() => r'58cb545b79a302e29909610925818e181f83be2f';
+
+abstract class _$CurrentServerPing extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(Version)
 final versionProvider = VersionProvider._();
 

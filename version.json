@@ -1,0 +1,25 @@
+{
+  "version": "1.2.0",
+  "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+  "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+  "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+  "releaseNotes": "LieVPN 1.2.0 (Масштабное обновление на базе FlClash 0.8.99!):\n• Новый модульный движок дашборда и поддержка гибких карточек\n• Новый сайдбар, плавающая навигация и жест drag-to-back\n• Исправлена маршрутизация всего ПК через TUN на Linux (включая старые процессоры)\n• Полная поддержка векторных глифов и переработанное меню серверов\n• Бесшовный автоапдейтер, сохранение серий (стриков) и всех настроек",
+  "android": {
+    "version": "1.2.0",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+    "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+    "releaseNotes": "LieVPN 1.2.0 для Android: обновление ядра FlClash 0.8.99, поддержка Android SDK 37, Doze reconnect, плавающий бар и жесты."
+  },
+  "windows": {
+    "version": "1.2.0",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+    "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
+    "releaseNotes": "LieVPN 1.2.0 для Windows: обновление ядра FlClash 0.8.99, новый дашборд, улучшенная стабильность TUN."
+  },
+  "linux": {
+    "version": "1.2.0",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+    "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
+    "releaseNotes": "LieVPN 1.2.0 для Linux: полноценная маршрутизация всего ПК через TUN, поддержка старых CPU (ISA fix), AppImage staging elevation."
+  }
+}

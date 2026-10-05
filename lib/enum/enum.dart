@@ -428,6 +428,9 @@ enum FunctionTag {
   suspend,
   coreErrorNotifier,
   reloadPackages,
+  addCheckIpNum,
+  checkIp,
+  renderPause,
 }
 
 enum DashboardWidget {
@@ -514,6 +517,8 @@ extension GeoResourceExt on GeoResource {
 
 enum PageLabel {
   dashboard,
+  speedtest,
+  serverStatus,
   proxies,
   profiles,
   tools,
@@ -522,6 +527,7 @@ enum PageLabel {
   resources,
   connections,
   dns,
+  addRules,
 }
 
 enum RuleAction {

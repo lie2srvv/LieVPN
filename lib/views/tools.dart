@@ -1,12 +1,9 @@
+import 'package:fl_clash/views/views.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/icons/icons.dart';
-import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/views/about.dart';
-import 'package:fl_clash/views/access.dart';
-import 'package:fl_clash/views/backup_and_restore.dart';
 import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/hotkey.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -14,8 +11,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'config/advanced.dart';
-import 'developer.dart';
-import 'disclaimer.dart';
 import 'theme.dart';
 
 class ToolsView extends ConsumerStatefulWidget {
@@ -52,6 +47,10 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.other,
       items: [
+        const _CheckUpdateItem(),
+        const _SupportItem(),
+        const _DonatorsItem(),
+        const _LieVpnSettingsItem(),
         const _DisclaimerItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
         const _InfoItem(),
@@ -133,7 +132,7 @@ class _LocaleItem extends ConsumerWidget {
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: [null, ...AppLocalizations.delegate.supportedLocales],
+      options: const [Locale('ru'), Locale('en'), Locale('uk'), Locale('be'), Locale('kk'), Locale('ko'), Locale('ja'), Locale('zh_CN'), Locale('tt')],
       onChanged: (Locale? locale) {
         ref
             .read(appSettingProvider.notifier)
@@ -262,6 +261,124 @@ class _DeveloperItem extends StatelessWidget {
       leading: const GlyphIcon(AppGlyphs.cpu),
       title: Text(context.appLocalizations.developerMode),
       widget: const DeveloperView(),
+    );
+  }
+}
+
+class _CheckUpdateItem extends StatelessWidget {
+  const _CheckUpdateItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem(
+      leading: const GlyphIcon(AppGlyphs.cloudDownload),
+      title: Text(context.appLocalizations.checkUpdates),
+      subtitle: Text(context.appLocalizations.checkUpdatesDesc),
+      trailing: const GlyphIcon(AppGlyphs.chevronForward),
+      onTap: () {
+        AppUpdateManager.manualCheckUpdate(context);
+      },
+    );
+  }
+}
+
+class _SupportItem extends StatelessWidget {
+  const _SupportItem();
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.appLocalizations;
+    return ListItem(
+      leading: const Icon(Icons.support_agent_rounded),
+      title: Text(loc.supportLieVpn),
+      subtitle: const Text('Telegram, MAX, Email'),
+      trailing: const GlyphIcon(AppGlyphs.chevronForward),
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          showDragHandle: true,
+          builder: (sheetContext) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      loc.supportLieVpnTitle,
+                      style: Theme.of(sheetContext).textTheme.titleLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ListItem(
+                    leading: const Icon(Icons.send_rounded, color: Color(0xFF2AABEE)),
+                    title: const Text('Telegram'),
+                    subtitle: const Text('@lie2srvv'),
+                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl('https://lie2srvv.t.me');
+                    },
+                  ),
+                  ListItem(
+                    leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
+                    title: Text(loc.supportMessengerMax),
+                    subtitle: Text(loc.supportMessengerMaxSubtitle),
+                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl(
+                        'https://max.ru/u/f9LHodD0cOLnlsYicsq-a-hyW986_IxbXiaExg00IFhfKP9cJFw9tJk-H-A',
+                      );
+                    },
+                  ),
+                  ListItem(
+                    leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
+                    title: Text(loc.supportEmail),
+                    subtitle: const Text('vpn@lie2srvv.com'),
+                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      dialogs.openUrl('mailto:vpn@lie2srvv.com');
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DonatorsItem extends StatelessWidget {
+  const _DonatorsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.open(
+      leading: const GlyphIcon(AppGlyphs.star),
+      title: Text(context.appLocalizations.donators),
+      widget: const DonatorsView(),
+      forceFull: false,
+    );
+  }
+}
+
+class _LieVpnSettingsItem extends StatelessWidget {
+  const _LieVpnSettingsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.open(
+      leading: const GlyphIcon(AppGlyphs.sliders),
+      title: Text(context.appLocalizations.lieVpnSettings),
+      subtitle: Text(context.appLocalizations.lieVpnSettingsDesc),
+      widget: const LieVpnSettingsView(),
     );
   }
 }

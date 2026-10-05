@@ -154,6 +154,32 @@ void _showHelp(ArgParser parser) {
   stderr.writeln(parser.usage);
 }
 
+/// Removes .note.gnu.property section from Linux ELF binaries so they run on older CPUs/LTS kernels
+Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
+  if (!Platform.isLinux) return;
+  final bundleDir = Directory(p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'));
+  if (!bundleDir.existsSync()) return;
+
+  final elfPaths = <String>[];
+  for (final entity in bundleDir.listSync(recursive: true)) {
+    if (entity is File) {
+      final name = p.basename(entity.path);
+      if (name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
+        elfPaths.add(entity.path);
+      }
+    }
+  }
+
+  for (final elfPath in elfPaths) {
+    try {
+      final res = await Process.run('objcopy', ['--remove-section=.note.gnu.property', elfPath]);
+      if (res.exitCode == 0) {
+        stdout.writeln('Sanitized CPU ISA constraints for ${p.basename(elfPath)}');
+      }
+    } catch (_) {}
+  }
+}
+
 Future<int> _package(
   String platform,
   String env,
@@ -177,6 +203,27 @@ Future<int> _package(
 
   final depExit = await _ensureDependencies(platform);
   if (depExit != 0) return depExit;
+
+  // On Linux: build bundle first if packaging AppImage/deb to sanitize binaries before packaging
+  if (platform == 'linux') {
+    stdout.writeln('Pre-building Linux bundle to sanitize CPU architecture requirements...');
+    final buildBundleArgs = [
+      'build',
+      'linux',
+      '--release',
+      if (flutterBuildArgs.isNotEmpty)
+        for (final arg in flutterBuildArgs)
+          if (arg == 'verbose') '-v' else '--$arg',
+    ];
+    final buildProcess = await Process.start('flutter', buildBundleArgs, runInShell: true);
+    buildProcess.stdout.listen((data) => stdout.write(utf8.decode(data)));
+    buildProcess.stderr.listen((data) => stderr.write(utf8.decode(data)));
+    final buildExit = await buildProcess.exitCode;
+    if (buildExit != 0) {
+      return buildExit;
+    }
+    await _sanitizeLinuxElfBinaries(rootDir);
+  }
 
   final activateResult = await Process.run('dart', [
     'pub',
@@ -237,7 +284,7 @@ String _detectArch() {
 }
 
 Future<bool> _hasCommand(String cmd) async {
-  final which = Platform.isWindows ? 'where' : 'command';
+  final which = Platform.isWindows ? 'where' : 'which';
   final args = Platform.isWindows ? [cmd] : ['-v', cmd];
   final result = await Process.run(which, args);
   return result.exitCode == 0;

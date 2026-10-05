@@ -98,9 +98,10 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> updateProfile(
+  Future<bool> updateProfile(
     Profile profile, {
     bool showLoading = false,
+    bool force = false,
     Iterable<int> renameIn = const [],
   }) async {
     final operation = showLoading
@@ -108,15 +109,17 @@ class ProfilesAction extends _$ProfilesAction {
         : null;
     try {
       ref.read(profilesProvider.notifier).put(profile, renameIn: renameIn);
-      final newProfile = await profile.update(
+      final (newProfile, isChanged) = await profile.checkAndUpdate(
         validate: (path) => _core.validateConfig(path),
+        force: force,
       );
       ref.read(profilesProvider.notifier).put(newProfile);
-      if (profile.id == ref.read(currentProfileIdProvider)) {
+      if (isChanged && profile.id == ref.read(currentProfileIdProvider)) {
         ref
             .read(setupActionProvider.notifier)
             .applyProfileDebounce(silence: true);
       }
+      return isChanged;
     } finally {
       if (operation != null) {
         ref
@@ -146,24 +149,57 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormURL(String url, {String? label}) async {
+  Future<bool> addProfileFormURL(String url, {bool replaceOld = true, String? label}) async {
+    var trimmed = url.trim();
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+      trimmed = 'https://$trimmed';
+    }
+    if (!isValidLieVpnSubscriptionUrl(trimmed)) {
+      dialogs.showNotifier(
+        currentAppLocalizations.notLieVpnSubscription,
+        level: MessageLevel.error,
+      );
+      return false;
+    }
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     }
-    ref.read(currentPageLabelProvider.notifier).value = PageLabel.profiles;
+    ref.read(currentPageLabelProvider.notifier).value = PageLabel.dashboard;
     final profile = await globalState.loadingRun(
       tag: LoadingTag.profiles,
       () async {
         return Profile.normal(
           label: label,
-          url: url,
+          url: trimmed,
         ).update(validate: (path) => _core.validateConfig(path));
       },
       title: currentAppLocalizations.addProfile,
     );
     if (profile != null) {
-      putProfile(profile);
+      if (isSubscriptionExpired(profile)) {
+        dialogs.showNotifier(
+          currentAppLocalizations.subExpiredNotice,
+          level: MessageLevel.warning,
+        );
+      }
+      final oldProfiles = List<Profile>.from(ref.read(profilesProvider));
+      if (replaceOld) {
+        for (final old in oldProfiles) {
+          if (old.id != profile.id) {
+            await deleteProfile(old.id);
+          }
+        }
+      }
+      final cleanLabel =
+          profile.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final cleanProfile = profile.copyWith(
+        label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
+      );
+      setProfileAndAutoApply(cleanProfile);
+      ref.read(currentProfileIdProvider.notifier).value = cleanProfile.id;
+      return true;
     }
+    return false;
   }
 
   void setProfileAndAutoApply(Profile profile) {
@@ -173,10 +209,10 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormQrCode() async {
+  Future<bool> addProfileFormQrCode({bool replaceOld = true}) async {
     final url = await globalState.safeRun(picker.pickerConfigQRCode);
-    if (url == null) return;
-    unawaited(addProfileFormURL(url));
+    if (url == null) return false;
+    return addProfileFormURL(url, replaceOld: replaceOld);
   }
 
   void reorder(List<Profile> profiles) {

@@ -64,6 +64,10 @@ _AppSettingProps _$AppSettingPropsFromJson(
           .toList() ??
       const [],
   currentService: json['currentService'] as String?,
+  liveNotification: json['liveNotification'] as bool? ?? false,
+  liveNotificationType: (json['liveNotificationType'] as num?)?.toInt() ?? 0,
+  liveNotificationCustomText:
+      json['liveNotificationCustomText'] as String? ?? '',
 );
 
 Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
@@ -100,6 +104,9 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'serviceOrder': instance.serviceOrder,
       'disabledServices': instance.disabledServices,
       'currentService': instance.currentService,
+      'liveNotification': instance.liveNotification,
+      'liveNotificationType': instance.liveNotificationType,
+      'liveNotificationCustomText': instance.liveNotificationCustomText,
     };
 
 const _$TabAnimationEnumMap = {

@@ -777,5 +777,312 @@
   "large": "Large",
   "extraLarge": "Extra large",
   "switchProfile": "Switch profile",
-  "lastUpdated": "Last updated"
+  "lastUpdated": "Last updated",
+  "logsDesc": "Captured log records",
+  "resourcesDesc": "Information about external resources",
+  "allowLanDesc": "Allow proxy access over the LAN",
+  "minimizeOnExitDesc": "Override the default system exit behavior",
+  "autoCheckUpdateDesc": "Check for updates automatically when the app starts",
+  "application": "Application",
+  "applicationDesc": "Adjust application settings",
+  "allowBypassDesc": "When enabled, some apps can bypass the VPN",
+  "systemProxyDesc": "Set the system proxy",
+  "unifiedDelayDesc": "Remove extra delays such as handshakes",
+  "tcpConcurrentDesc": "Allow concurrent TCP connections",
+  "geodataLoaderDesc": "Use the low-memory Geo loader",
+  "requestsDesc": "View recent request records",
+  "connectionsDesc": "View current connection data",
+  "onlyStatisticsProxyDesc": "When enabled, only proxy traffic is counted",
+  "showNotificationStopActionDesc": "Show a stop button on the persistent notification. Turn it off if your system keeps the notification expanded because of it",
+  "remoteBackupDesc": "Back up data to WebDAV",
+  "localBackupDesc": "Back up data locally",
+  "dnsDesc": "Update DNS-related settings",
+  "hostsDesc": "Append hosts",
+  "loopbackDesc": "Used for UWP loopback exemption",
+  "overrideDnsDesc": "When enabled, the DNS options in the profile are overridden",
+  "preferH3Desc": "Prefer HTTP/3 for DoH",
+  "defaultNameserver": "Default nameserver",
+  "defaultNameserverDesc": "Used to resolve DNS servers",
+  "nameserver": "Nameserver",
+  "nameserverDesc": "Used to resolve domains",
+  "nameserverPolicy": "Nameserver policy",
+  "nameserverPolicyDesc": "Specify the nameserver policy for matching domains",
+  "proxyNameserver": "Proxy nameserver",
+  "proxyNameserverDesc": "Used to resolve proxy node domains",
+  "fallback": "Fallback",
+  "fallbackDesc": "Usually an overseas DNS",
+  "geoipCode": "GeoIP code",
+  "ipcidr": "IP/CIDR",
+  "hotkeyManagementDesc": "Control the app with the keyboard",
+  "inputCorrectHotkey": "Please enter a valid hotkey",
+  "hotkeyConflict": "Hotkey conflict",
+  "noHotKey": "No hotkeys yet",
+  "onlyIcon": "Icon only",
+  "networkDesc": "Adjust network-related settings",
+  "routeAddressDesc": "Configure the listened route addresses",
+  "basicConfig": "Basic configuration",
+  "basicConfigDesc": "Modify the basic configuration globally",
+  "matchTargetTitle": "Match target",
+  "matchTargetDesc": "Where rules targeting MATCH-TARGET go. Defaults to the target of the final MATCH rule in this profile.",
+  "selectMatchTarget": "Select MATCH-TARGET",
+  "findProcessModeDesc": "Enabling causes some performance loss",
+  "tabAnimationDesc": "Only effective in mobile view",
+  "multipleValuesTip": "Separate multiple values with commas",
+  "appendSystemDnsTip": "Force-append the system DNS to the configuration",
+  "externalFetch": "External fetch",
+  "restoreException": "Restore error",
+  "networkException": "Network error, please check your connection and try again",
+  "restoreFromWebDAVDesc": "Restore data from WebDAV",
+  "restoreFromFileDesc": "Restore data from a file",
+  "proxyGroupNameEmpty": "Proxy group name cannot be empty",
+  "proxyGroupDetectedAbnormal": "The current proxy group is abnormal",
+  "proxyProviderDetectedAbnormal": "The selected proxy providers are abnormal",
+  "proxyDetectedAbnormal": "The selected proxies are abnormal",
+  "createProfile": "Create profile",
+  "entriesCount": "{count, plural, =1{1 entry} other{{count} entries}}",
+  "toggleLabel": "Toggle labels",
+  "dashboardLieVpn": "LieVPN Dashboard",
+  "personalAccount": "Personal Account",
+  "userProfileHeader": "// USER",
+  "accountStatus": "STATUS",
+  "statusActive": "Active",
+  "statusExpired": "Expired",
+  "dataLimit": "DATA LIMIT",
+  "dataUsed": "USED",
+  "unlimited": "∞ Unlimited",
+  "expirationDate": "EXPIRATION DATE",
+  "noExpiration": "∞ Unlimited",
+  "updateSubscription": "Update subscription",
+  "subscriptionUpdated": "Subscription updated",
+  "subscriptionNoChanges": "Subscription is up to date",
+  "notLieVpnSubscription": "This is not a LieVPN subscription",
+  "donators": "Donators",
+  "hallOfFameHeader": "// Hall of Fame — Total Donations",
+  "supportProject": "Support project",
+  "subExpireReminder3d": "Subscription expires in 3 days. If you have already renewed, please update your subscription.",
+  "subExpireReminder1d": "Subscription expires in 1 day. If you have already renewed, please update your subscription.",
+  "subExpireReminder1h": "Subscription expires in 1 hour. If you have already renewed, please update your subscription.",
+  "subExpiredNotice": "Your subscription has expired. If you have already renewed, please update your subscription.",
+  "subExpiringTitle": "Subscription expiring soon",
+  "subExpiredTitle": "Subscription expired",
+  "accountUsername": "USERNAME",
+  "tapToInsertSubscription": "Tap to paste subscription",
+  "subscriptionFromClipboardHint": "From clipboard, URL or QR code",
+  "subscriptionActivating": "Activating subscription from clipboard...",
+  "addSubscription": "Add subscription",
+  "changeSubscription": "Change subscription",
+  "noSubscriptionFound": "No subscription added",
+  "change": "Change",
+  "subscriptionRequired": "Subscription Required",
+  "subscriptionInactive": "Subscription Inactive",
+  "subscriptionRequiredDesc": "An active LieVPN subscription is required to use the application. Activate access via URL or QR code.",
+  "subscriptionExpiredDesc": "Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.",
+  "insertSubscriptionUrl": "Paste URL",
+  "scanQrCode": "Scan QR Code",
+  "buyInTelegram": "Get via Telegram",
+  "checkUpdateStatus": "Check Renewal",
+  "subscriptionInvalidOrEmpty": "Subscription contains no servers or is invalid",
+  "subscriptionFoundInClipboard": "Subscription found in clipboard",
+  "enterSubscriptionUrl": "Enter LieVPN subscription URL",
+  "speedtest": "Speedtest",
+  "speedtestDesc": "Test connection speed",
+  "serverStatus": "Server Status",
+  "serverStatusDesc": "LieVPN servers state and uptime",
+  "vpnConnected": "VPN Connected",
+  "vpnDisconnected": "VPN Disconnected",
+  "readyToTest": "Ready to test",
+  "speedtestTestingDownload": "Testing download speed...",
+  "speedtestTestingUpload": "Testing upload speed...",
+  "speedtestTestingPing": "Measuring latency (Ping)...",
+  "speedtestCompleted": "Test completed successfully",
+  "speedtestError": "Connection error",
+  "speedtestDownload": "Download",
+  "speedtestUpload": "Upload",
+  "speedtestPing": "Ping",
+  "speedtestStop": "Stop",
+  "speedtestStart": "Start Test",
+  "speedtestRunAgain": "Test Again",
+  "speedtestUnitMbps": "Mbps",
+  "speedtestUnitMs": "ms",
+  "speedtestGaugeUnit": "MBPS",
+  "statusAllSystemsOperational": "All systems operational",
+  "statusAllSystemsOperationalDesc": "All servers are in \"Operational\" status",
+  "statusPartialOutages": "Partial outages",
+  "statusPartialOutagesDesc": "{up} of {total} operational",
+  "statusAllDown": "All servers down",
+  "statusAllDownDesc": "All monitors report an error",
+  "statusMonitors": "// MONITORS",
+  "statusChecking": "Checking servers...",
+  "statusAllAvailable": "All servers operational ({count})",
+  "statusUpdated": "Updated",
+  "statusOperational": "Operational",
+  "statusDown": "Down",
+  "statusCheckHistory": "Check history",
+  "statusNoMonitors": "No monitor data",
+  "checkUpdates": "Check for updates",
+  "checkUpdatesDesc": "Check if a newer version is available",
+  "newVersionAvailable": "Update {version} available",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "You are using the latest version",
+  "updateLater": "Later",
+  "updateNow": "Update",
+  "updateCheckError": "Failed to check for updates",
+  "addRules": "Add Rules",
+  "addRulesDesc": "Custom direct routing rules (DIRECT)",
+  "ruleDomain": "Domain",
+  "ruleApp": "App",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "Process or package name (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "Select app or process",
+  "selectAppTitle": "Select App / Process",
+  "searchAppHint": "Search app or process...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "Type",
+  "ruleContent": "Rule",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "No rules added yet. Add a domain or app above.",
+  "ruleAlreadyExists": "This rule already exists",
+  "ruleInputEmpty": "Input field cannot be empty",
+  "ruleAddedSuccess": "Rule added successfully",
+  "supportLieVpn": "LieVPN Support",
+  "supportLieVpnTitle": "LieVPN Customer Support",
+  "supportMessengerMax": "MAX Messenger",
+  "supportMessengerMaxSubtitle": "Contact on MAX",
+  "supportEmail": "Email Support",
+  "aboutAppDesc": "Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.",
+  "aboutFork": "FlClash Fork",
+  "aboutForkDesc": "Open original FlClash repository",
+  "liveNotification": "Live notification",
+  "liveNotificationDesc": "Display username and real-time speed in notification",
+  "lieVpnSettings": "LieVPN Settings",
+  "lieVpnSettingsDesc": "Notification and personalization options",
+  "liveNotificationType": "Live Notification Display",
+  "liveNotificationTypeDesc": "Choose what is shown in the status bar pill and live notification",
+  "liveNotificationTypeUsername": "Username",
+  "liveNotificationTypeTraffic": "Data used",
+  "liveNotificationTypeSpeed": "Network speed (Download + Upload)",
+  "liveNotificationTypeServer": "Current server (country)",
+  "liveNotificationTypeCustom": "Custom text",
+  "liveNotificationCustomText": "Custom text",
+  "liveNotificationCustomTextDesc": "Text displayed in Live notification",
+  "uk": "Ukrainian",
+  "ko": "Korean",
+  "kk": "Kazakh",
+  "be": "Belarusian",
+  "tt": "TikTok / Memes ⚡",
+  "renew": "Renew",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "Renew subscription",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "Server stopped responding. Reconnecting...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "Tsar of Donations",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "Subscription has expired",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "Subscription expires in {time}",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "Download speed",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "Upload speed",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "Server ping",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  },
+  "speedtestDisclaimer": "Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.",
+  "speedtestNoDataError": "Failed to measure speed: no response from server",
+  "liveNotificationTypeStreak": "Streak flame",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "Fire Streak",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, one{{count} day} other{{count} days}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "Streak is burning! Connected today.",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "Restore streak",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "Restores remaining this month: {count} of 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "Streak restored successfully!",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "No restores left for this month (maximum 3).",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "Fire Streak Rules",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• Streak progress is stored locally and will only reset if the app is uninstalled.",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• You can restore your broken streak up to 3 times per calendar month.",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "Awesome! {count} days streak milestone reached!",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 Your streak is about to go out!",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "You haven't connected to LieVPN today. Connect before 00:00 MSK to keep your {count}-day streak!",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

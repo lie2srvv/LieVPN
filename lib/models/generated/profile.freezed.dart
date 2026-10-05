@@ -14,7 +14,7 @@ part of '../profile.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$SubscriptionInfo {
+mixin _$SubscriptionInfo implements DiagnosticableTreeMixin {
 
  int get upload; int get download; int get total; int get expire;
 /// Create a copy of SubscriptionInfo
@@ -26,6 +26,13 @@ $SubscriptionInfoCopyWith<SubscriptionInfo> get copyWith => _$SubscriptionInfoCo
   /// Serializes this SubscriptionInfo to a JSON map.
   Map<String, dynamic> toJson();
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as SubscriptionInfo;
+  properties
+    ..add(DiagnosticsProperty('type', 'SubscriptionInfo'))
+    ..add(DiagnosticsProperty('upload', _this.upload))..add(DiagnosticsProperty('download', _this.download))..add(DiagnosticsProperty('total', _this.total))..add(DiagnosticsProperty('expire', _this.expire));
+}
 
 @override
 bool operator ==(Object other) {
@@ -41,7 +48,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   final _this = this as SubscriptionInfo;
   return 'SubscriptionInfo(upload: ${_this.upload}, download: ${_this.download}, total: ${_this.total}, expire: ${_this.expire})';
 }
@@ -217,7 +224,7 @@ return $default(_that.upload,_that.download,_that.total,_that.expire);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _SubscriptionInfo implements SubscriptionInfo {
+class _SubscriptionInfo with DiagnosticableTreeMixin implements SubscriptionInfo {
   const _SubscriptionInfo({this.upload = 0, this.download = 0, this.total = 0, this.expire = 0});
   factory _SubscriptionInfo.fromJson(Map<String, dynamic> json) => _$SubscriptionInfoFromJson(json);
 
@@ -236,6 +243,12 @@ _$SubscriptionInfoCopyWith<_SubscriptionInfo> get copyWith => __$SubscriptionInf
 Map<String, dynamic> toJson() {
   return _$SubscriptionInfoToJson(this, );
 }
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+    ..add(DiagnosticsProperty('type', 'SubscriptionInfo'))
+    ..add(DiagnosticsProperty('upload', upload))..add(DiagnosticsProperty('download', download))..add(DiagnosticsProperty('total', total))..add(DiagnosticsProperty('expire', expire));
+}
 
 @override
 bool operator ==(Object other) {
@@ -249,7 +262,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
     return 'SubscriptionInfo(upload: $upload, download: $download, total: $total, expire: $expire)';
 }
 
@@ -293,7 +306,7 @@ as int,
 
 
 /// @nodoc
-mixin _$Profile {
+mixin _$Profile implements DiagnosticableTreeMixin {
 
  int get id; String get label; String? get currentGroupName; String get url; DateTime? get lastUpdateDate; Duration get autoUpdateDuration; SubscriptionInfo? get subscriptionInfo; bool get autoUpdate; Map<String, String> get selectedMap; Set<String> get unfoldSet; OverwriteType get overwriteType; int? get scriptId; String? get matchTarget; int? get order;
 /// Create a copy of Profile
@@ -305,6 +318,13 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
   /// Serializes this Profile to a JSON map.
   Map<String, dynamic> toJson();
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as Profile;
+  properties
+    ..add(DiagnosticsProperty('type', 'Profile'))
+    ..add(DiagnosticsProperty('id', _this.id))..add(DiagnosticsProperty('label', _this.label))..add(DiagnosticsProperty('currentGroupName', _this.currentGroupName))..add(DiagnosticsProperty('url', _this.url))..add(DiagnosticsProperty('lastUpdateDate', _this.lastUpdateDate))..add(DiagnosticsProperty('autoUpdateDuration', _this.autoUpdateDuration))..add(DiagnosticsProperty('subscriptionInfo', _this.subscriptionInfo))..add(DiagnosticsProperty('autoUpdate', _this.autoUpdate))..add(DiagnosticsProperty('selectedMap', _this.selectedMap))..add(DiagnosticsProperty('unfoldSet', _this.unfoldSet))..add(DiagnosticsProperty('overwriteType', _this.overwriteType))..add(DiagnosticsProperty('scriptId', _this.scriptId))..add(DiagnosticsProperty('matchTarget', _this.matchTarget))..add(DiagnosticsProperty('order', _this.order));
+}
 
 @override
 bool operator ==(Object other) {
@@ -320,7 +340,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   final _this = this as Profile;
   return 'Profile(id: ${_this.id}, label: ${_this.label}, currentGroupName: ${_this.currentGroupName}, url: ${_this.url}, lastUpdateDate: ${_this.lastUpdateDate}, autoUpdateDuration: ${_this.autoUpdateDuration}, subscriptionInfo: ${_this.subscriptionInfo}, autoUpdate: ${_this.autoUpdate}, selectedMap: ${_this.selectedMap}, unfoldSet: ${_this.unfoldSet}, overwriteType: ${_this.overwriteType}, scriptId: ${_this.scriptId}, matchTarget: ${_this.matchTarget}, order: ${_this.order})';
 }
@@ -518,7 +538,7 @@ return $default(_that.id,_that.label,_that.currentGroupName,_that.url,_that.last
 /// @nodoc
 @JsonSerializable()
 
-class _Profile implements Profile {
+class _Profile with DiagnosticableTreeMixin implements Profile {
   const _Profile({required this.id, this.label = '', this.currentGroupName, this.url = '', this.lastUpdateDate, required this.autoUpdateDuration, this.subscriptionInfo, this.autoUpdate = true,  Map<String, String> selectedMap = const {},  Set<String> unfoldSet = const {}, this.overwriteType = OverwriteType.standard, this.scriptId, this.matchTarget, this.order}): _selectedMap = selectedMap,_unfoldSet = unfoldSet;
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
@@ -559,6 +579,12 @@ _$ProfileCopyWith<_Profile> get copyWith => __$ProfileCopyWithImpl<_Profile>(thi
 Map<String, dynamic> toJson() {
   return _$ProfileToJson(this, );
 }
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+    ..add(DiagnosticsProperty('type', 'Profile'))
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('label', label))..add(DiagnosticsProperty('currentGroupName', currentGroupName))..add(DiagnosticsProperty('url', url))..add(DiagnosticsProperty('lastUpdateDate', lastUpdateDate))..add(DiagnosticsProperty('autoUpdateDuration', autoUpdateDuration))..add(DiagnosticsProperty('subscriptionInfo', subscriptionInfo))..add(DiagnosticsProperty('autoUpdate', autoUpdate))..add(DiagnosticsProperty('selectedMap', selectedMap))..add(DiagnosticsProperty('unfoldSet', unfoldSet))..add(DiagnosticsProperty('overwriteType', overwriteType))..add(DiagnosticsProperty('scriptId', scriptId))..add(DiagnosticsProperty('matchTarget', matchTarget))..add(DiagnosticsProperty('order', order));
+}
 
 @override
 bool operator ==(Object other) {
@@ -572,7 +598,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
     return 'Profile(id: $id, label: $label, currentGroupName: $currentGroupName, url: $url, lastUpdateDate: $lastUpdateDate, autoUpdateDuration: $autoUpdateDuration, subscriptionInfo: $subscriptionInfo, autoUpdate: $autoUpdate, selectedMap: $selectedMap, unfoldSet: $unfoldSet, overwriteType: $overwriteType, scriptId: $scriptId, matchTarget: $matchTarget, order: $order)';
 }
 
@@ -637,7 +663,7 @@ $SubscriptionInfoCopyWith<$Res>? get subscriptionInfo {
 }
 
 /// @nodoc
-mixin _$ProfileRuleLink {
+mixin _$ProfileRuleLink implements DiagnosticableTreeMixin {
 
  int? get profileId; int get ruleId; RuleScene? get scene; String? get order;
 /// Create a copy of ProfileRuleLink
@@ -647,6 +673,13 @@ mixin _$ProfileRuleLink {
 $ProfileRuleLinkCopyWith<ProfileRuleLink> get copyWith => _$ProfileRuleLinkCopyWithImpl<ProfileRuleLink>(this as ProfileRuleLink, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as ProfileRuleLink;
+  properties
+    ..add(DiagnosticsProperty('type', 'ProfileRuleLink'))
+    ..add(DiagnosticsProperty('profileId', _this.profileId))..add(DiagnosticsProperty('ruleId', _this.ruleId))..add(DiagnosticsProperty('scene', _this.scene))..add(DiagnosticsProperty('order', _this.order));
+}
 
 @override
 bool operator ==(Object other) {
@@ -662,7 +695,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   final _this = this as ProfileRuleLink;
   return 'ProfileRuleLink(profileId: ${_this.profileId}, ruleId: ${_this.ruleId}, scene: ${_this.scene}, order: ${_this.order})';
 }
@@ -838,7 +871,7 @@ return $default(_that.profileId,_that.ruleId,_that.scene,_that.order);case _:
 /// @nodoc
 
 
-class _ProfileRuleLink implements ProfileRuleLink {
+class _ProfileRuleLink with DiagnosticableTreeMixin implements ProfileRuleLink {
   const _ProfileRuleLink({this.profileId, required this.ruleId, this.scene, this.order});
   
 
@@ -854,6 +887,12 @@ class _ProfileRuleLink implements ProfileRuleLink {
 _$ProfileRuleLinkCopyWith<_ProfileRuleLink> get copyWith => __$ProfileRuleLinkCopyWithImpl<_ProfileRuleLink>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+    ..add(DiagnosticsProperty('type', 'ProfileRuleLink'))
+    ..add(DiagnosticsProperty('profileId', profileId))..add(DiagnosticsProperty('ruleId', ruleId))..add(DiagnosticsProperty('scene', scene))..add(DiagnosticsProperty('order', order));
+}
 
 @override
 bool operator ==(Object other) {
@@ -867,7 +906,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
     return 'ProfileRuleLink(profileId: $profileId, ruleId: $ruleId, scene: $scene, order: $order)';
 }
 
@@ -911,7 +950,7 @@ as String?,
 
 
 /// @nodoc
-mixin _$StandardOverwrite {
+mixin _$StandardOverwrite implements DiagnosticableTreeMixin {
 
  List<Rule> get addedRules; List<int> get disabledRuleIds;
 /// Create a copy of StandardOverwrite
@@ -923,6 +962,13 @@ $StandardOverwriteCopyWith<StandardOverwrite> get copyWith => _$StandardOverwrit
   /// Serializes this StandardOverwrite to a JSON map.
   Map<String, dynamic> toJson();
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as StandardOverwrite;
+  properties
+    ..add(DiagnosticsProperty('type', 'StandardOverwrite'))
+    ..add(DiagnosticsProperty('addedRules', _this.addedRules))..add(DiagnosticsProperty('disabledRuleIds', _this.disabledRuleIds));
+}
 
 @override
 bool operator ==(Object other) {
@@ -938,7 +984,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   final _this = this as StandardOverwrite;
   return 'StandardOverwrite(addedRules: ${_this.addedRules}, disabledRuleIds: ${_this.disabledRuleIds})';
 }
@@ -1112,7 +1158,7 @@ return $default(_that.addedRules,_that.disabledRuleIds);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _StandardOverwrite implements StandardOverwrite {
+class _StandardOverwrite with DiagnosticableTreeMixin implements StandardOverwrite {
   const _StandardOverwrite({ List<Rule> addedRules = const [],  List<int> disabledRuleIds = const []}): _addedRules = addedRules,_disabledRuleIds = disabledRuleIds;
   factory _StandardOverwrite.fromJson(Map<String, dynamic> json) => _$StandardOverwriteFromJson(json);
 
@@ -1141,6 +1187,12 @@ _$StandardOverwriteCopyWith<_StandardOverwrite> get copyWith => __$StandardOverw
 Map<String, dynamic> toJson() {
   return _$StandardOverwriteToJson(this, );
 }
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+    ..add(DiagnosticsProperty('type', 'StandardOverwrite'))
+    ..add(DiagnosticsProperty('addedRules', addedRules))..add(DiagnosticsProperty('disabledRuleIds', disabledRuleIds));
+}
 
 @override
 bool operator ==(Object other) {
@@ -1154,7 +1206,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
     return 'StandardOverwrite(addedRules: $addedRules, disabledRuleIds: $disabledRuleIds)';
 }
 
@@ -1196,7 +1248,7 @@ as List<int>,
 
 
 /// @nodoc
-mixin _$ScriptOverwrite {
+mixin _$ScriptOverwrite implements DiagnosticableTreeMixin {
 
  int? get scriptId;
 /// Create a copy of ScriptOverwrite
@@ -1208,6 +1260,13 @@ $ScriptOverwriteCopyWith<ScriptOverwrite> get copyWith => _$ScriptOverwriteCopyW
   /// Serializes this ScriptOverwrite to a JSON map.
   Map<String, dynamic> toJson();
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as ScriptOverwrite;
+  properties
+    ..add(DiagnosticsProperty('type', 'ScriptOverwrite'))
+    ..add(DiagnosticsProperty('scriptId', _this.scriptId));
+}
 
 @override
 bool operator ==(Object other) {
@@ -1223,7 +1282,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   final _this = this as ScriptOverwrite;
   return 'ScriptOverwrite(scriptId: ${_this.scriptId})';
 }
@@ -1396,7 +1455,7 @@ return $default(_that.scriptId);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _ScriptOverwrite implements ScriptOverwrite {
+class _ScriptOverwrite with DiagnosticableTreeMixin implements ScriptOverwrite {
   const _ScriptOverwrite({this.scriptId});
   factory _ScriptOverwrite.fromJson(Map<String, dynamic> json) => _$ScriptOverwriteFromJson(json);
 
@@ -1412,6 +1471,12 @@ _$ScriptOverwriteCopyWith<_ScriptOverwrite> get copyWith => __$ScriptOverwriteCo
 Map<String, dynamic> toJson() {
   return _$ScriptOverwriteToJson(this, );
 }
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+    ..add(DiagnosticsProperty('type', 'ScriptOverwrite'))
+    ..add(DiagnosticsProperty('scriptId', scriptId));
+}
 
 @override
 bool operator ==(Object other) {
@@ -1425,7 +1490,7 @@ int get hashCode {
 }
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
     return 'ScriptOverwrite(scriptId: $scriptId)';
 }
 

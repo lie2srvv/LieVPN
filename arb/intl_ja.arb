@@ -777,5 +777,312 @@
   "large": "大",
   "extraLarge": "特大",
   "switchProfile": "プロファイルを切り替え",
-  "lastUpdated": "最終更新"
+  "lastUpdated": "最終更新",
+  "logsDesc": "キャプチャしたログの記録",
+  "resourcesDesc": "外部リソースの関連情報",
+  "allowLanDesc": "LAN経由でのプロキシ利用を許可します",
+  "minimizeOnExitDesc": "システム標準の終了動作を変更します",
+  "autoCheckUpdateDesc": "アプリ起動時に更新を自動的にチェックします",
+  "application": "アプリケーション",
+  "applicationDesc": "アプリケーション関連の設定を変更します",
+  "allowBypassDesc": "有効にすると、一部のアプリがVPNをバイパスできます",
+  "systemProxyDesc": "システムプロキシを設定します",
+  "unifiedDelayDesc": "ハンドシェイクなどの余分な遅延を除きます",
+  "tcpConcurrentDesc": "有効にすると、TCPの同時接続を許可します",
+  "geodataLoaderDesc": "有効にすると、低メモリのGeoローダーを使用します",
+  "requestsDesc": "最近のリクエスト記録を表示します",
+  "connectionsDesc": "現在の接続データを表示します",
+  "onlyStatisticsProxyDesc": "有効にすると、プロキシのトラフィックのみを集計します",
+  "showNotificationStopActionDesc": "常駐通知に停止ボタンを表示します。これが原因で通知が常に展開される場合はオフにしてください",
+  "remoteBackupDesc": "WebDAVにデータをバックアップします",
+  "localBackupDesc": "ローカルにデータをバックアップします",
+  "dnsDesc": "DNS関連の設定を更新します",
+  "hostsDesc": "Hostsを追加します",
+  "loopbackDesc": "UWPのループバック解除に使用します",
+  "overrideDnsDesc": "有効にすると、プロファイル内のDNS設定を上書きします",
+  "preferH3Desc": "DoHでHTTP/3を優先します",
+  "defaultNameserver": "デフォルトネームサーバー",
+  "defaultNameserverDesc": "DNSサーバーの名前解決に使用します",
+  "nameserver": "ネームサーバー",
+  "nameserverDesc": "ドメインの名前解決に使用します",
+  "nameserverPolicy": "ネームサーバーポリシー",
+  "nameserverPolicyDesc": "ドメインごとのネームサーバーポリシーを指定します",
+  "proxyNameserver": "プロキシネームサーバー",
+  "proxyNameserverDesc": "プロキシノードのドメイン解決に使用します",
+  "fallback": "フォールバック",
+  "fallbackDesc": "通常は国外のDNSを使用します",
+  "geoipCode": "GeoIPコード",
+  "ipcidr": "IP/CIDR",
+  "hotkeyManagementDesc": "キーボードでアプリを操作します",
+  "inputCorrectHotkey": "正しいホットキーを入力してください",
+  "hotkeyConflict": "ホットキーが競合しています",
+  "noHotKey": "ホットキーはまだありません",
+  "onlyIcon": "アイコンのみ",
+  "networkDesc": "ネットワーク関連の設定を変更します",
+  "routeAddressDesc": "リッスンするルートアドレスを設定します",
+  "basicConfig": "基本設定",
+  "basicConfigDesc": "基本設定をグローバルに変更します",
+  "matchTargetTitle": "マッチ先",
+  "matchTargetDesc": "MATCH-TARGET を対象にしたルールの行き先。既定ではこのプロファイル末尾の MATCH ルールのターゲットを使います。",
+  "selectMatchTarget": "MATCH-TARGET を選択",
+  "findProcessModeDesc": "有効にすると、パフォーマンスが多少低下します",
+  "tabAnimationDesc": "モバイル表示でのみ有効です",
+  "multipleValuesTip": "複数の値はカンマで区切ってください",
+  "appendSystemDnsTip": "設定にシステムDNSを強制的に追加します",
+  "externalFetch": "外部取得",
+  "restoreException": "復元エラー",
+  "networkException": "ネットワークエラーです。接続を確認してから再試行してください",
+  "restoreFromWebDAVDesc": "WebDAVからデータを復元します",
+  "restoreFromFileDesc": "ファイルからデータを復元します",
+  "proxyGroupNameEmpty": "プロキシグループ名は空にできません",
+  "proxyGroupDetectedAbnormal": "現在のプロキシグループに異常が見つかりました",
+  "proxyProviderDetectedAbnormal": "選択したプロキシプロバイダーに異常が見つかりました",
+  "proxyDetectedAbnormal": "選択したプロキシに異常が見つかりました",
+  "createProfile": "プロファイルを作成",
+  "entriesCount": "{count} 件",
+  "toggleLabel": "ラベルを切り替え",
+  "dashboardLieVpn": "LieVPN ダッシュボード",
+  "personalAccount": "マイアカウント",
+  "userProfileHeader": "// ユーザー",
+  "accountStatus": "ステータス",
+  "statusActive": "有効",
+  "statusExpired": "期限切れ",
+  "dataLimit": "データ上限",
+  "dataUsed": "使用済み",
+  "unlimited": "∞ 無制限",
+  "expirationDate": "有効期限",
+  "noExpiration": "∞ 無期限",
+  "updateSubscription": "サブスクリプションを更新",
+  "subscriptionUpdated": "サブスクリプションを更新しました",
+  "subscriptionNoChanges": "変更はありません",
+  "notLieVpnSubscription": "LieVPNのサブスクリプションではありません",
+  "donators": "寄付者",
+  "hallOfFameHeader": "// 殿堂 — 総寄付",
+  "supportProject": "プロジェクトを支援",
+  "subExpireReminder3d": "サブスクリプションの期限まで残り3日です。更新済みの場合はサブスクリプションを更新してください。",
+  "subExpireReminder1d": "サブスクリプションの期限まで残り1日です。更新済みの場合はサブスクリプションを更新してください。",
+  "subExpireReminder1h": "サブスクリプションの期限まで残り1時間です。更新済みの場合はサブスクリプションを更新してください。",
+  "subExpiredNotice": "サブスクリプションの有効期限が切れました。更新済みの場合はサブスクリプションを更新してください。",
+  "subExpiringTitle": "サブスクリプションの期限が近づいています",
+  "subExpiredTitle": "サブスクリプションが切れました",
+  "accountUsername": "ユーザー名",
+  "tapToInsertSubscription": "タップしてサブスクリプションを貼り付け",
+  "subscriptionFromClipboardHint": "クリップボード、URL、またはQRコードから",
+  "subscriptionActivating": "クリップボードからサブスクリプションを有効化しています...",
+  "addSubscription": "サブスクリプションを追加",
+  "changeSubscription": "サブスクリプションを変更",
+  "noSubscriptionFound": "サブスクリプションがありません",
+  "change": "変更",
+  "subscriptionRequired": "サブスクリプションが必要です",
+  "subscriptionInactive": "サブスクリプションが無効です",
+  "subscriptionRequiredDesc": "LieVPN を使用するには有効なサブスクリプションが必要です。リンクまたはQRコードからアクセスを有効化してください。",
+  "subscriptionExpiredDesc": "LieVPN サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
+  "insertSubscriptionUrl": "URLを貼り付け",
+  "scanQrCode": "QRコードをスキャン",
+  "buyInTelegram": "Telegramで購入",
+  "checkUpdateStatus": "更新を確認",
+  "subscriptionInvalidOrEmpty": "サブスクリプションにサーバーが含まれていないか、無効です",
+  "subscriptionFoundInClipboard": "クリップボードにサブスクリプションが見つかりました",
+  "enterSubscriptionUrl": "LieVPN サブスクリプション URL を入力",
+  "speedtest": "スピードテスト",
+  "speedtestDesc": "通信速度テスト",
+  "serverStatus": "サーバー状況",
+  "serverStatusDesc": "LieVPN サーバー状況と稼働時間",
+  "vpnConnected": "VPN 接続中",
+  "vpnDisconnected": "VPN 切断",
+  "readyToTest": "テスト準備完了",
+  "speedtestTestingDownload": "ダウンロード速度測定中...",
+  "speedtestTestingUpload": "アップロード速度測定中...",
+  "speedtestTestingPing": "遅延測定中 (Ping)...",
+  "speedtestCompleted": "テスト完了",
+  "speedtestError": "接続エラー",
+  "speedtestDownload": "ダウンロード",
+  "speedtestUpload": "アップロード",
+  "speedtestPing": "Ping",
+  "speedtestStop": "停止",
+  "speedtestStart": "テスト開始",
+  "speedtestRunAgain": "再測定",
+  "speedtestUnitMbps": "Mbps",
+  "speedtestUnitMs": "ms",
+  "speedtestGaugeUnit": "MBPS",
+  "statusAllSystemsOperational": "全システム正常稼働中",
+  "statusAllSystemsOperationalDesc": "すべてのサーバーが利用可能です",
+  "statusPartialOutages": "一部で障害発生中",
+  "statusPartialOutagesDesc": "{up}/{total} 台が稼働中",
+  "statusAllDown": "全サーバー停止中",
+  "statusAllDownDesc": "すべての監視対象でエラーが発生しています",
+  "statusMonitors": "// 監視対象",
+  "statusChecking": "サーバー確認中...",
+  "statusAllAvailable": "全サーバー稼働中 ({count})",
+  "statusUpdated": "更新済み",
+  "statusOperational": "稼働中",
+  "statusDown": "停止中",
+  "statusCheckHistory": "監視履歴",
+  "statusNoMonitors": "監視データがありません",
+  "checkUpdates": "アップデートを確認",
+  "checkUpdatesDesc": "新しいバージョンがあるか確認します",
+  "newVersionAvailable": "バージョン {version} が利用可能です",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersionInstalled": "最新バージョンを使用しています",
+  "updateLater": "あとで",
+  "updateNow": "更新する",
+  "updateCheckError": "アップデートの確認に失敗しました",
+  "addRules": "ルール追加",
+  "addRulesDesc": "カスタムダイレクトルーティングルール (DIRECT)",
+  "ruleDomain": "ドメイン",
+  "ruleApp": "アプリ",
+  "ruleDomainHint": "example.com (DOMAIN-SUFFIX)",
+  "ruleProcessHint": "プロセス名またはパッケージ名 (PROCESS-NAME)",
+  "ruleSelectAppTooltip": "アプリまたはプロセスを選択",
+  "selectAppTitle": "アプリ / プロセスを選択",
+  "searchAppHint": "アプリまたはプロセスを検索...",
+  "ruleTargetDirect": "DIRECT",
+  "ruleType": "タイプ",
+  "ruleContent": "ルール",
+  "ruleActionDirectBadge": "DIRECT",
+  "noAddedRulesYet": "追加されたルールはありません。上部からドメインまたはアプリを追加してください。",
+  "ruleAlreadyExists": "このルールは既に存在します",
+  "ruleInputEmpty": "入力フィールドを空にすることはできません",
+  "ruleAddedSuccess": "ルールが正常に追加されました",
+  "supportLieVpn": "LieVPN サポート",
+  "supportLieVpnTitle": "LieVPN カスタマーサポート",
+  "supportMessengerMax": "MAX メッセンジャー",
+  "supportMessengerMaxSubtitle": "MAXでお問い合わせ",
+  "supportEmail": "メールサポート",
+  "aboutAppDesc": "VLESSおよびHysteria2プロトコルに基づき、データの安全性とインターネットの匿名性を保護するプライベートVPN。",
+  "aboutFork": "FlClash フォーク",
+  "aboutForkDesc": "オリジナルのFlClashリポジトリを開く",
+  "liveNotification": "Live通知",
+  "liveNotificationDesc": "通知バーにサブスクリプション名と通信速度を表示",
+  "lieVpnSettings": "LieVPN 設定",
+  "lieVpnSettingsDesc": "通知とカスタマイズの設定",
+  "liveNotificationType": "Live通知の表示内容",
+  "liveNotificationTypeDesc": "ステータスバーのピルやLive通知に表示する項目を選択します",
+  "liveNotificationTypeUsername": "ユーザー名",
+  "liveNotificationTypeTraffic": "使用データ量",
+  "liveNotificationTypeSpeed": "ネットワーク速度 (ダウンロード + アップロード)",
+  "liveNotificationTypeServer": "現在のサーバー (国)",
+  "liveNotificationTypeCustom": "カスタムテキスト",
+  "liveNotificationCustomText": "カスタムテキスト",
+  "liveNotificationCustomTextDesc": "Live通知に表示するテキスト",
+  "uk": "ウクライナ語",
+  "ko": "韓国語",
+  "kk": "カザフ語",
+  "be": "ベラルーシ語",
+  "tt": "TikTok / ミーム ⚡",
+  "renew": "更新",
+  "@renew": {
+    "description": "renew"
+  },
+  "renewSubscription": "サブスクリプションを更新",
+  "@renewSubscription": {
+    "description": "renewSubscription"
+  },
+  "serverNotRespondingReconnecting": "サーバーが応答を停止しました。再接続中...",
+  "@serverNotRespondingReconnecting": {
+    "description": "serverNotRespondingReconnecting"
+  },
+  "tsarOfDonations": "寄付の王",
+  "@tsarOfDonations": {
+    "description": "tsarOfDonations"
+  },
+  "subscriptionExpiredWarning": "サブスクリプションの有効期限が切れました",
+  "@subscriptionExpiredWarning": {
+    "description": "subscriptionExpiredWarning"
+  },
+  "subscriptionExpiringIn": "サブスクリプションは{time}で期限切れになります",
+  "@subscriptionExpiringIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@liveNotificationTypeSpeed": {
+    "description": "liveNotificationTypeSpeed"
+  },
+  "liveNotificationTypeSpeedDown": "ダウンロード速度",
+  "@liveNotificationTypeSpeedDown": {
+    "description": "liveNotificationTypeSpeedDown"
+  },
+  "liveNotificationTypeSpeedUp": "アップロード速度",
+  "@liveNotificationTypeSpeedUp": {
+    "description": "liveNotificationTypeSpeedUp"
+  },
+  "liveNotificationTypePing": "サーバーのping",
+  "@liveNotificationTypePing": {
+    "description": "liveNotificationTypePing"
+  },
+  "speedtestDisclaimer": "速度テストはサードパーティのサービスを利用して行われます。実際の速度とは異なる場合や正確に測定されない場合があります。",
+  "speedtestNoDataError": "速度を測定できませんでした：サーバーからの応答がありません",
+  "liveNotificationTypeStreak": "ストリークの炎",
+  "@liveNotificationTypeStreak": {
+    "description": "liveNotificationTypeStreak"
+  },
+  "streakFlameTitle": "ファイアーストリーク",
+  "@streakFlameTitle": {
+    "description": "streakFlameTitle"
+  },
+  "streakDaysCount": "{count, plural, other{{count}日}}",
+  "@streakDaysCount": {
+    "description": "streakDaysCount"
+  },
+  "streakActiveToday": "炎が燃えています！本日接続完了。",
+  "@streakActiveToday": {
+    "description": "streakActiveToday"
+  },
+  "streakInactiveToday": "炎が消えています。モスクワ時間00:00（12:00 AM UTC+3）までに接続して点火しましょう！",
+  "@streakInactiveToday": {
+    "description": "streakInactiveToday"
+  },
+  "streakRestoreButton": "ストリークを復元",
+  "@streakRestoreButton": {
+    "description": "streakRestoreButton"
+  },
+  "streakRestoresLeft": "今月の残り復元回数: {count} / 3",
+  "@streakRestoresLeft": {
+    "description": "streakRestoresLeft"
+  },
+  "streakRestoredSuccess": "ストリークを復元しました！",
+  "@streakRestoredSuccess": {
+    "description": "streakRestoredSuccess"
+  },
+  "streakNoRestoresLeft": "今月の復元上限（最大3回）に達しました。",
+  "@streakNoRestoresLeft": {
+    "description": "streakNoRestoresLeft"
+  },
+  "streakRuleTitle": "ファイアーストリークのルール",
+  "@streakRuleTitle": {
+    "description": "streakRuleTitle"
+  },
+  "streakRuleTime": "• ストリークは毎日モスクワ時間00:00（12:00 AM UTC+3）にリセットされます。",
+  "@streakRuleTime": {
+    "description": "streakRuleTime"
+  },
+  "streakRuleStorage": "• ストリークは端末内に保存され、アプリをアンインストールした場合のみ削除されます。",
+  "@streakRuleStorage": {
+    "description": "streakRuleStorage"
+  },
+  "streakRuleRestore": "• 日付を逃した場合でも、1か月に最大3回までストリークを復元できます。",
+  "@streakRuleRestore": {
+    "description": "streakRuleRestore"
+  },
+  "streakMilestoneCongrats": "おめでとうございます！{count}日連続ストリーク達成！",
+  "@streakMilestoneCongrats": {
+    "description": "streakMilestoneCongrats"
+  },
+  "streakNotificationTitle": "🔥 ストリークの炎が消えそうです！",
+  "@streakNotificationTitle": {
+    "description": "streakNotificationTitle"
+  },
+  "streakNotificationBody": "本日まだLieVPNに接続していません。{count}日連続記録を維持するため、00:00 MSKまでに接続してください！",
+  "@streakNotificationBody": {
+    "description": "streakNotificationBody"
+  }
 }

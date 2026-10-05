@@ -138,7 +138,35 @@ class SetupAction extends _$SetupAction {
     }
   }
 
+  DateTime? _lastToggleTime;
+
   Future<bool> setRunning(bool running, {bool initialize = false}) {
+    if (!initialize && (Platform.isWindows || Platform.isLinux)) {
+      final now = DateTime.now();
+      if (_lastToggleTime != null &&
+          now.difference(_lastToggleTime!) < const Duration(milliseconds: 1500)) {
+        commonPrint.log('setRunning debounced (cooldown 1.5s)');
+        return Future.value(ref.read(isStartProvider));
+      }
+      _lastToggleTime = now;
+    }
+    if (running && !ref.read(hasActiveSubscriptionProvider)) {
+      dialogs.showNotifier(
+        currentAppLocalizations.subscriptionRequiredDesc,
+        level: MessageLevel.warning,
+      );
+      return Future.value(false);
+    }
+    if (running && system.isDesktop) {
+      final tunEnable = ref.read(
+        patchClashConfigProvider.select((state) => state.tun.enable),
+      );
+      if (!tunEnable) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(enable: true));
+      }
+    }
     if (running && !initialize && !ref.read(initProvider)) {
       return Future.value(true);
     }

@@ -6447,6 +6447,1985 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Captured log records`
+  String get logsDesc {
+    return Intl.message(
+      'Captured log records',
+      name: 'logsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Information about external resources`
+  String get resourcesDesc {
+    return Intl.message(
+      'Information about external resources',
+      name: 'resourcesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow proxy access over the LAN`
+  String get allowLanDesc {
+    return Intl.message(
+      'Allow proxy access over the LAN',
+      name: 'allowLanDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Override the default system exit behavior`
+  String get minimizeOnExitDesc {
+    return Intl.message(
+      'Override the default system exit behavior',
+      name: 'minimizeOnExitDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check for updates automatically when the app starts`
+  String get autoCheckUpdateDesc {
+    return Intl.message(
+      'Check for updates automatically when the app starts',
+      name: 'autoCheckUpdateDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Application`
+  String get application {
+    return Intl.message('Application', name: 'application', desc: '', args: []);
+  }
+
+  /// `Adjust application settings`
+  String get applicationDesc {
+    return Intl.message(
+      'Adjust application settings',
+      name: 'applicationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When enabled, some apps can bypass the VPN`
+  String get allowBypassDesc {
+    return Intl.message(
+      'When enabled, some apps can bypass the VPN',
+      name: 'allowBypassDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set the system proxy`
+  String get systemProxyDesc {
+    return Intl.message(
+      'Set the system proxy',
+      name: 'systemProxyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove extra delays such as handshakes`
+  String get unifiedDelayDesc {
+    return Intl.message(
+      'Remove extra delays such as handshakes',
+      name: 'unifiedDelayDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow concurrent TCP connections`
+  String get tcpConcurrentDesc {
+    return Intl.message(
+      'Allow concurrent TCP connections',
+      name: 'tcpConcurrentDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use the low-memory Geo loader`
+  String get geodataLoaderDesc {
+    return Intl.message(
+      'Use the low-memory Geo loader',
+      name: 'geodataLoaderDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View recent request records`
+  String get requestsDesc {
+    return Intl.message(
+      'View recent request records',
+      name: 'requestsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View current connection data`
+  String get connectionsDesc {
+    return Intl.message(
+      'View current connection data',
+      name: 'connectionsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When enabled, only proxy traffic is counted`
+  String get onlyStatisticsProxyDesc {
+    return Intl.message(
+      'When enabled, only proxy traffic is counted',
+      name: 'onlyStatisticsProxyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show a stop button on the persistent notification. Turn it off if your system keeps the notification expanded because of it`
+  String get showNotificationStopActionDesc {
+    return Intl.message(
+      'Show a stop button on the persistent notification. Turn it off if your system keeps the notification expanded because of it',
+      name: 'showNotificationStopActionDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back up data to WebDAV`
+  String get remoteBackupDesc {
+    return Intl.message(
+      'Back up data to WebDAV',
+      name: 'remoteBackupDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back up data locally`
+  String get localBackupDesc {
+    return Intl.message(
+      'Back up data locally',
+      name: 'localBackupDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update DNS-related settings`
+  String get dnsDesc {
+    return Intl.message(
+      'Update DNS-related settings',
+      name: 'dnsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Append hosts`
+  String get hostsDesc {
+    return Intl.message('Append hosts', name: 'hostsDesc', desc: '', args: []);
+  }
+
+  /// `Used for UWP loopback exemption`
+  String get loopbackDesc {
+    return Intl.message(
+      'Used for UWP loopback exemption',
+      name: 'loopbackDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When enabled, the DNS options in the profile are overridden`
+  String get overrideDnsDesc {
+    return Intl.message(
+      'When enabled, the DNS options in the profile are overridden',
+      name: 'overrideDnsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Prefer HTTP/3 for DoH`
+  String get preferH3Desc {
+    return Intl.message(
+      'Prefer HTTP/3 for DoH',
+      name: 'preferH3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Default nameserver`
+  String get defaultNameserver {
+    return Intl.message(
+      'Default nameserver',
+      name: 'defaultNameserver',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Used to resolve DNS servers`
+  String get defaultNameserverDesc {
+    return Intl.message(
+      'Used to resolve DNS servers',
+      name: 'defaultNameserverDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nameserver`
+  String get nameserver {
+    return Intl.message('Nameserver', name: 'nameserver', desc: '', args: []);
+  }
+
+  /// `Used to resolve domains`
+  String get nameserverDesc {
+    return Intl.message(
+      'Used to resolve domains',
+      name: 'nameserverDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nameserver policy`
+  String get nameserverPolicy {
+    return Intl.message(
+      'Nameserver policy',
+      name: 'nameserverPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specify the nameserver policy for matching domains`
+  String get nameserverPolicyDesc {
+    return Intl.message(
+      'Specify the nameserver policy for matching domains',
+      name: 'nameserverPolicyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy nameserver`
+  String get proxyNameserver {
+    return Intl.message(
+      'Proxy nameserver',
+      name: 'proxyNameserver',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Used to resolve proxy node domains`
+  String get proxyNameserverDesc {
+    return Intl.message(
+      'Used to resolve proxy node domains',
+      name: 'proxyNameserverDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fallback`
+  String get fallback {
+    return Intl.message('Fallback', name: 'fallback', desc: '', args: []);
+  }
+
+  /// `Usually an overseas DNS`
+  String get fallbackDesc {
+    return Intl.message(
+      'Usually an overseas DNS',
+      name: 'fallbackDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `GeoIP code`
+  String get geoipCode {
+    return Intl.message('GeoIP code', name: 'geoipCode', desc: '', args: []);
+  }
+
+  /// `IP/CIDR`
+  String get ipcidr {
+    return Intl.message('IP/CIDR', name: 'ipcidr', desc: '', args: []);
+  }
+
+  /// `Control the app with the keyboard`
+  String get hotkeyManagementDesc {
+    return Intl.message(
+      'Control the app with the keyboard',
+      name: 'hotkeyManagementDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid hotkey`
+  String get inputCorrectHotkey {
+    return Intl.message(
+      'Please enter a valid hotkey',
+      name: 'inputCorrectHotkey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hotkey conflict`
+  String get hotkeyConflict {
+    return Intl.message(
+      'Hotkey conflict',
+      name: 'hotkeyConflict',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No hotkeys yet`
+  String get noHotKey {
+    return Intl.message('No hotkeys yet', name: 'noHotKey', desc: '', args: []);
+  }
+
+  /// `Icon only`
+  String get onlyIcon {
+    return Intl.message('Icon only', name: 'onlyIcon', desc: '', args: []);
+  }
+
+  /// `Adjust network-related settings`
+  String get networkDesc {
+    return Intl.message(
+      'Adjust network-related settings',
+      name: 'networkDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Configure the listened route addresses`
+  String get routeAddressDesc {
+    return Intl.message(
+      'Configure the listened route addresses',
+      name: 'routeAddressDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Basic configuration`
+  String get basicConfig {
+    return Intl.message(
+      'Basic configuration',
+      name: 'basicConfig',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Modify the basic configuration globally`
+  String get basicConfigDesc {
+    return Intl.message(
+      'Modify the basic configuration globally',
+      name: 'basicConfigDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match target`
+  String get matchTargetTitle {
+    return Intl.message(
+      'Match target',
+      name: 'matchTargetTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Where rules targeting MATCH-TARGET go. Defaults to the target of the final MATCH rule in this profile.`
+  String get matchTargetDesc {
+    return Intl.message(
+      'Where rules targeting MATCH-TARGET go. Defaults to the target of the final MATCH rule in this profile.',
+      name: 'matchTargetDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select MATCH-TARGET`
+  String get selectMatchTarget {
+    return Intl.message(
+      'Select MATCH-TARGET',
+      name: 'selectMatchTarget',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enabling causes some performance loss`
+  String get findProcessModeDesc {
+    return Intl.message(
+      'Enabling causes some performance loss',
+      name: 'findProcessModeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only effective in mobile view`
+  String get tabAnimationDesc {
+    return Intl.message(
+      'Only effective in mobile view',
+      name: 'tabAnimationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Separate multiple values with commas`
+  String get multipleValuesTip {
+    return Intl.message(
+      'Separate multiple values with commas',
+      name: 'multipleValuesTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Force-append the system DNS to the configuration`
+  String get appendSystemDnsTip {
+    return Intl.message(
+      'Force-append the system DNS to the configuration',
+      name: 'appendSystemDnsTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `External fetch`
+  String get externalFetch {
+    return Intl.message(
+      'External fetch',
+      name: 'externalFetch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore error`
+  String get restoreException {
+    return Intl.message(
+      'Restore error',
+      name: 'restoreException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network error, please check your connection and try again`
+  String get networkException {
+    return Intl.message(
+      'Network error, please check your connection and try again',
+      name: 'networkException',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore data from WebDAV`
+  String get restoreFromWebDAVDesc {
+    return Intl.message(
+      'Restore data from WebDAV',
+      name: 'restoreFromWebDAVDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore data from a file`
+  String get restoreFromFileDesc {
+    return Intl.message(
+      'Restore data from a file',
+      name: 'restoreFromFileDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy group name cannot be empty`
+  String get proxyGroupNameEmpty {
+    return Intl.message(
+      'Proxy group name cannot be empty',
+      name: 'proxyGroupNameEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The current proxy group is abnormal`
+  String get proxyGroupDetectedAbnormal {
+    return Intl.message(
+      'The current proxy group is abnormal',
+      name: 'proxyGroupDetectedAbnormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The selected proxy providers are abnormal`
+  String get proxyProviderDetectedAbnormal {
+    return Intl.message(
+      'The selected proxy providers are abnormal',
+      name: 'proxyProviderDetectedAbnormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The selected proxies are abnormal`
+  String get proxyDetectedAbnormal {
+    return Intl.message(
+      'The selected proxies are abnormal',
+      name: 'proxyDetectedAbnormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create profile`
+  String get createProfile {
+    return Intl.message(
+      'Create profile',
+      name: 'createProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, =1{1 entry} other{{count} entries}}`
+  String entriesCount(num count) {
+    return Intl.plural(
+      count,
+      one: '1 entry',
+      other: '$count entries',
+      name: 'entriesCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Toggle labels`
+  String get toggleLabel {
+    return Intl.message(
+      'Toggle labels',
+      name: 'toggleLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Dashboard`
+  String get dashboardLieVpn {
+    return Intl.message(
+      'LieVPN Dashboard',
+      name: 'dashboardLieVpn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal Account`
+  String get personalAccount {
+    return Intl.message(
+      'Personal Account',
+      name: 'personalAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `// USER`
+  String get userProfileHeader {
+    return Intl.message(
+      '// USER',
+      name: 'userProfileHeader',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `STATUS`
+  String get accountStatus {
+    return Intl.message('STATUS', name: 'accountStatus', desc: '', args: []);
+  }
+
+  /// `Active`
+  String get statusActive {
+    return Intl.message('Active', name: 'statusActive', desc: '', args: []);
+  }
+
+  /// `Expired`
+  String get statusExpired {
+    return Intl.message('Expired', name: 'statusExpired', desc: '', args: []);
+  }
+
+  /// `DATA LIMIT`
+  String get dataLimit {
+    return Intl.message('DATA LIMIT', name: 'dataLimit', desc: '', args: []);
+  }
+
+  /// `USED`
+  String get dataUsed {
+    return Intl.message('USED', name: 'dataUsed', desc: '', args: []);
+  }
+
+  /// `∞ Unlimited`
+  String get unlimited {
+    return Intl.message('∞ Unlimited', name: 'unlimited', desc: '', args: []);
+  }
+
+  /// `EXPIRATION DATE`
+  String get expirationDate {
+    return Intl.message(
+      'EXPIRATION DATE',
+      name: 'expirationDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `∞ Unlimited`
+  String get noExpiration {
+    return Intl.message(
+      '∞ Unlimited',
+      name: 'noExpiration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update subscription`
+  String get updateSubscription {
+    return Intl.message(
+      'Update subscription',
+      name: 'updateSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription updated`
+  String get subscriptionUpdated {
+    return Intl.message(
+      'Subscription updated',
+      name: 'subscriptionUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription is up to date`
+  String get subscriptionNoChanges {
+    return Intl.message(
+      'Subscription is up to date',
+      name: 'subscriptionNoChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This is not a LieVPN subscription`
+  String get notLieVpnSubscription {
+    return Intl.message(
+      'This is not a LieVPN subscription',
+      name: 'notLieVpnSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Donators`
+  String get donators {
+    return Intl.message('Donators', name: 'donators', desc: '', args: []);
+  }
+
+  /// `// Hall of Fame — Total Donations`
+  String get hallOfFameHeader {
+    return Intl.message(
+      '// Hall of Fame — Total Donations',
+      name: 'hallOfFameHeader',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Support project`
+  String get supportProject {
+    return Intl.message(
+      'Support project',
+      name: 'supportProject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 3 days. If you have already renewed, please update your subscription.`
+  String get subExpireReminder3d {
+    return Intl.message(
+      'Subscription expires in 3 days. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder3d',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 1 day. If you have already renewed, please update your subscription.`
+  String get subExpireReminder1d {
+    return Intl.message(
+      'Subscription expires in 1 day. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder1d',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in 1 hour. If you have already renewed, please update your subscription.`
+  String get subExpireReminder1h {
+    return Intl.message(
+      'Subscription expires in 1 hour. If you have already renewed, please update your subscription.',
+      name: 'subExpireReminder1h',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription has expired. If you have already renewed, please update your subscription.`
+  String get subExpiredNotice {
+    return Intl.message(
+      'Your subscription has expired. If you have already renewed, please update your subscription.',
+      name: 'subExpiredNotice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expiring soon`
+  String get subExpiringTitle {
+    return Intl.message(
+      'Subscription expiring soon',
+      name: 'subExpiringTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription expired`
+  String get subExpiredTitle {
+    return Intl.message(
+      'Subscription expired',
+      name: 'subExpiredTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `USERNAME`
+  String get accountUsername {
+    return Intl.message(
+      'USERNAME',
+      name: 'accountUsername',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to paste subscription`
+  String get tapToInsertSubscription {
+    return Intl.message(
+      'Tap to paste subscription',
+      name: 'tapToInsertSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `From clipboard, URL or QR code`
+  String get subscriptionFromClipboardHint {
+    return Intl.message(
+      'From clipboard, URL or QR code',
+      name: 'subscriptionFromClipboardHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activating subscription from clipboard...`
+  String get subscriptionActivating {
+    return Intl.message(
+      'Activating subscription from clipboard...',
+      name: 'subscriptionActivating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add subscription`
+  String get addSubscription {
+    return Intl.message(
+      'Add subscription',
+      name: 'addSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change subscription`
+  String get changeSubscription {
+    return Intl.message(
+      'Change subscription',
+      name: 'changeSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No subscription added`
+  String get noSubscriptionFound {
+    return Intl.message(
+      'No subscription added',
+      name: 'noSubscriptionFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change`
+  String get change {
+    return Intl.message('Change', name: 'change', desc: '', args: []);
+  }
+
+  /// `Subscription Required`
+  String get subscriptionRequired {
+    return Intl.message(
+      'Subscription Required',
+      name: 'subscriptionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription Inactive`
+  String get subscriptionInactive {
+    return Intl.message(
+      'Subscription Inactive',
+      name: 'subscriptionInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An active LieVPN subscription is required to use the application. Activate access via URL or QR code.`
+  String get subscriptionRequiredDesc {
+    return Intl.message(
+      'An active LieVPN subscription is required to use the application. Activate access via URL or QR code.',
+      name: 'subscriptionRequiredDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.`
+  String get subscriptionExpiredDesc {
+    return Intl.message(
+      'Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.',
+      name: 'subscriptionExpiredDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste URL`
+  String get insertSubscriptionUrl {
+    return Intl.message(
+      'Paste URL',
+      name: 'insertSubscriptionUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan QR Code`
+  String get scanQrCode {
+    return Intl.message('Scan QR Code', name: 'scanQrCode', desc: '', args: []);
+  }
+
+  /// `Get via Telegram`
+  String get buyInTelegram {
+    return Intl.message(
+      'Get via Telegram',
+      name: 'buyInTelegram',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check Renewal`
+  String get checkUpdateStatus {
+    return Intl.message(
+      'Check Renewal',
+      name: 'checkUpdateStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription contains no servers or is invalid`
+  String get subscriptionInvalidOrEmpty {
+    return Intl.message(
+      'Subscription contains no servers or is invalid',
+      name: 'subscriptionInvalidOrEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription found in clipboard`
+  String get subscriptionFoundInClipboard {
+    return Intl.message(
+      'Subscription found in clipboard',
+      name: 'subscriptionFoundInClipboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter LieVPN subscription URL`
+  String get enterSubscriptionUrl {
+    return Intl.message(
+      'Enter LieVPN subscription URL',
+      name: 'enterSubscriptionUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Speedtest`
+  String get speedtest {
+    return Intl.message('Speedtest', name: 'speedtest', desc: '', args: []);
+  }
+
+  /// `Test connection speed`
+  String get speedtestDesc {
+    return Intl.message(
+      'Test connection speed',
+      name: 'speedtestDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server Status`
+  String get serverStatus {
+    return Intl.message(
+      'Server Status',
+      name: 'serverStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN servers state and uptime`
+  String get serverStatusDesc {
+    return Intl.message(
+      'LieVPN servers state and uptime',
+      name: 'serverStatusDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `VPN Connected`
+  String get vpnConnected {
+    return Intl.message(
+      'VPN Connected',
+      name: 'vpnConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `VPN Disconnected`
+  String get vpnDisconnected {
+    return Intl.message(
+      'VPN Disconnected',
+      name: 'vpnDisconnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ready to test`
+  String get readyToTest {
+    return Intl.message(
+      'Ready to test',
+      name: 'readyToTest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing download speed...`
+  String get speedtestTestingDownload {
+    return Intl.message(
+      'Testing download speed...',
+      name: 'speedtestTestingDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing upload speed...`
+  String get speedtestTestingUpload {
+    return Intl.message(
+      'Testing upload speed...',
+      name: 'speedtestTestingUpload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Measuring latency (Ping)...`
+  String get speedtestTestingPing {
+    return Intl.message(
+      'Measuring latency (Ping)...',
+      name: 'speedtestTestingPing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test completed successfully`
+  String get speedtestCompleted {
+    return Intl.message(
+      'Test completed successfully',
+      name: 'speedtestCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection error`
+  String get speedtestError {
+    return Intl.message(
+      'Connection error',
+      name: 'speedtestError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get speedtestDownload {
+    return Intl.message(
+      'Download',
+      name: 'speedtestDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload`
+  String get speedtestUpload {
+    return Intl.message('Upload', name: 'speedtestUpload', desc: '', args: []);
+  }
+
+  /// `Ping`
+  String get speedtestPing {
+    return Intl.message('Ping', name: 'speedtestPing', desc: '', args: []);
+  }
+
+  /// `Stop`
+  String get speedtestStop {
+    return Intl.message('Stop', name: 'speedtestStop', desc: '', args: []);
+  }
+
+  /// `Start Test`
+  String get speedtestStart {
+    return Intl.message(
+      'Start Test',
+      name: 'speedtestStart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test Again`
+  String get speedtestRunAgain {
+    return Intl.message(
+      'Test Again',
+      name: 'speedtestRunAgain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mbps`
+  String get speedtestUnitMbps {
+    return Intl.message('Mbps', name: 'speedtestUnitMbps', desc: '', args: []);
+  }
+
+  /// `ms`
+  String get speedtestUnitMs {
+    return Intl.message('ms', name: 'speedtestUnitMs', desc: '', args: []);
+  }
+
+  /// `MBPS`
+  String get speedtestGaugeUnit {
+    return Intl.message('MBPS', name: 'speedtestGaugeUnit', desc: '', args: []);
+  }
+
+  /// `All systems operational`
+  String get statusAllSystemsOperational {
+    return Intl.message(
+      'All systems operational',
+      name: 'statusAllSystemsOperational',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All servers are in "Operational" status`
+  String get statusAllSystemsOperationalDesc {
+    return Intl.message(
+      'All servers are in "Operational" status',
+      name: 'statusAllSystemsOperationalDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Partial outages`
+  String get statusPartialOutages {
+    return Intl.message(
+      'Partial outages',
+      name: 'statusPartialOutages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{up} of {total} operational`
+  String statusPartialOutagesDesc(Object up, Object total) {
+    return Intl.message(
+      '$up of $total operational',
+      name: 'statusPartialOutagesDesc',
+      desc: '',
+      args: [up, total],
+    );
+  }
+
+  /// `All servers down`
+  String get statusAllDown {
+    return Intl.message(
+      'All servers down',
+      name: 'statusAllDown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All monitors report an error`
+  String get statusAllDownDesc {
+    return Intl.message(
+      'All monitors report an error',
+      name: 'statusAllDownDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `// MONITORS`
+  String get statusMonitors {
+    return Intl.message(
+      '// MONITORS',
+      name: 'statusMonitors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checking servers...`
+  String get statusChecking {
+    return Intl.message(
+      'Checking servers...',
+      name: 'statusChecking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All servers operational ({count})`
+  String statusAllAvailable(Object count) {
+    return Intl.message(
+      'All servers operational ($count)',
+      name: 'statusAllAvailable',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Updated`
+  String get statusUpdated {
+    return Intl.message('Updated', name: 'statusUpdated', desc: '', args: []);
+  }
+
+  /// `Operational`
+  String get statusOperational {
+    return Intl.message(
+      'Operational',
+      name: 'statusOperational',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Down`
+  String get statusDown {
+    return Intl.message('Down', name: 'statusDown', desc: '', args: []);
+  }
+
+  /// `Check history`
+  String get statusCheckHistory {
+    return Intl.message(
+      'Check history',
+      name: 'statusCheckHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No monitor data`
+  String get statusNoMonitors {
+    return Intl.message(
+      'No monitor data',
+      name: 'statusNoMonitors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check for updates`
+  String get checkUpdates {
+    return Intl.message(
+      'Check for updates',
+      name: 'checkUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check if a newer version is available`
+  String get checkUpdatesDesc {
+    return Intl.message(
+      'Check if a newer version is available',
+      name: 'checkUpdatesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update {version} available`
+  String newVersionAvailable(String version) {
+    return Intl.message(
+      'Update $version available',
+      name: 'newVersionAvailable',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `You are using the latest version`
+  String get latestVersionInstalled {
+    return Intl.message(
+      'You are using the latest version',
+      name: 'latestVersionInstalled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Later`
+  String get updateLater {
+    return Intl.message('Later', name: 'updateLater', desc: '', args: []);
+  }
+
+  /// `Update`
+  String get updateNow {
+    return Intl.message('Update', name: 'updateNow', desc: '', args: []);
+  }
+
+  /// `Failed to check for updates`
+  String get updateCheckError {
+    return Intl.message(
+      'Failed to check for updates',
+      name: 'updateCheckError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Rules`
+  String get addRules {
+    return Intl.message('Add Rules', name: 'addRules', desc: '', args: []);
+  }
+
+  /// `Custom direct routing rules (DIRECT)`
+  String get addRulesDesc {
+    return Intl.message(
+      'Custom direct routing rules (DIRECT)',
+      name: 'addRulesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domain`
+  String get ruleDomain {
+    return Intl.message('Domain', name: 'ruleDomain', desc: '', args: []);
+  }
+
+  /// `App`
+  String get ruleApp {
+    return Intl.message('App', name: 'ruleApp', desc: '', args: []);
+  }
+
+  /// `example.com (DOMAIN-SUFFIX)`
+  String get ruleDomainHint {
+    return Intl.message(
+      'example.com (DOMAIN-SUFFIX)',
+      name: 'ruleDomainHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Process or package name (PROCESS-NAME)`
+  String get ruleProcessHint {
+    return Intl.message(
+      'Process or package name (PROCESS-NAME)',
+      name: 'ruleProcessHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select app or process`
+  String get ruleSelectAppTooltip {
+    return Intl.message(
+      'Select app or process',
+      name: 'ruleSelectAppTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select App / Process`
+  String get selectAppTitle {
+    return Intl.message(
+      'Select App / Process',
+      name: 'selectAppTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search app or process...`
+  String get searchAppHint {
+    return Intl.message(
+      'Search app or process...',
+      name: 'searchAppHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DIRECT`
+  String get ruleTargetDirect {
+    return Intl.message('DIRECT', name: 'ruleTargetDirect', desc: '', args: []);
+  }
+
+  /// `Type`
+  String get ruleType {
+    return Intl.message('Type', name: 'ruleType', desc: '', args: []);
+  }
+
+  /// `Rule`
+  String get ruleContent {
+    return Intl.message('Rule', name: 'ruleContent', desc: '', args: []);
+  }
+
+  /// `DIRECT`
+  String get ruleActionDirectBadge {
+    return Intl.message(
+      'DIRECT',
+      name: 'ruleActionDirectBadge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rules added yet. Add a domain or app above.`
+  String get noAddedRulesYet {
+    return Intl.message(
+      'No rules added yet. Add a domain or app above.',
+      name: 'noAddedRulesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This rule already exists`
+  String get ruleAlreadyExists {
+    return Intl.message(
+      'This rule already exists',
+      name: 'ruleAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input field cannot be empty`
+  String get ruleInputEmpty {
+    return Intl.message(
+      'Input field cannot be empty',
+      name: 'ruleInputEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rule added successfully`
+  String get ruleAddedSuccess {
+    return Intl.message(
+      'Rule added successfully',
+      name: 'ruleAddedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Support`
+  String get supportLieVpn {
+    return Intl.message(
+      'LieVPN Support',
+      name: 'supportLieVpn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Customer Support`
+  String get supportLieVpnTitle {
+    return Intl.message(
+      'LieVPN Customer Support',
+      name: 'supportLieVpnTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MAX Messenger`
+  String get supportMessengerMax {
+    return Intl.message(
+      'MAX Messenger',
+      name: 'supportMessengerMax',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact on MAX`
+  String get supportMessengerMaxSubtitle {
+    return Intl.message(
+      'Contact on MAX',
+      name: 'supportMessengerMaxSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email Support`
+  String get supportEmail {
+    return Intl.message(
+      'Email Support',
+      name: 'supportEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.`
+  String get aboutAppDesc {
+    return Intl.message(
+      'Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.',
+      name: 'aboutAppDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FlClash Fork`
+  String get aboutFork {
+    return Intl.message('FlClash Fork', name: 'aboutFork', desc: '', args: []);
+  }
+
+  /// `Open original FlClash repository`
+  String get aboutForkDesc {
+    return Intl.message(
+      'Open original FlClash repository',
+      name: 'aboutForkDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live notification`
+  String get liveNotification {
+    return Intl.message(
+      'Live notification',
+      name: 'liveNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Display username and real-time speed in notification`
+  String get liveNotificationDesc {
+    return Intl.message(
+      'Display username and real-time speed in notification',
+      name: 'liveNotificationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LieVPN Settings`
+  String get lieVpnSettings {
+    return Intl.message(
+      'LieVPN Settings',
+      name: 'lieVpnSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notification and personalization options`
+  String get lieVpnSettingsDesc {
+    return Intl.message(
+      'Notification and personalization options',
+      name: 'lieVpnSettingsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live Notification Display`
+  String get liveNotificationType {
+    return Intl.message(
+      'Live Notification Display',
+      name: 'liveNotificationType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose what is shown in the status bar pill and live notification`
+  String get liveNotificationTypeDesc {
+    return Intl.message(
+      'Choose what is shown in the status bar pill and live notification',
+      name: 'liveNotificationTypeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username`
+  String get liveNotificationTypeUsername {
+    return Intl.message(
+      'Username',
+      name: 'liveNotificationTypeUsername',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data used`
+  String get liveNotificationTypeTraffic {
+    return Intl.message(
+      'Data used',
+      name: 'liveNotificationTypeTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network speed (Download + Upload)`
+  String get liveNotificationTypeSpeed {
+    return Intl.message(
+      'Network speed (Download + Upload)',
+      name: 'liveNotificationTypeSpeed',
+      desc: 'liveNotificationTypeSpeed',
+      args: [],
+    );
+  }
+
+  /// `Current server (country)`
+  String get liveNotificationTypeServer {
+    return Intl.message(
+      'Current server (country)',
+      name: 'liveNotificationTypeServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom text`
+  String get liveNotificationTypeCustom {
+    return Intl.message(
+      'Custom text',
+      name: 'liveNotificationTypeCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom text`
+  String get liveNotificationCustomText {
+    return Intl.message(
+      'Custom text',
+      name: 'liveNotificationCustomText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Text displayed in Live notification`
+  String get liveNotificationCustomTextDesc {
+    return Intl.message(
+      'Text displayed in Live notification',
+      name: 'liveNotificationCustomTextDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ukrainian`
+  String get uk {
+    return Intl.message('Ukrainian', name: 'uk', desc: '', args: []);
+  }
+
+  /// `Korean`
+  String get ko {
+    return Intl.message('Korean', name: 'ko', desc: '', args: []);
+  }
+
+  /// `Kazakh`
+  String get kk {
+    return Intl.message('Kazakh', name: 'kk', desc: '', args: []);
+  }
+
+  /// `Belarusian`
+  String get be {
+    return Intl.message('Belarusian', name: 'be', desc: '', args: []);
+  }
+
+  /// `TikTok / Memes ⚡`
+  String get tt {
+    return Intl.message('TikTok / Memes ⚡', name: 'tt', desc: '', args: []);
+  }
+
+  /// `Renew`
+  String get renew {
+    return Intl.message('Renew', name: 'renew', desc: 'renew', args: []);
+  }
+
+  /// `Renew subscription`
+  String get renewSubscription {
+    return Intl.message(
+      'Renew subscription',
+      name: 'renewSubscription',
+      desc: 'renewSubscription',
+      args: [],
+    );
+  }
+
+  /// `Server stopped responding. Reconnecting...`
+  String get serverNotRespondingReconnecting {
+    return Intl.message(
+      'Server stopped responding. Reconnecting...',
+      name: 'serverNotRespondingReconnecting',
+      desc: 'serverNotRespondingReconnecting',
+      args: [],
+    );
+  }
+
+  /// `Tsar of Donations`
+  String get tsarOfDonations {
+    return Intl.message(
+      'Tsar of Donations',
+      name: 'tsarOfDonations',
+      desc: 'tsarOfDonations',
+      args: [],
+    );
+  }
+
+  /// `Subscription has expired`
+  String get subscriptionExpiredWarning {
+    return Intl.message(
+      'Subscription has expired',
+      name: 'subscriptionExpiredWarning',
+      desc: 'subscriptionExpiredWarning',
+      args: [],
+    );
+  }
+
+  /// `Subscription expires in {time}`
+  String subscriptionExpiringIn(String time) {
+    return Intl.message(
+      'Subscription expires in $time',
+      name: 'subscriptionExpiringIn',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Download speed`
+  String get liveNotificationTypeSpeedDown {
+    return Intl.message(
+      'Download speed',
+      name: 'liveNotificationTypeSpeedDown',
+      desc: 'liveNotificationTypeSpeedDown',
+      args: [],
+    );
+  }
+
+  /// `Upload speed`
+  String get liveNotificationTypeSpeedUp {
+    return Intl.message(
+      'Upload speed',
+      name: 'liveNotificationTypeSpeedUp',
+      desc: 'liveNotificationTypeSpeedUp',
+      args: [],
+    );
+  }
+
+  /// `Server ping`
+  String get liveNotificationTypePing {
+    return Intl.message(
+      'Server ping',
+      name: 'liveNotificationTypePing',
+      desc: 'liveNotificationTypePing',
+      args: [],
+    );
+  }
+
+  /// `Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.`
+  String get speedtestDisclaimer {
+    return Intl.message(
+      'Speed tests are performed via third-party services. Actual speed may differ or be measured inaccurately.',
+      name: 'speedtestDisclaimer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to measure speed: no response from server`
+  String get speedtestNoDataError {
+    return Intl.message(
+      'Failed to measure speed: no response from server',
+      name: 'speedtestNoDataError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Streak flame`
+  String get liveNotificationTypeStreak {
+    return Intl.message(
+      'Streak flame',
+      name: 'liveNotificationTypeStreak',
+      desc: 'liveNotificationTypeStreak',
+      args: [],
+    );
+  }
+
+  /// `Fire Streak`
+  String get streakFlameTitle {
+    return Intl.message(
+      'Fire Streak',
+      name: 'streakFlameTitle',
+      desc: 'streakFlameTitle',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, one{{count} day} other{{count} days}}`
+  String streakDaysCount(num count) {
+    return Intl.plural(
+      count,
+      one: '$count day',
+      other: '$count days',
+      name: 'streakDaysCount',
+      desc: 'streakDaysCount',
+      args: [count],
+    );
+  }
+
+  /// `Streak is burning! Connected today.`
+  String get streakActiveToday {
+    return Intl.message(
+      'Streak is burning! Connected today.',
+      name: 'streakActiveToday',
+      desc: 'streakActiveToday',
+      args: [],
+    );
+  }
+
+  /// `Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!`
+  String get streakInactiveToday {
+    return Intl.message(
+      'Streak is out. Connect before 00:00 MSK (12:00 AM UTC+3) to light it up!',
+      name: 'streakInactiveToday',
+      desc: 'streakInactiveToday',
+      args: [],
+    );
+  }
+
+  /// `Restore streak`
+  String get streakRestoreButton {
+    return Intl.message(
+      'Restore streak',
+      name: 'streakRestoreButton',
+      desc: 'streakRestoreButton',
+      args: [],
+    );
+  }
+
+  /// `Restores remaining this month: {count} of 3`
+  String streakRestoresLeft(Object count) {
+    return Intl.message(
+      'Restores remaining this month: $count of 3',
+      name: 'streakRestoresLeft',
+      desc: 'streakRestoresLeft',
+      args: [count],
+    );
+  }
+
+  /// `Streak restored successfully!`
+  String get streakRestoredSuccess {
+    return Intl.message(
+      'Streak restored successfully!',
+      name: 'streakRestoredSuccess',
+      desc: 'streakRestoredSuccess',
+      args: [],
+    );
+  }
+
+  /// `No restores left for this month (maximum 3).`
+  String get streakNoRestoresLeft {
+    return Intl.message(
+      'No restores left for this month (maximum 3).',
+      name: 'streakNoRestoresLeft',
+      desc: 'streakNoRestoresLeft',
+      args: [],
+    );
+  }
+
+  /// `Fire Streak Rules`
+  String get streakRuleTitle {
+    return Intl.message(
+      'Fire Streak Rules',
+      name: 'streakRuleTitle',
+      desc: 'streakRuleTitle',
+      args: [],
+    );
+  }
+
+  /// `• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).`
+  String get streakRuleTime {
+    return Intl.message(
+      '• Streak resets daily at 00:00 MSK (12:00 AM UTC+3).',
+      name: 'streakRuleTime',
+      desc: 'streakRuleTime',
+      args: [],
+    );
+  }
+
+  /// `• Streak progress is stored locally and will only reset if the app is uninstalled.`
+  String get streakRuleStorage {
+    return Intl.message(
+      '• Streak progress is stored locally and will only reset if the app is uninstalled.',
+      name: 'streakRuleStorage',
+      desc: 'streakRuleStorage',
+      args: [],
+    );
+  }
+
+  /// `• You can restore your broken streak up to 3 times per calendar month.`
+  String get streakRuleRestore {
+    return Intl.message(
+      '• You can restore your broken streak up to 3 times per calendar month.',
+      name: 'streakRuleRestore',
+      desc: 'streakRuleRestore',
+      args: [],
+    );
+  }
+
+  /// `Awesome! {count} days streak milestone reached!`
+  String streakMilestoneCongrats(Object count) {
+    return Intl.message(
+      'Awesome! $count days streak milestone reached!',
+      name: 'streakMilestoneCongrats',
+      desc: 'streakMilestoneCongrats',
+      args: [count],
+    );
+  }
+
+  /// `🔥 Your streak is about to go out!`
+  String get streakNotificationTitle {
+    return Intl.message(
+      '🔥 Your streak is about to go out!',
+      name: 'streakNotificationTitle',
+      desc: 'streakNotificationTitle',
+      args: [],
+    );
+  }
+
+  /// `You haven't connected to LieVPN today. Connect before 00:00 MSK to keep your {count}-day streak!`
+  String streakNotificationBody(Object count) {
+    return Intl.message(
+      'You haven\'t connected to LieVPN today. Connect before 00:00 MSK to keep your $count-day streak!',
+      name: 'streakNotificationBody',
+      desc: 'streakNotificationBody',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -6455,8 +8434,13 @@ class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'be'),
       Locale.fromSubtags(languageCode: 'ja'),
+      Locale.fromSubtags(languageCode: 'kk'),
+      Locale.fromSubtags(languageCode: 'ko'),
       Locale.fromSubtags(languageCode: 'ru'),
+      Locale.fromSubtags(languageCode: 'tt'),
+      Locale.fromSubtags(languageCode: 'uk'),
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
     ];
   }

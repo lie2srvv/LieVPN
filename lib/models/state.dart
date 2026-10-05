@@ -313,6 +313,12 @@ abstract class SharedState with _$SharedState {
     required bool onlyStatisticsProxy,
     @Default(true) bool showStopAction,
     required bool crashlytics,
+    @Default(false) bool liveNotification,
+    @Default(0) int liveNotificationType,
+    @Default('') String liveNotificationCustomText,
+    @Default('') String currentServerName,
+    @Default(0) int currentServerPing,
+    @Default(0) int streakCount,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>

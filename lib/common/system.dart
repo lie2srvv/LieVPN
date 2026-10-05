@@ -180,14 +180,6 @@ class System {
     if (hasHelperService) {
       return await linux?.registerService() ?? AuthorizeCode.error;
     }
-    if (isAppImage) {
-      commonPrint.log(
-        'TUN cannot be authorized inside an AppImage: '
-        'the bundled Core is on a read-only nosuid mount',
-        logLevel: LogLevel.error,
-      );
-      return AuthorizeCode.error;
-    }
     final isAdmin = await checkIsAdmin();
     if (isAdmin) {
       return AuthorizeCode.none;
@@ -206,13 +198,49 @@ class System {
       }
       return AuthorizeCode.success;
     } else if (system.isLinux) {
+      if (isAppImage) {
+        const targetPath = AppPath.linuxExternalCorePath;
+        final sourcePath = appPath.bundledCorePath;
+        final stagePath = '/tmp/.lievpn_core_stage_$pid';
+        try {
+          await File(sourcePath).copy(stagePath);
+        } catch (e) {
+          commonPrint.log('Failed to copy core to staging: $e', logLevel: LogLevel.error);
+          return AuthorizeCode.error;
+        }
+
+        final escapedTarget = _shellEscape(targetPath);
+        final escapedStage = _shellEscape(stagePath);
+        final shellCommand =
+            'mkdir -p /opt/flclash && mv -f $escapedStage $escapedTarget && chown root:root $escapedTarget && chmod 4755 $escapedTarget && (setcap cap_net_admin,cap_net_bind_service+ep $escapedTarget 2>/dev/null || true)';
+        final ProcessResult result;
+        try {
+          result = await runProcess('pkexec', ['/bin/sh', '-c', shellCommand]);
+        } on ProcessException catch (error) {
+          commonPrint.log('pkexec is unavailable: ${compactError(error)}', logLevel: LogLevel.error);
+          return AuthorizeCode.error;
+        } finally {
+          final stageFile = File(stagePath);
+          if (stageFile.existsSync()) {
+            try {
+              stageFile.deleteSync();
+            } catch (_) {}
+          }
+        }
+        if (result.exitCode != 0) {
+          commonPrint.log('pkexec failed for AppImage core: ${result.exitCode}', logLevel: LogLevel.error);
+          return AuthorizeCode.error;
+        }
+        return AuthorizeCode.success;
+      }
+
       final escapedCorePath = _shellEscape(appPath.corePath);
       final ProcessResult result;
       try {
         result = await runProcess('pkexec', [
           '/bin/sh',
           '-c',
-          'chown root:root $escapedCorePath && chmod +sx $escapedCorePath',
+          'chown root:root $escapedCorePath && chmod 4755 $escapedCorePath && (setcap cap_net_admin,cap_net_bind_service+ep $escapedCorePath 2>/dev/null || true)',
         ]);
       } on ProcessException catch (error) {
         commonPrint.log(

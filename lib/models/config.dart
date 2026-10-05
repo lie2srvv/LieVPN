@@ -159,6 +159,9 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default([]) List<String> serviceOrder,
     @Default([]) List<String> disabledServices,
     String? currentService,
+    @Default(false) bool liveNotification,
+    @Default(0) int liveNotificationType,
+    @Default('') String liveNotificationCustomText,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>

@@ -123,13 +123,9 @@ int _render(String root, ArgResults command) {
 
   final output = switch (rest.first) {
     'release' => renderRelease(version),
-    // Only stable builds pass --tag, and only they get a release page; a
-    // prerelease caption already links its workflow run.
     'telegram' => renderTelegram(
       version,
-      moreUrl: tag == null
-          ? null
-          : 'https://github.com/$_repository/releases/tag/$tag',
+      moreUrl: 'https://github.com/$_repository/releases',
     ),
     _ => _fail('Unknown render target: ${rest.first}'),
   };

@@ -33,7 +33,12 @@ class AppPath {
 
   AppPath._internal() {
     appDirPath = join(dirname(Platform.resolvedExecutable));
-    supportDirectory().then((value) {
+    supportDirectory().then((value) async {
+      if (Platform.isLinux) {
+        try {
+          await _migrateLegacyLinuxDataDir(value);
+        } catch (_) {}
+      }
       dataDir.complete(value);
     });
     temporaryDirectory().then((value) {
@@ -58,8 +63,22 @@ class AppPath {
     return dirname(currentExecutablePath);
   }
 
-  String get corePath {
+  String get bundledCorePath {
     return join(executableDirPath, 'FlClashCore$executableExtension');
+  }
+
+  static const String linuxExternalCorePath = '/opt/flclash/FlClashCore';
+
+  String get corePath {
+    if (system.isLinux) {
+      if (isLinuxRoot()) {
+        return bundledCorePath;
+      }
+      if (File(linuxExternalCorePath).existsSync()) {
+        return linuxExternalCorePath;
+      }
+    }
+    return bundledCorePath;
   }
 
   String get helperPath {
@@ -88,7 +107,7 @@ class AppPath {
 
   Future<String> get lockFilePath async {
     final homeDirPath = await appPath.homeDirPath;
-    return join(homeDirPath, 'FlClash.lock');
+    return join(homeDirPath, 'LieVPN.lock');
   }
 
   Future<String> get configFilePath async {
@@ -162,6 +181,51 @@ class AppPath {
   Future<String> get tempPath async {
     final directory = await tempDir.future;
     return directory.path;
+  }
+
+  static Future<void> _migrateLegacyLinuxDataDir(Directory targetDir) async {
+    final parent = targetDir.parent;
+    final legacyDir = Directory(join(parent.path, 'com.follow.clash'));
+    if (!await legacyDir.exists()) {
+      return;
+    }
+
+    if (!await targetDir.exists()) {
+      await targetDir.create(recursive: true);
+    }
+
+    final targetEntities = targetDir.listSync();
+    final hasExistingData = targetEntities.any((e) =>
+        basename(e.path) == 'database.sqlite' ||
+        basename(e.path) == 'config.yaml' ||
+        basename(e.path) == 'profiles');
+
+    if (hasExistingData) {
+      return;
+    }
+
+    await _copyDirectory(legacyDir, targetDir);
+  }
+
+  static Future<void> _copyDirectory(Directory source, Directory destination) async {
+    await for (final entity in source.list(recursive: false)) {
+      final name = basename(entity.path);
+      if (name.endsWith('.lock') || name.endsWith('.sock')) {
+        continue;
+      }
+      final newPath = join(destination.path, name);
+      if (entity is Directory) {
+        final newDir = Directory(newPath);
+        if (!await newDir.exists()) {
+          await newDir.create(recursive: true);
+        }
+        await _copyDirectory(entity, newDir);
+      } else if (entity is File) {
+        try {
+          await entity.copy(newPath);
+        } catch (_) {}
+      }
+    }
   }
 }
 
