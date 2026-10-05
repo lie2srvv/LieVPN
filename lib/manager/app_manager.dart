@@ -6,7 +6,6 @@ import 'package:fl_clash/common/system_dns.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
 import 'package:fl_clash/widgets/icon.dart';
 import 'package:fl_clash/widgets/sidebar.dart';
@@ -122,10 +121,10 @@ class AppEnvManager extends ConsumerWidget {
     if (safeMode) {
       return 'SAFE MODE';
     }
-    if (!globalState.isPre) {
-      return null;
+    if (kDebugMode) {
+      return 'DEBUG';
     }
-    return kDebugMode ? 'DEBUG' : globalState.appEnv.toUpperCase();
+    return null;
   }
 
   @override

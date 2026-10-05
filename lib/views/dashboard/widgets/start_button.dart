@@ -197,6 +197,7 @@ class _StartButtonState extends ConsumerState<StartButton>
       return BreathingFill(
         active: isStart && !suspend,
         child: FloatingActionButton(
+          shape: AppShape.md,
           heroTag: null,
           tooltip: suspended ? appLocalizations.suspended : null,
           onPressed: handleSwitchStart,

@@ -50,8 +50,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         const _CheckUpdateItem(),
         const _SupportItem(),
         const _DonatorsItem(),
-        const _LieVpnSettingsItem(),
-        const _DisclaimerItem(),
+        if (system.isAndroid) const _LieVpnSettingsItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
         const _InfoItem(),
       ],
@@ -226,18 +225,6 @@ class _AdvancedConfigItem extends StatelessWidget {
   }
 }
 
-class _DisclaimerItem extends StatelessWidget {
-  const _DisclaimerItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.gavel),
-      title: Text(context.appLocalizations.disclaimer),
-      widget: const DisclaimerView(),
-    );
-  }
-}
 
 class _InfoItem extends StatelessWidget {
   const _InfoItem();

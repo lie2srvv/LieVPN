@@ -16,6 +16,7 @@ const double _barPadding = 4;
 const double _edgeMargin = 21;
 const double _shadowRoom = 8;
 const double _fabGap = 8;
+const _dockButtonShape = AppShape.md;
 const double _hitSlop = 8;
 const double _maxItemExtent = 72;
 const _fullWidthCount = 5;
@@ -233,12 +234,14 @@ class NavigationDock extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelected,
     this.trailing,
+    this.streakFlame,
   });
 
   final List<NavigationDockDestination> destinations;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
   final Widget? trailing;
+  final Widget? streakFlame;
 
   /// Whether [context] sits in the dock's button slot, where a button keeps
   /// to a circle the bar's height instead of growing a label.
@@ -292,6 +295,8 @@ class NavigationDock extends StatelessWidget {
                   ),
                 ),
               ),
+              if (streakFlame != null)
+                _DockTrailing(height: height, child: streakFlame),
               _DockTrailing(height: height, child: trailing),
             ],
           ),
@@ -353,7 +358,7 @@ class _DockTrailing extends StatelessWidget {
   ThemeData _dockedTheme(ThemeData theme) {
     return theme.copyWith(
       floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
-        shape: AppShape.full,
+        shape: _dockButtonShape,
         elevation: 0,
         focusElevation: 0,
         hoverElevation: 0,
@@ -404,7 +409,7 @@ class _DockTrailing extends StatelessWidget {
                 child: ElasticButton(
                   child: DecoratedBox(
                     decoration: ShapeDecoration(
-                      shape: AppShape.full,
+                      shape: _dockButtonShape,
                       shadows: _dockShadows(theme.colorScheme),
                     ),
                     child: Builder(
@@ -1088,7 +1093,7 @@ class _HoverHighlight extends StatelessWidget {
       child: DecoratedBox(
         decoration: ShapeDecoration(
           color: context.colorScheme.onSurface.withValues(alpha: alpha),
-          shape: AppShape.full,
+          shape: _dockButtonShape,
         ),
       ),
     );
@@ -1133,7 +1138,7 @@ class _Lens extends StatelessWidget {
             ),
             colorScheme.secondaryContainer,
           ),
-          shape: AppShape.full,
+          shape: _dockButtonShape,
         ),
       ),
     );
@@ -1273,7 +1278,7 @@ class _FloatingBarItemState extends State<_FloatingBarItem>
             color: _focused
                 ? colorScheme.onSurface.withValues(alpha: 0.1)
                 : Colors.transparent,
-            shape: AppShape.full.copyWith(
+            shape: _dockButtonShape.copyWith(
               side: _focused
                   ? BorderSide(color: colorScheme.secondary, width: 2)
                   : BorderSide.none,
@@ -1531,7 +1536,7 @@ class _RenderLensTint extends RenderProxyBox {
       return;
     }
     final reach = content.expandToInclude(bounds).inflate(_labelInset);
-    final lens = AppShape.full.getOuterPath(lensBounds);
+    final lens = _dockButtonShape.getOuterPath(lensBounds);
     _outside.layer = context.pushClipPath(
       needsCompositing,
       offset,

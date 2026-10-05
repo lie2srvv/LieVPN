@@ -251,7 +251,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2,
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
                           ),
                         ),
                       ],
@@ -350,23 +350,23 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(AppCorner.lg),
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppCorner.md),
         border: Border.all(
           color: isActive
-              ? iconColor.withValues(alpha: 0.6)
-              : colorScheme.outlineVariant.withValues(alpha: 0.25),
+              ? iconColor
+              : colorScheme.outlineVariant.withValues(alpha: 0.5),
           width: isActive ? 1.5 : 1,
         ),
-        boxShadow: isActive
-            ? [
-                BoxShadow(
-                  color: iconColor.withValues(alpha: 0.15),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-              ]
-            : null,
+        boxShadow: [
+          BoxShadow(
+            color: isActive
+                ? iconColor.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.15),
+            blurRadius: isActive ? 12 : 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -471,10 +471,10 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        color: colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(AppCorner.md),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
           width: 1,
         ),
       ),
@@ -541,7 +541,7 @@ class _SpeedGaugePainter extends CustomPainter {
 
     // 1. Background Arc Track
     final bgPaint = Paint()
-      ..color = colorScheme.outlineVariant.withValues(alpha: 0.25)
+      ..color = colorScheme.surfaceContainerHighest.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.round;
@@ -574,7 +574,7 @@ class _SpeedGaugePainter extends CustomPainter {
       final textSpan = TextSpan(
         text: val.toString(),
         style: TextStyle(
-          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
           fontSize: 10,
           fontFamily: 'monospace',
           fontWeight: FontWeight.w600,

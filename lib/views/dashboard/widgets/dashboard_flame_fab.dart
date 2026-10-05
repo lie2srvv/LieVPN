@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 class DashboardFlameFab extends StatefulWidget {
   const DashboardFlameFab({super.key});
 
+  static void showStreakSheet(BuildContext context, StreakState state) {
+    _DashboardFlameFabState.showStreakSheet(context, state);
+  }
+
   @override
   State<DashboardFlameFab> createState() => _DashboardFlameFabState();
 }
@@ -51,7 +55,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
     }
   }
 
-  void _showStreakSheet(BuildContext context, StreakState state) {
+  static void showStreakSheet(BuildContext context, StreakState state) {
     final l = context.appLocalizations;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -332,7 +336,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                   children: [
                     // Flame widget
                     GestureDetector(
-                      onTap: () => _showStreakSheet(context, streakState),
+                      onTap: () => showStreakSheet(context, streakState),
                       child: Container(
                         height: 56,
                         margin: const EdgeInsets.only(right: 18), // ~0.5 cm
@@ -341,7 +345,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                           color: isActive
                               ? const Color(0xFF2C150A)
                               : colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isActive
                                 ? const Color(0xFFFF5722).withValues(alpha: 0.8)
@@ -422,6 +426,100 @@ class _RuleLine extends StatelessWidget {
         height: 1.35,
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
+    );
+  }
+}
+
+
+class StreakFlameDockButton extends StatefulWidget {
+  const StreakFlameDockButton({super.key});
+
+  @override
+  State<StreakFlameDockButton> createState() => _StreakFlameDockButtonState();
+}
+
+class _StreakFlameDockButtonState extends State<StreakFlameDockButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.94, end: 1.08).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<StreakState>(
+      valueListenable: StreakManager.instance.streakNotifier,
+      builder: (context, streakState, _) {
+        final isActive = streakState.isActiveToday;
+        final count = streakState.count;
+        final colorScheme = Theme.of(context).colorScheme;
+
+        return Material(
+          color: isActive
+              ? const Color(0xFF2C150A)
+              : colorScheme.surfaceContainer,
+          shape: AppShape.md,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => DashboardFlameFab.showStreakSheet(context, streakState),
+            child: SizedBox(
+              height: 56,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '$count',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: isActive
+                            ? const Color(0xFFFFB74D)
+                            : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    if (isActive)
+                      ScaleTransition(
+                        scale: _pulseAnimation,
+                        child: const Icon(
+                          Icons.local_fire_department_rounded,
+                          color: Color(0xFFFF3D00),
+                          size: 26,
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.local_fire_department_rounded,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                        size: 26,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

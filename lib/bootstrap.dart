@@ -39,7 +39,7 @@ class Bootstrap {
   Future<ProviderContainer> init(int version) async {
     globalState.appEnv = const String.fromEnvironment(
       'APP_ENV',
-      defaultValue: 'pre',
+      defaultValue: 'stable',
     );
     windowPort = window;
     trayPort = appTray;

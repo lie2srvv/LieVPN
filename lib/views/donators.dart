@@ -359,11 +359,18 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(AppCorner.lg),
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppCorner.md),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -454,8 +461,8 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       body: RefreshIndicator(
         onRefresh: _fetchDonators,
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
-              .copyWith(bottom: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 16)
+              .copyWith(top: context.contentTopPadding + 16, bottom: 32),
           children: [
             _buildTop1Card(top1),
             const SizedBox(height: 14),
