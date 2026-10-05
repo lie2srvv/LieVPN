@@ -1,25 +1,25 @@
 {
-  "version": "1.2.0",
+  "version": "1.1.1",
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.2.0 (Масштабное обновление на базе FlClash 0.8.99!):\n• Новый модульный движок дашборда и поддержка гибких карточек\n• Новый сайдбар, плавающая навигация и жест drag-to-back\n• Исправлена маршрутизация всего ПК через TUN на Linux (включая старые процессоры)\n• Полная поддержка векторных глифов и переработанное меню серверов\n• Бесшовный автоапдейтер, сохранение серий (стриков) и всех настроек",
+  "releaseNotes": "LieVPN 1.1.1:\n• Исправлен запуск установщика на Android (поддержка Android 8–17)\n• Устранена ошибка 'Текстовый файл занят' при автообновлении AppImage на Linux\n• Повышена общая стабильность и оптимизирована работа TUN-режима",
   "android": {
-    "version": "1.2.0",
+    "version": "1.1.1",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.2.0 для Android: обновление ядра FlClash 0.8.99, поддержка Android SDK 37, Doze reconnect, плавающий бар и жесты."
+    "releaseNotes": "LieVPN 1.1.1 для Android: исправлен запуск системного установщика пакетов, поддержка Android 8–17, корректное обновление без суффикса .dev."
   },
   "windows": {
-    "version": "1.2.0",
+    "version": "1.1.1",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.2.0 для Windows: обновление ядра FlClash 0.8.99, новый дашборд, улучшенная стабильность TUN."
+    "releaseNotes": "LieVPN 1.1.1 для Windows: повышение стабильности ядра и автообновлений."
   },
   "linux": {
-    "version": "1.2.0",
+    "version": "1.1.1",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.2.0 для Linux: полноценная маршрутизация всего ПК через TUN, поддержка старых CPU (ISA fix), AppImage staging elevation."
+    "releaseNotes": "LieVPN 1.1.1 для Linux: устранена ошибка 'Текстовый файл занят' (errno 26) при замене AppImage, атомарный перезапуск."
   }
 }
