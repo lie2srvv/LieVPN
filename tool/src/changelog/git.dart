@@ -120,8 +120,18 @@ class Git {
 
   String head() => _run(['rev-parse', 'HEAD']).trim();
 
+  bool revExists(String revision) {
+    final result = Process.runSync(
+      'git',
+      ['rev-parse', '--verify', revision],
+      workingDirectory: workingDirectory,
+    );
+    return result.exitCode == 0;
+  }
+
   List<RawCommit> commits({String? from, required String to}) {
-    final range = from == null ? to : '$from..$to';
+    final validFrom = (from != null && revExists(from)) ? from : null;
+    final range = validFrom == null ? to : '$validFrom..$to';
     final output = _run([
       'log',
       '--no-merges',

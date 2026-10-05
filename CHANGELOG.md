@@ -8,6 +8,7 @@
 
 **Bug Fixes**
 
+- **updater** Fix Android PackageInstaller invocation, resolve Linux ETXTBSY on restart, and update release changelog (fb6f113)
 - **ci** Fix Windows runner plugin includes, format code, and improve update parsing (798b314)
 - **ui** Restore speedtest layout and theme, fix dock overlap, specify FlClash fork in about (9020c2f)
 - **ui** Remove PRE ribbon, restore LieVPN logo everywhere, squircle dock buttons, streak flame in dock, and fix dark theme contrast (3de05ac)

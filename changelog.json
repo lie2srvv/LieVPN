@@ -20,6 +20,11 @@
           "type": "fix",
           "entries": [
             {
+              "id": "fb6f113",
+              "scope": "updater",
+              "text": "Fix Android PackageInstaller invocation, resolve Linux ETXTBSY on restart, and update release changelog"
+            },
+            {
               "id": "798b314",
               "scope": "ci",
               "text": "Fix Windows runner plugin includes, format code, and improve update parsing"
