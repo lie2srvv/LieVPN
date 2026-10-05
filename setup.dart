@@ -242,8 +242,14 @@ Future<int> _package(
     return activateResult.exitCode;
   }
 
+  final homeDir = Platform.environment['HOME'] ?? '';
+  final localPubBin = p.join(homeDir, '.pub-cache', 'bin', 'flutter_distributor');
+  final distributorCmd = await _hasCommand('flutter_distributor')
+      ? 'flutter_distributor'
+      : (File(localPubBin).existsSync() ? localPubBin : 'flutter_distributor');
+
   final process = await Process.start(
-    'flutter_distributor',
+    distributorCmd,
     [
       'package',
       '--skip-clean',
@@ -285,7 +291,7 @@ String _detectArch() {
 
 Future<bool> _hasCommand(String cmd) async {
   final which = Platform.isWindows ? 'where' : 'which';
-  final args = Platform.isWindows ? [cmd] : ['-v', cmd];
+  final args = [cmd];
   final result = await Process.run(which, args);
   return result.exitCode == 0;
 }
@@ -315,6 +321,14 @@ Future<int> _ensureMacosDependencies() async {
 }
 
 Future<int> _ensureLinuxDependencies() async {
+  if (!await _hasCommand('dpkg')) {
+    stdout.writeln('Non-Debian system detected, skipping apt dependency checks.');
+    if (await _hasCommand('appimagetool') || File('/usr/local/bin/appimagetool').existsSync()) {
+      return 0;
+    }
+    return 0;
+  }
+
   const pkgGroups = <List<String>>[
     ['ninja-build', 'libgtk-3-dev'],
     ['libayatana-appindicator3-dev'],
