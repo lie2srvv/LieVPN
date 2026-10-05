@@ -92,8 +92,9 @@ class SubscriptionStatusCard extends ConsumerWidget {
     final hasExpire = subscriptionInfo != null && subscriptionInfo.expire > 0;
     String expireText = '';
     if (hasExpire) {
-      final expireDate =
-          DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000);
+      final expireDate = DateTime.fromMillisecondsSinceEpoch(
+        subscriptionInfo.expire * 1000,
+      );
       final diff = expireDate.difference(DateTime.now());
       if (diff.isNegative) {
         expireText = '${appLocalizations.statusExpired} (${expireDate.show})';
@@ -113,8 +114,8 @@ class SubscriptionStatusCard extends ConsumerWidget {
 
     final subtitleText = currentProfile?.label.isNotEmpty == true
         ? (hasExpire
-            ? '${currentProfile!.label} • $expireText'
-            : currentProfile!.label)
+              ? '${currentProfile!.label} • $expireText'
+              : currentProfile!.label)
         : (hasExpire ? expireText : 'LieVPN');
 
     return CommonCard(
@@ -187,8 +188,10 @@ class SubscriptionStatusCard extends ConsumerWidget {
             if (expiryStatus.isExpiringSoon || isExpired) ...[
               const SizedBox(height: 10),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: isExpired
                       ? colorScheme.errorContainer.withValues(alpha: 0.35)
@@ -218,10 +221,9 @@ class SubscriptionStatusCard extends ConsumerWidget {
                         style: textTheme.bodySmall?.copyWith(
                           color: isExpired
                               ? colorScheme.error
-                              : (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.amber.shade300
-                                  : Colors.amber.shade900),
+                              : (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.amber.shade300
+                                    : Colors.amber.shade900),
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                         ),
@@ -230,12 +232,13 @@ class SubscriptionStatusCard extends ConsumerWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () =>
-                          dialogs.openUrl('https://t.me/liesubbot'),
+                      onTap: () => dialogs.openUrl('https://t.me/liesubbot'),
                       borderRadius: BorderRadius.circular(AppCorner.sm),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         child: Text(
                           'Продлить',
                           style: textTheme.labelSmall?.copyWith(

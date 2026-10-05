@@ -208,7 +208,9 @@ class ApplicationState extends ConsumerState<Application> {
             actionIconTheme: _actionIconTheme,
             colorScheme: _getAppColorScheme(brightness: Brightness.dark),
           ).withAppShapes,
-          home: ConnectionHealthManager(child: KeyboardInsetHold(child: child!)),
+          home: ConnectionHealthManager(
+            child: KeyboardInsetHold(child: child!),
+          ),
         );
       },
       child: const HomePage(),

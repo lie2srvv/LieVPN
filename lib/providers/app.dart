@@ -275,7 +275,8 @@ class SortNum extends _$SortNum with AutoDisposeNotifierMixin {
 }
 
 @Riverpod(keepAlive: true)
-class CurrentServerPing extends _$CurrentServerPing with AutoDisposeNotifierMixin {
+class CurrentServerPing extends _$CurrentServerPing
+    with AutoDisposeNotifierMixin {
   @override
   int build() {
     return 0;

@@ -38,7 +38,8 @@ Future<bool> canSudoWithoutPassword() async {
 Future<bool> setupPasswordlessRootOnce() async {
   final currentExec = getLinuxCurrentExecutable();
 
-  final setupScript = '''
+  final setupScript =
+      '''
 set -e
 mkdir -p "$_configDir"
 echo "$currentExec" > "$_targetFilePath"
@@ -119,8 +120,11 @@ chmod 440 "$_sudoersPath"
 ''';
 
   try {
-    final result =
-        await Process.run('pkexec', ['/bin/bash', '-c', setupScript]);
+    final result = await Process.run('pkexec', [
+      '/bin/bash',
+      '-c',
+      setupScript,
+    ]);
     return result.exitCode == 0;
   } catch (e) {
     commonPrint.log('pkexec setup failed: $e', logLevel: LogLevel.error);
@@ -143,15 +147,16 @@ Future<bool> handleLinuxElevation(List<String> args) async {
   final hasSudo = await canSudoWithoutPassword();
   if (hasSudo) {
     try {
-      await Process.run(
-        'sudo',
-        ['-n', _wrapperPath, '--set-target', currentExec],
-      );
-      final proc = await Process.start(
-        'sudo',
-        [_wrapperPath, ...args],
-        mode: ProcessStartMode.inheritStdio,
-      );
+      await Process.run('sudo', [
+        '-n',
+        _wrapperPath,
+        '--set-target',
+        currentExec,
+      ]);
+      final proc = await Process.start('sudo', [
+        _wrapperPath,
+        ...args,
+      ], mode: ProcessStartMode.inheritStdio);
       final exitCode = await proc.exitCode;
       exit(exitCode);
     } catch (e) {
@@ -163,11 +168,10 @@ Future<bool> handleLinuxElevation(List<String> args) async {
   final setupOk = await setupPasswordlessRootOnce();
   if (setupOk) {
     try {
-      final proc = await Process.start(
-        'sudo',
-        [_wrapperPath, ...args],
-        mode: ProcessStartMode.inheritStdio,
-      );
+      final proc = await Process.start('sudo', [
+        _wrapperPath,
+        ...args,
+      ], mode: ProcessStartMode.inheritStdio);
       final exitCode = await proc.exitCode;
       exit(exitCode);
     } catch (e) {

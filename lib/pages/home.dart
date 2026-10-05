@@ -43,9 +43,7 @@ class HomePage extends ConsumerWidget {
     });
 
     if (!hasActiveSub) {
-      return const HomeBackScopeContainer(
-        child: SubscriptionLockView(),
-      );
+      return const HomeBackScopeContainer(child: SubscriptionLockView());
     }
 
     return HomeBackScopeContainer(

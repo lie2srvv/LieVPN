@@ -114,7 +114,9 @@ class _ConnectionHealthManagerState
       final isAlive = delay != null && (delay.value ?? 0) > 0;
       if (isAlive) {
         _consecutiveFailures = 0;
-        ref.read(currentServerPingProvider.notifier).updatePing(delay.value ?? 0);
+        ref
+            .read(currentServerPingProvider.notifier)
+            .updatePing(delay.value ?? 0);
         unawaited(StreakManager.instance.onSuccessfulConnection());
       } else {
         _consecutiveFailures++;
@@ -145,10 +147,7 @@ class _ConnectionHealthManagerState
         }
       }
     } catch (e) {
-      commonPrint.log(
-        'Health check error: $e',
-        logLevel: LogLevel.warning,
-      );
+      commonPrint.log('Health check error: $e', logLevel: LogLevel.warning);
     } finally {
       _isChecking = false;
     }

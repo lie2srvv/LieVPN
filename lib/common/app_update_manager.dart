@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:fl_clash/plugins/app.dart';
 import 'dart:async';
 import 'dart:io';
@@ -52,22 +53,25 @@ class AppUpdateInfo {
     // 1. If combined version.json with OS-specific subobjects (android, windows, linux)
     if (json[platformKey] is Map<String, dynamic>) {
       final pMap = json[platformKey] as Map<String, dynamic>;
-      final downloadUrl = pMap['url'] as String? ??
+      final downloadUrl =
+          pMap['url'] as String? ??
           (Platform.isWindows
               ? (pMap['windowsUrl'] as String? ?? defaultUrl)
               : Platform.isLinux
-                  ? (pMap['linuxUrl'] as String? ?? defaultUrl)
-                  : (pMap['apkUrl'] as String? ?? defaultUrl));
+              ? (pMap['linuxUrl'] as String? ?? defaultUrl)
+              : (pMap['apkUrl'] as String? ?? defaultUrl));
       return AppUpdateInfo(
         version: pMap['version'] as String? ?? '0.0.0',
         downloadUrl: downloadUrl,
-        releaseNotes: pMap['releaseNotes'] as String? ?? json['releaseNotes'] as String?,
+        releaseNotes:
+            pMap['releaseNotes'] as String? ?? json['releaseNotes'] as String?,
       );
     }
 
     // If json has other OS sections but missing current platformKey,
     // NEVER fall back to top-level version (it belongs to a different OS)!
-    final isCombinedManifest = json.containsKey('android') ||
+    final isCombinedManifest =
+        json.containsKey('android') ||
         json.containsKey('windows') ||
         json.containsKey('linux');
     if (isCombinedManifest) {
@@ -79,19 +83,32 @@ class AppUpdateInfo {
     }
 
     // 2. Direct dedicated platform JSON (e.g. version_linux.json or version_windows.json)
-    if (Platform.isLinux && json.containsKey('apkUrl') && !json.containsKey('linuxUrl')) {
-      return AppUpdateInfo(version: '0.0.0', downloadUrl: defaultUrl, releaseNotes: null);
+    if (Platform.isLinux &&
+        json.containsKey('apkUrl') &&
+        !json.containsKey('linuxUrl')) {
+      return AppUpdateInfo(
+        version: '0.0.0',
+        downloadUrl: defaultUrl,
+        releaseNotes: null,
+      );
     }
-    if (Platform.isWindows && json.containsKey('apkUrl') && !json.containsKey('windowsUrl')) {
-      return AppUpdateInfo(version: '0.0.0', downloadUrl: defaultUrl, releaseNotes: null);
+    if (Platform.isWindows &&
+        json.containsKey('apkUrl') &&
+        !json.containsKey('windowsUrl')) {
+      return AppUpdateInfo(
+        version: '0.0.0',
+        downloadUrl: defaultUrl,
+        releaseNotes: null,
+      );
     }
 
-    final directUrl = json['url'] as String? ??
+    final directUrl =
+        json['url'] as String? ??
         (Platform.isWindows
             ? (json['windowsUrl'] as String? ?? defaultUrl)
             : Platform.isLinux
-                ? (json['linuxUrl'] as String? ?? defaultUrl)
-                : (json['apkUrl'] as String? ?? defaultUrl));
+            ? (json['linuxUrl'] as String? ?? defaultUrl)
+            : (json['apkUrl'] as String? ?? defaultUrl));
 
     return AppUpdateInfo(
       version: json['version'] as String? ?? '0.0.0',
@@ -155,51 +172,63 @@ class AppUpdateManager {
       ),
     );
 
-    // 1. Primary: check latest versions manifest from GitHub
+    Map<String, dynamic>? parseData(dynamic raw) {
+      if (raw == null) return null;
+      if (raw is Map<String, dynamic>) return raw;
+      if (raw is Map) return Map<String, dynamic>.from(raw);
+      if (raw is String) {
+        try {
+          final decoded = jsonDecode(raw);
+          if (decoded is Map) return Map<String, dynamic>.from(decoded);
+        } catch (_) {}
+      }
+      return null;
+    }
+
+    final currentVersion = globalState.packageInfo.version;
+
+    // 1. Primary: check latest versions manifest from GitHub raw
     try {
-      final response = await dio.get<Map<String, dynamic>>(
-        _primaryGitHubVersionUrl,
-        options: Options(responseType: ResponseType.json),
-      );
+      final response = await dio.get<dynamic>(_primaryGitHubVersionUrl);
       if (response.statusCode == 200 && response.data != null) {
-        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
-        final currentVersion = globalState.packageInfo.version;
-        if (isNewerVersion(updateInfo.version, currentVersion)) {
-          return updateInfo;
+        final data = parseData(response.data);
+        if (data != null) {
+          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
+          if (isNewerVersion(updateInfo.version, currentVersion)) {
+            return updateInfo;
+          }
+          return null;
         }
-        return null;
       }
     } catch (_) {}
 
     // 2. Secondary fallback: check platform-specific endpoint on personal server
     try {
-      final response = await dio.get<Map<String, dynamic>>(
-        _platformServerVersionUrl,
-        options: Options(responseType: ResponseType.json),
-      );
+      final response = await dio.get<dynamic>(_platformServerVersionUrl);
       if (response.statusCode == 200 && response.data != null) {
-        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
-        final currentVersion = globalState.packageInfo.version;
-        if (isNewerVersion(updateInfo.version, currentVersion)) {
-          return updateInfo;
+        final data = parseData(response.data);
+        if (data != null) {
+          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
+          if (isNewerVersion(updateInfo.version, currentVersion)) {
+            return updateInfo;
+          }
+          return null;
         }
-        return null;
       }
     } catch (_) {}
 
     // 3. Tertiary fallback: check combined version.json on personal server
     try {
-      final response = await dio.get<Map<String, dynamic>>(
-        _fallbackServerVersionUrl,
-        options: Options(responseType: ResponseType.json),
-      );
+      final response = await dio.get<dynamic>(_fallbackServerVersionUrl);
       if (response.statusCode == 200 && response.data != null) {
-        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
-        final currentVersion = globalState.packageInfo.version;
-        if (isNewerVersion(updateInfo.version, currentVersion)) {
-          return updateInfo;
+        final data = parseData(response.data);
+        if (data != null) {
+          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
+          if (isNewerVersion(updateInfo.version, currentVersion)) {
+            return updateInfo;
+          }
+          return null;
         }
-        return null;
       }
     } catch (_) {}
 
@@ -219,7 +248,9 @@ class AppUpdateManager {
 
     // Start periodic 1-minute check
     _periodicUpdateTimer?.cancel();
-    _periodicUpdateTimer = Timer.periodic(const Duration(minutes: 1), (_) async {
+    _periodicUpdateTimer = Timer.periodic(const Duration(minutes: 1), (
+      _,
+    ) async {
       final autoCheckEnabled = ref.read(appSettingProvider).autoCheckUpdate;
       if (autoCheckEnabled) {
         await _checkAndNotifyUpdate();

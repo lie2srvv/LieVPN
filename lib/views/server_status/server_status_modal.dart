@@ -83,7 +83,9 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
       constraints: BoxConstraints(maxHeight: maxHeight),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 20),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ).copyWith(bottom: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +119,9 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
                         Text(
                           '${appLocalizations.statusUpdated}: ${_formatMoscowTime(state.lastUpdated)}',
                           style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.8,
+                            ),
                           ),
                         ),
                       ],
@@ -134,7 +138,10 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
                               color: colorScheme.primary,
                             ),
                           )
-                        : Icon(Icons.refresh_rounded, color: colorScheme.primary),
+                        : Icon(
+                            Icons.refresh_rounded,
+                            color: colorScheme.primary,
+                          ),
                     onPressed: state.isLoading ? null : () => _loadStatus(),
                   ),
                 ],
@@ -157,7 +164,9 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
                           fontFamily: 'monospace',
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.2,
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -166,7 +175,9 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
                       else if (state.monitors.isEmpty)
                         _buildEmptyState(context)
                       else
-                        ...state.monitors.map((m) => _buildMonitorCard(context, m)),
+                        ...state.monitors.map(
+                          (m) => _buildMonitorCard(context, m),
+                        ),
                     ],
                   ),
                 ),
@@ -267,7 +278,9 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
     final isUp = data.isUp;
     final dotColor = isUp ? const Color(0xFF10B981) : colorScheme.error;
     final badgeBg = dotColor.withValues(alpha: 0.15);
-    final badgeText = isUp ? appLocalizations.statusOperational : appLocalizations.statusDown;
+    final badgeText = isUp
+        ? appLocalizations.statusOperational
+        : appLocalizations.statusDown;
 
     final recentBeats = data.heartbeats.length > 35
         ? data.heartbeats.sublist(data.heartbeats.length - 35)
@@ -277,8 +290,8 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
     final Color uptimeColor = uptimeVal != null && uptimeVal >= 0.99
         ? const Color(0xFF10B981)
         : (uptimeVal != null && uptimeVal >= 0.95
-            ? const Color(0xFFF59E0B)
-            : colorScheme.error);
+              ? const Color(0xFFF59E0B)
+              : colorScheme.error);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -380,7 +393,8 @@ class _ServerStatusSheetState extends State<ServerStatusSheet> {
                   fontFamily: 'monospace',
                 ),
               ),
-              if (data.latestHeartbeat?.ping != null && data.latestHeartbeat!.ping > 0)
+              if (data.latestHeartbeat?.ping != null &&
+                  data.latestHeartbeat!.ping > 0)
                 Text(
                   '${data.latestHeartbeat!.ping.toStringAsFixed(1)} ms',
                   style: textTheme.labelSmall?.copyWith(

@@ -21,20 +21,20 @@ class DonatorItem {
   });
 
   Map<String, dynamic> toJson() => {
-        'rank': rank,
-        'name': name,
-        'amount': amount,
-        'avatarUrl': avatarUrl,
-        'title': title,
-      };
+    'rank': rank,
+    'name': name,
+    'amount': amount,
+    'avatarUrl': avatarUrl,
+    'title': title,
+  };
 
   factory DonatorItem.fromJson(Map<String, dynamic> json) => DonatorItem(
-        rank: json['rank'] as int? ?? 1,
-        name: json['name'] as String? ?? '',
-        amount: json['amount'] as String? ?? '',
-        avatarUrl: json['avatarUrl'] as String? ?? '',
-        title: json['title'] as String?,
-      );
+    rank: json['rank'] as int? ?? 1,
+    name: json['name'] as String? ?? '',
+    amount: json['amount'] as String? ?? '',
+    avatarUrl: json['avatarUrl'] as String? ?? '',
+    title: json['title'] as String?,
+  );
 }
 
 class DonatorsView extends ConsumerStatefulWidget {
@@ -152,7 +152,10 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       final sectionEnd = html.indexOf('</section>', startIndex);
       final hofSection = sectionEnd != -1
           ? html.substring(startIndex, sectionEnd)
-          : html.substring(startIndex, (startIndex + 25000).clamp(0, html.length));
+          : html.substring(
+              startIndex,
+              (startIndex + 25000).clamp(0, html.length),
+            );
 
       final items = <DonatorItem>[];
 
@@ -164,30 +167,42 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
             ? hofSection.substring(throneIndex, throneEnd)
             : hofSection.substring(throneIndex);
 
-        final titleMatch = RegExp(r'<span[^>]*uppercase[^>]*>([^<]+)</span>').firstMatch(throneHtml);
+        final titleMatch = RegExp(
+          r'<span[^>]*uppercase[^>]*>([^<]+)</span>',
+        ).firstMatch(throneHtml);
         final title = titleMatch?.group(1)?.trim() ?? 'Царь Доната';
 
-        final nameMatch = RegExp(r'<span[^>]*font-bold[^>]*>([^<]+)</span>').firstMatch(throneHtml) ??
+        final nameMatch =
+            RegExp(
+              r'<span[^>]*font-bold[^>]*>([^<]+)</span>',
+            ).firstMatch(throneHtml) ??
             RegExp(r'>\s*(@[^\s<]+)\s*<').firstMatch(throneHtml);
         final name = nameMatch?.group(1)?.trim();
 
-        final amtMatch = RegExp(r'>\s*(\d[\d\s]*[₽\w]+)\s*<').firstMatch(throneHtml);
+        final amtMatch = RegExp(
+          r'>\s*(\d[\d\s]*[₽\w]+)\s*<',
+        ).firstMatch(throneHtml);
         final amt = amtMatch?.group(1)?.trim();
 
-        final avMatch = RegExp(r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]').firstMatch(throneHtml);
+        final avMatch = RegExp(
+          r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]',
+        ).firstMatch(throneHtml);
         var av = avMatch?.group(1)?.trim() ?? 'top1.png';
         if (!av.startsWith('http')) {
-          av = 'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
+          av =
+              'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
         }
 
         if (name != null && amt != null) {
-          items.add(DonatorItem(
-            rank: 1,
-            title: title,
-            name: name,
-            amount: amt,
-            avatarUrl: av,
-          ));
+          items.add(
+            DonatorItem(
+              rank: 1,
+              title: title,
+              name: name,
+              amount: amt,
+              avatarUrl: av,
+            ),
+          );
         }
       }
 
@@ -196,35 +211,47 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       }
 
       // 2. Liquid glass cards (Top 2, 3, etc.)
-      final cardChunks = hofSection.split(RegExp(r'<div[^>]*class=["\x27][^"\x27]*liquid-glass'));
+      final cardChunks = hofSection.split(
+        RegExp(r'<div[^>]*class=["\x27][^"\x27]*liquid-glass'),
+      );
       if (cardChunks.length > 1) {
         for (var i = 1; i < cardChunks.length; i++) {
           final chunk = cardChunks[i];
 
-          final rankMatch = RegExp(r'rank-badge[^>]*>(\d+)</span>').firstMatch(chunk);
-          final rank = rankMatch != null ? int.tryParse(rankMatch.group(1) ?? '') ?? (i + 1) : (i + 1);
+          final rankMatch = RegExp(
+            r'rank-badge[^>]*>(\d+)</span>',
+          ).firstMatch(chunk);
+          final rank = rankMatch != null
+              ? int.tryParse(rankMatch.group(1) ?? '') ?? (i + 1)
+              : (i + 1);
 
-          final nameMatch = RegExp(r'<span[^>]*font-semibold[^>]*>([^<]+)</span>').firstMatch(chunk) ??
+          final nameMatch =
+              RegExp(
+                r'<span[^>]*font-semibold[^>]*>([^<]+)</span>',
+              ).firstMatch(chunk) ??
               RegExp(r'>\s*(@[^\s<]+)\s*<').firstMatch(chunk);
           final name = nameMatch?.group(1)?.trim();
 
-          final amtMatch = RegExp(r'<span[^>]*font-mono[^>]*>([^<]+)</span>').firstMatch(chunk) ??
+          final amtMatch =
+              RegExp(
+                r'<span[^>]*font-mono[^>]*>([^<]+)</span>',
+              ).firstMatch(chunk) ??
               RegExp(r'>\s*(\d[\d\s]*[₽\w]+)\s*<').firstMatch(chunk);
           final amt = amtMatch?.group(1)?.trim();
 
-          final avMatch = RegExp(r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]').firstMatch(chunk);
+          final avMatch = RegExp(
+            r'<img[^>]*src=["\x27]([^"\x27]+)["\x27]',
+          ).firstMatch(chunk);
           var av = avMatch?.group(1)?.trim() ?? 'top$rank.png';
           if (!av.startsWith('http')) {
-            av = 'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
+            av =
+                'https://vpn.lie2srvv.com/${av.replaceAll(RegExp(r'^\.?\/'), '')}';
           }
 
           if (name != null && amt != null) {
-            items.add(DonatorItem(
-              rank: rank,
-              name: name,
-              amount: amt,
-              avatarUrl: av,
-            ));
+            items.add(
+              DonatorItem(rank: rank, name: name, amount: amt, avatarUrl: av),
+            );
           }
         }
       }
@@ -298,10 +325,7 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFFACC15),
-                    width: 3,
-                  ),
+                  border: Border.all(color: const Color(0xFFFACC15), width: 3),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFFACC15).withValues(alpha: 0.35),
@@ -328,9 +352,7 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
           const SizedBox(height: 12),
           Text(
             item.name,
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
@@ -351,7 +373,9 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final badgeColor = isSilver ? const Color(0xFFE2E8F0) : const Color(0xFFF97316);
+    final badgeColor = isSilver
+        ? const Color(0xFFE2E8F0)
+        : const Color(0xFFF97316);
     final badgeBg = isSilver
         ? const Color(0xFF94A3B8).withValues(alpha: 0.25)
         : const Color(0xFFEA580C).withValues(alpha: 0.25);
@@ -389,11 +413,8 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
                 item.avatarUrl,
                 key: ValueKey('${item.avatarUrl}_${item.name}'),
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Icon(
-                  Icons.person,
-                  size: 24,
-                  color: badgeColor,
-                ),
+                errorBuilder: (_, _, _) =>
+                    Icon(Icons.person, size: 24, color: badgeColor),
               ),
             ),
           ),
@@ -461,15 +482,18 @@ class _DonatorsViewState extends ConsumerState<DonatorsView> {
       body: RefreshIndicator(
         onRefresh: _fetchDonators,
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16)
-              .copyWith(top: context.contentTopPadding + 16, bottom: 32),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ).copyWith(top: context.contentTopPadding + 16, bottom: 32),
           children: [
             _buildTop1Card(top1),
             const SizedBox(height: 14),
-            ...otherDonators.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _buildRankCard(item, isSilver: item.rank == 2),
-                )),
+            ...otherDonators.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _buildRankCard(item, isSilver: item.rank == 2),
+              ),
+            ),
             const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,

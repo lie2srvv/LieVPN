@@ -154,8 +154,9 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
     if (system.isDesktop) {
       setState(() => _isProcessing = true);
       try {
-        final success =
-            await profilesAction.addProfileFormQrCode(replaceOld: true);
+        final success = await profilesAction.addProfileFormQrCode(
+          replaceOld: true,
+        );
         if (!success && mounted) {
           final loc = context.appLocalizations;
           dialogs.showNotifier(
@@ -206,8 +207,11 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
       Locale('zh_CN'),
       Locale('tt'),
     ];
-    final currentLocaleStr = ref.read(appSettingProvider.select((s) => s.locale));
-    final currentLocale = getLocaleForString(currentLocaleStr) ?? const Locale('en');
+    final currentLocaleStr = ref.read(
+      appSettingProvider.select((s) => s.locale),
+    );
+    final currentLocale =
+        getLocaleForString(currentLocaleStr) ?? const Locale('en');
 
     final selected = await dialogs.showCommonDialog<Locale>(
       context: context,
@@ -236,9 +240,9 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
     );
 
     if (selected != null) {
-      ref.read(appSettingProvider.notifier).update(
-            (state) => state.copyWith(locale: selected.toString()),
-          );
+      ref
+          .read(appSettingProvider.notifier)
+          .update((state) => state.copyWith(locale: selected.toString()));
     }
   }
 
@@ -266,8 +270,9 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
       expireText = expireDate.show;
     }
 
-    final accentColor =
-        isExpired ? const Color(0xFFF59E0B) : const Color(0xFF10B981);
+    final accentColor = isExpired
+        ? const Color(0xFFF59E0B)
+        : const Color(0xFF10B981);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -376,11 +381,13 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                   Text(
                     isExpired
                         ? (expireText != null
-                            ? '${loc.subscriptionExpiredDesc}\n(${loc.expirationDate}: $expireText)'
-                            : loc.subscriptionExpiredDesc)
+                              ? '${loc.subscriptionExpiredDesc}\n(${loc.expirationDate}: $expireText)'
+                              : loc.subscriptionExpiredDesc)
                         : loc.subscriptionRequiredDesc,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.75,
+                      ),
                       height: 1.45,
                     ),
                     textAlign: TextAlign.center,
@@ -388,12 +395,14 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                   const SizedBox(height: 28),
                   Container(
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest
-                          .withValues(alpha: 0.4),
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.4,
+                      ),
                       borderRadius: BorderRadius.circular(AppCorner.xl),
                       border: Border.all(
-                        color:
-                            colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
                       ),
                     ),
                     padding: const EdgeInsets.all(16),
@@ -434,8 +443,9 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             side: BorderSide(
-                              color: colorScheme.outlineVariant
-                                  .withValues(alpha: 0.5),
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(AppCorner.lg),
@@ -457,12 +467,14 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               side: BorderSide(
-                                color: colorScheme.outlineVariant
-                                    .withValues(alpha: 0.5),
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppCorner.lg),
+                                borderRadius: BorderRadius.circular(
+                                  AppCorner.lg,
+                                ),
                               ),
                             ),
                             onPressed: _isProcessing

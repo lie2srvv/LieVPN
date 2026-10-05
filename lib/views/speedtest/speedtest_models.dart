@@ -1,11 +1,4 @@
-enum SpeedtestPhase {
-  idle,
-  download,
-  upload,
-  ping,
-  completed,
-  error,
-}
+enum SpeedtestPhase { idle, download, upload, ping, completed, error }
 
 class SpeedtestState {
   final SpeedtestPhase phase;

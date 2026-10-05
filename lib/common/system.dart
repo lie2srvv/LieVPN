@@ -205,7 +205,10 @@ class System {
         try {
           await File(sourcePath).copy(stagePath);
         } catch (e) {
-          commonPrint.log('Failed to copy core to staging: $e', logLevel: LogLevel.error);
+          commonPrint.log(
+            'Failed to copy core to staging: $e',
+            logLevel: LogLevel.error,
+          );
           return AuthorizeCode.error;
         }
 
@@ -217,7 +220,10 @@ class System {
         try {
           result = await runProcess('pkexec', ['/bin/sh', '-c', shellCommand]);
         } on ProcessException catch (error) {
-          commonPrint.log('pkexec is unavailable: ${compactError(error)}', logLevel: LogLevel.error);
+          commonPrint.log(
+            'pkexec is unavailable: ${compactError(error)}',
+            logLevel: LogLevel.error,
+          );
           return AuthorizeCode.error;
         } finally {
           final stageFile = File(stagePath);
@@ -228,7 +234,10 @@ class System {
           }
         }
         if (result.exitCode != 0) {
-          commonPrint.log('pkexec failed for AppImage core: ${result.exitCode}', logLevel: LogLevel.error);
+          commonPrint.log(
+            'pkexec failed for AppImage core: ${result.exitCode}',
+            logLevel: LogLevel.error,
+          );
           return AuthorizeCode.error;
         }
         return AuthorizeCode.success;

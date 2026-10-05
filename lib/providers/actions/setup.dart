@@ -144,7 +144,8 @@ class SetupAction extends _$SetupAction {
     if (!initialize && (Platform.isWindows || Platform.isLinux)) {
       final now = DateTime.now();
       if (_lastToggleTime != null &&
-          now.difference(_lastToggleTime!) < const Duration(milliseconds: 1500)) {
+          now.difference(_lastToggleTime!) <
+              const Duration(milliseconds: 1500)) {
         commonPrint.log('setRunning debounced (cooldown 1.5s)');
         return Future.value(ref.read(isStartProvider));
       }

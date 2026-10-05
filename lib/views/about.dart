@@ -21,8 +21,6 @@ class Contributor {
 class AboutView extends ConsumerWidget {
   const AboutView({super.key});
 
-
-
   Future<void> _checkUpdate(BuildContext context, WidgetRef ref) async {
     if (ref.read(loadingProvider(LoadingTag.checkUpdate))) return;
     final commonAction = ref.read(commonActionProvider.notifier);

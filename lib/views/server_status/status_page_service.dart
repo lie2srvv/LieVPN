@@ -6,18 +6,28 @@ const String _kStatusBaseUrl = 'https://uptime.lie2srvv.com';
 const String _kStatusSlug = 'lievpn';
 
 class ServerStatusService {
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   Future<ServerStatusState> fetchStatus() async {
     try {
-      final configResponse = await _dio.get('$_kStatusBaseUrl/api/status-page/$_kStatusSlug');
-      final heartbeatResponse = await _dio.get('$_kStatusBaseUrl/api/status-page/heartbeat/$_kStatusSlug');
+      final configResponse = await _dio.get(
+        '$_kStatusBaseUrl/api/status-page/$_kStatusSlug',
+      );
+      final heartbeatResponse = await _dio.get(
+        '$_kStatusBaseUrl/api/status-page/heartbeat/$_kStatusSlug',
+      );
 
-      final configData = configResponse.data is String ? jsonDecode(configResponse.data) : configResponse.data;
-      final heartbeatData = heartbeatResponse.data is String ? jsonDecode(heartbeatResponse.data) : heartbeatResponse.data;
+      final configData = configResponse.data is String
+          ? jsonDecode(configResponse.data)
+          : configResponse.data;
+      final heartbeatData = heartbeatResponse.data is String
+          ? jsonDecode(heartbeatResponse.data)
+          : heartbeatResponse.data;
 
       final publicGroups = (configData['publicGroupList'] as List?) ?? [];
       final List<UptimeMonitor> monitors = [];
@@ -39,7 +49,9 @@ class ServerStatusService {
             .toList();
 
         final rawUptime = uptimeMap['${monitor.id}_24'];
-        final double? uptime24h = rawUptime != null ? (rawUptime as num).toDouble() : null;
+        final double? uptime24h = rawUptime != null
+            ? (rawUptime as num).toDouble()
+            : null;
 
         monitorDataList.add(
           MonitorStatusData(

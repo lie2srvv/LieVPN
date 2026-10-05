@@ -139,7 +139,10 @@ class _ServerStatusViewState extends State<ServerStatusView> {
       statusColor = const Color(0xFFF59E0B);
       iconData = Icons.warning_amber_rounded;
       title = appLocalizations.statusPartialOutages;
-      subtitle = appLocalizations.statusPartialOutagesDesc(state.upCount, state.monitors.length);
+      subtitle = appLocalizations.statusPartialOutagesDesc(
+        state.upCount,
+        state.monitors.length,
+      );
     } else {
       statusColor = const Color(0xFF10B981);
       iconData = Icons.check_circle_outline_rounded;
@@ -152,7 +155,10 @@ class _ServerStatusViewState extends State<ServerStatusView> {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(AppCorner.lg),
-        border: Border.all(color: statusColor.withValues(alpha: 0.35), width: 1.2),
+        border: Border.all(
+          color: statusColor.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
             color: statusColor.withValues(alpha: 0.08),
@@ -231,7 +237,9 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     final isUp = data.isUp;
     final dotColor = isUp ? const Color(0xFF10B981) : colorScheme.error;
     final badgeBg = dotColor.withValues(alpha: 0.15);
-    final badgeText = isUp ? appLocalizations.statusOperational : appLocalizations.statusDown;
+    final badgeText = isUp
+        ? appLocalizations.statusOperational
+        : appLocalizations.statusDown;
 
     final recentBeats = data.heartbeats.length > 35
         ? data.heartbeats.sublist(data.heartbeats.length - 35)
@@ -241,8 +249,8 @@ class _ServerStatusViewState extends State<ServerStatusView> {
     final Color uptimeColor = uptimeVal != null && uptimeVal >= 0.99
         ? const Color(0xFF10B981)
         : (uptimeVal != null && uptimeVal >= 0.95
-            ? const Color(0xFFF59E0B)
-            : colorScheme.error);
+              ? const Color(0xFFF59E0B)
+              : colorScheme.error);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -345,7 +353,8 @@ class _ServerStatusViewState extends State<ServerStatusView> {
                   fontFamily: 'monospace',
                 ),
               ),
-              if (data.latestHeartbeat?.ping != null && data.latestHeartbeat!.ping > 0)
+              if (data.latestHeartbeat?.ping != null &&
+                  data.latestHeartbeat!.ping > 0)
                 Text(
                   '${data.latestHeartbeat!.ping.toStringAsFixed(1)} ms',
                   style: textTheme.labelSmall?.copyWith(

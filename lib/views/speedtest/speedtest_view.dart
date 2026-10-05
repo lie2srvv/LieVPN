@@ -65,12 +65,16 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
             final bottomInset = 36.0 + BottomInsetScope.of(context);
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16).copyWith(
-                bottom: bottomInset,
-              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ).copyWith(bottom: bottomInset),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: math.max(0.0, constraints.maxHeight - 32 - bottomInset),
+                  minHeight: math.max(
+                    0.0,
+                    constraints.maxHeight - 32 - bottomInset,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,7 +157,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           Text(
             labelText,
             style: TextStyle(
-              color: isVpnConnected ? const Color(0xFF10B981) : colorScheme.onSurfaceVariant,
+              color: isVpnConnected
+                  ? const Color(0xFF10B981)
+                  : colorScheme.onSurfaceVariant,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -169,8 +175,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
     ColorScheme colorScheme,
   ) {
     final appLocalizations = context.appLocalizations;
-    final double targetSpeed =
-        state.phase == SpeedtestPhase.ping ? 0.0 : state.currentSpeedMbps;
+    final double targetSpeed = state.phase == SpeedtestPhase.ping
+        ? 0.0
+        : state.currentSpeedMbps;
 
     String statusText = appLocalizations.readyToTest;
     Color statusColor = colorScheme.onSurfaceVariant;
@@ -197,7 +204,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
         statusColor = const Color(0xFF10B981);
         break;
       case SpeedtestPhase.error:
-        statusText = state.errorMessage ?? appLocalizations.speedtestNoDataError;
+        statusText =
+            state.errorMessage ?? appLocalizations.speedtestNoDataError;
         statusColor = colorScheme.error;
         break;
     }
@@ -232,10 +240,11 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                           animatedSpeed > 0.0
                               ? animatedSpeed.toStringAsFixed(1)
                               : (state.downloadMbps != null &&
-                                      (state.phase == SpeedtestPhase.completed ||
-                                          state.phase == SpeedtestPhase.error)
-                                  ? state.downloadMbps!.toStringAsFixed(1)
-                                  : '0.0'),
+                                        (state.phase ==
+                                                SpeedtestPhase.completed ||
+                                            state.phase == SpeedtestPhase.error)
+                                    ? state.downloadMbps!.toStringAsFixed(1)
+                                    : '0.0'),
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 48,
@@ -254,7 +263,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2,
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.85,
+                            ),
                           ),
                         ),
                       ],
@@ -432,7 +443,8 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       );
     }
 
-    final isDone = state.phase == SpeedtestPhase.completed ||
+    final isDone =
+        state.phase == SpeedtestPhase.completed ||
         state.phase == SpeedtestPhase.error;
     return SizedBox(
       width: double.infinity,
@@ -452,7 +464,9 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
           color: const Color(0xFF2E1517),
         ),
         label: Text(
-          isDone ? appLocalizations.speedtestRunAgain : appLocalizations.speedtestStart,
+          isDone
+              ? appLocalizations.speedtestRunAgain
+              : appLocalizations.speedtestStart,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -471,10 +485,7 @@ class _SpeedtestViewState extends ConsumerState<SpeedtestView> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E1C1C),
         borderRadius: BorderRadius.circular(AppCorner.md),
-        border: Border.all(
-          color: const Color(0xFF2C2A2A),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF2C2A2A), width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -585,8 +596,10 @@ class _SpeedGaugePainter extends CustomPainter {
       textPainter.layout();
 
       final labelRadius = radius + 25;
-      final labelX = center.dx + labelRadius * math.cos(angle) - (textPainter.width / 2);
-      final labelY = center.dy + labelRadius * math.sin(angle) - (textPainter.height / 2);
+      final labelX =
+          center.dx + labelRadius * math.cos(angle) - (textPainter.width / 2);
+      final labelY =
+          center.dy + labelRadius * math.sin(angle) - (textPainter.height / 2);
       textPainter.paint(canvas, Offset(labelX, labelY));
     }
 

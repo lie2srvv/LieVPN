@@ -882,10 +882,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
       "Уставіць спасылку",
     ),
-    "installedAppsPermissionDeniedMessage":
-        MessageLookupByLibrary.simpleMessage(
-          "Разрешеніе на спісок праграм адклонено, поэтому установленные праграмы недаступны. Предаставьте его вручную в сістемных наладах.",
-        ),
+    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
+      "Разрешеніе на спісок праграм адклонено, поэтому установленные праграмы недаступны. Предаставьте его вручную в сістемных наладах.",
+    ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта сістэма не выдаёт спісок установленных праграм без разрешенія. Предаставьте его, чтобы настроіть проксі для аддельных праграм.",
     ),

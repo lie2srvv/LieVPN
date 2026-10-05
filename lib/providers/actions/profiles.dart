@@ -149,7 +149,11 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<bool> addProfileFormURL(String url, {bool replaceOld = true, String? label}) async {
+  Future<bool> addProfileFormURL(
+    String url, {
+    bool replaceOld = true,
+    String? label,
+  }) async {
     var trimmed = url.trim();
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
@@ -190,8 +194,9 @@ class ProfilesAction extends _$ProfilesAction {
           }
         }
       }
-      final cleanLabel =
-          profile.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final cleanLabel = profile.label
+          .replaceAll(RegExp(r'\s*\(\d+\)$'), '')
+          .trim();
       final cleanProfile = profile.copyWith(
         label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
       );

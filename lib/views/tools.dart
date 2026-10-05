@@ -131,7 +131,17 @@ class _LocaleItem extends ConsumerWidget {
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: const [Locale('ru'), Locale('en'), Locale('uk'), Locale('be'), Locale('kk'), Locale('ko'), Locale('ja'), Locale('zh_CN'), Locale('tt')],
+      options: const [
+        Locale('ru'),
+        Locale('en'),
+        Locale('uk'),
+        Locale('be'),
+        Locale('kk'),
+        Locale('ko'),
+        Locale('ja'),
+        Locale('zh_CN'),
+        Locale('tt'),
+      ],
       onChanged: (Locale? locale) {
         ref
             .read(appSettingProvider.notifier)
@@ -225,7 +235,6 @@ class _AdvancedConfigItem extends StatelessWidget {
   }
 }
 
-
 class _InfoItem extends StatelessWidget {
   const _InfoItem();
 
@@ -292,7 +301,10 @@ class _SupportItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Text(
                       loc.supportLieVpnTitle,
                       style: Theme.of(sheetContext).textTheme.titleLarge,
@@ -300,7 +312,10 @@ class _SupportItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   ListItem(
-                    leading: const Icon(Icons.send_rounded, color: Color(0xFF2AABEE)),
+                    leading: const Icon(
+                      Icons.send_rounded,
+                      color: Color(0xFF2AABEE),
+                    ),
                     title: const Text('Telegram'),
                     subtitle: const Text('@lie2srvv'),
                     trailing: const GlyphIcon(AppGlyphs.openExternal),
@@ -310,7 +325,10 @@ class _SupportItem extends StatelessWidget {
                     },
                   ),
                   ListItem(
-                    leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
+                    leading: const Icon(
+                      Icons.chat_bubble_rounded,
+                      color: Color(0xFF007AFF),
+                    ),
                     title: Text(loc.supportMessengerMax),
                     subtitle: Text(loc.supportMessengerMaxSubtitle),
                     trailing: const GlyphIcon(AppGlyphs.openExternal),
@@ -322,7 +340,10 @@ class _SupportItem extends StatelessWidget {
                     },
                   ),
                   ListItem(
-                    leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
+                    leading: const Icon(
+                      Icons.email_outlined,
+                      color: Color(0xFFEA4335),
+                    ),
                     title: Text(loc.supportEmail),
                     subtitle: const Text('vpn@lie2srvv.com'),
                     trailing: const GlyphIcon(AppGlyphs.openExternal),

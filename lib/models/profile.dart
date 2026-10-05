@@ -173,7 +173,10 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({required ValidateConfig validate}) async {
-    final (newProfile, _) = await checkAndUpdate(validate: validate, force: true);
+    final (newProfile, _) = await checkAndUpdate(
+      validate: validate,
+      force: true,
+    );
     return newProfile;
   }
 

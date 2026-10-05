@@ -8,21 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-enum UpdateStatus {
-  idle,
-  downloading,
-  readyToRestart,
-  installing,
-  error,
-}
+enum UpdateStatus { idle, downloading, readyToRestart, installing, error }
 
 class InAppUpdateDialog extends StatefulWidget {
   final AppUpdateInfo updateInfo;
 
-  const InAppUpdateDialog({
-    super.key,
-    required this.updateInfo,
-  });
+  const InAppUpdateDialog({super.key, required this.updateInfo});
 
   @override
   State<InAppUpdateDialog> createState() => _InAppUpdateDialogState();
@@ -70,13 +61,25 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       String savePath;
 
       if (Platform.isAndroid) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.apk');
+        savePath = p.join(
+          tempDir.path,
+          'LieVPN-update-${widget.updateInfo.version}.apk',
+        );
       } else if (Platform.isWindows) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.exe');
+        savePath = p.join(
+          tempDir.path,
+          'LieVPN-update-${widget.updateInfo.version}.exe',
+        );
       } else if (Platform.isLinux) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.AppImage');
+        savePath = p.join(
+          tempDir.path,
+          'LieVPN-update-${widget.updateInfo.version}.AppImage',
+        );
       } else {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.bin');
+        savePath = p.join(
+          tempDir.path,
+          'LieVPN-update-${widget.updateInfo.version}.bin',
+        );
       }
 
       final file = File(savePath);
@@ -177,18 +180,10 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
           await Process.run('chmod', ['+x', target.path]);
 
           // Detach and launch updated AppImage
-          await Process.start(
-            target.path,
-            [],
-            mode: ProcessStartMode.detached,
-          );
+          await Process.start(target.path, [], mode: ProcessStartMode.detached);
         } else {
           // If running raw binary, launch the new AppImage detached
-          await Process.start(
-            filePath,
-            [],
-            mode: ProcessStartMode.detached,
-          );
+          await Process.start(filePath, [], mode: ProcessStartMode.detached);
         }
 
         // Exit immediately so only the new instance remains
@@ -206,8 +201,12 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
         final currentExePath = Platform.resolvedExecutable;
 
         // Batch script to wait 1 second, copy new exe over old exe, and restart
-        final updaterScriptPath = p.join(p.dirname(filePath), 'lievpn_update.bat');
-        final scriptContent = '''
+        final updaterScriptPath = p.join(
+          p.dirname(filePath),
+          'lievpn_update.bat',
+        );
+        final scriptContent =
+            '''
 @echo off
 timeout /t 1 /nobreak > NUL
 copy /y "$filePath" "$currentExePath" > NUL
@@ -217,11 +216,10 @@ del "%~f0"
         await File(updaterScriptPath).writeAsString(scriptContent);
 
         // Run batch script detached via cmd.exe
-        await Process.start(
-          'cmd.exe',
-          ['/c', updaterScriptPath],
-          mode: ProcessStartMode.detached,
-        );
+        await Process.start('cmd.exe', [
+          '/c',
+          updaterScriptPath,
+        ], mode: ProcessStartMode.detached);
 
         // Exit immediately to release file lock on LieVPN.exe
         exit(0);
@@ -325,7 +323,9 @@ del "%~f0"
                   value: _progress > 0 ? _progress : null,
                   minHeight: 8,
                   backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF22C55E)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFF22C55E),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -411,13 +411,18 @@ del "%~f0"
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF22C55E)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF22C55E),
+                          ),
                         ),
                       ),
                       SizedBox(width: 14),
                       Text(
                         'Перезапуск и установка обновления...',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -436,7 +441,11 @@ del "%~f0"
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: colorScheme.error, size: 22),
+                    Icon(
+                      Icons.error_outline,
+                      color: colorScheme.error,
+                      size: 22,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -465,7 +474,11 @@ del "%~f0"
                       ),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: Text(_status == UpdateStatus.readyToRestart ? 'Позже' : loc.updateLater),
+                    child: Text(
+                      _status == UpdateStatus.readyToRestart
+                          ? 'Позже'
+                          : loc.updateLater,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -479,11 +492,14 @@ del "%~f0"
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: _status == UpdateStatus.downloading || _status == UpdateStatus.installing
+                    onPressed:
+                        _status == UpdateStatus.downloading ||
+                            _status == UpdateStatus.installing
                         ? null
                         : () {
                             if (_status == UpdateStatus.readyToRestart) {
-                              if (Platform.isAndroid && _downloadedFilePath != null) {
+                              if (Platform.isAndroid &&
+                                  _downloadedFilePath != null) {
                                 _installAndroidApk(_downloadedFilePath!);
                               } else {
                                 _applyDesktopUpdateAndRestart();
@@ -494,8 +510,12 @@ del "%~f0"
                           },
                     child: Text(
                       _status == UpdateStatus.readyToRestart
-                          ? (Platform.isAndroid ? 'Установить' : 'Перезапустить')
-                          : (_status == UpdateStatus.error ? 'Повторить' : loc.updateNow),
+                          ? (Platform.isAndroid
+                                ? 'Установить'
+                                : 'Перезапустить')
+                          : (_status == UpdateStatus.error
+                                ? 'Повторить'
+                                : loc.updateNow),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

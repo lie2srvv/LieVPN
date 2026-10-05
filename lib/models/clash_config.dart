@@ -443,7 +443,9 @@ abstract class Tun with _$Tun {
     @Default(false) bool enable,
     @Default(appName) String device,
     @JsonKey(name: 'auto-route') @Default(true) bool autoRoute,
-    @JsonKey(name: 'auto-detect-interface') @Default(true) bool autoDetectInterface,
+    @JsonKey(name: 'auto-detect-interface')
+    @Default(true)
+    bool autoDetectInterface,
     @Default(TunStack.gvisor) TunStack stack,
     @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,

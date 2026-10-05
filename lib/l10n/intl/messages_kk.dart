@@ -938,10 +938,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
       "Сілтемені қою",
     ),
-    "installedAppsPermissionDeniedMessage":
-        MessageLookupByLibrary.simpleMessage(
-          "Разрешенжәнее на спжәнесок қолданбалардың бастапклонено, поэтому установленные қолданбалар недейінступны. Предейінставьте его вручную в сжәнестемных баптаух.",
-        ),
+    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
+      "Разрешенжәнее на спжәнесок қолданбалардың бастапклонено, поэтому установленные қолданбалар недейінступны. Предейінставьте его вручную в сжәнестемных баптаух.",
+    ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта жүйе не выдаёт спжәнесок установленных қолданбалардың без разрешенжәнея. Предейінставьте его, чтобы настрожәнеть проксжәне үшін бастапдельных қолданбалардың.",
     ),

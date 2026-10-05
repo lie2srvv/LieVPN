@@ -41,15 +41,8 @@ class SubscriptionReminderManager {
     final lastStage = await preferences.getSubNotifyStage(profile.id);
     if (lastStage != stage) {
       await preferences.saveSubNotifyStage(profile.id, stage);
-      await app?.showNotification(
-        title: title,
-        message: message,
-        id: 1002,
-      );
-      dialogs.showNotifier(
-        '$title\n$message',
-        level: MessageLevel.warning,
-      );
+      await app?.showNotification(title: title, message: message, id: 1002);
+      dialogs.showNotifier('$title\n$message', level: MessageLevel.warning);
     }
   }
 }

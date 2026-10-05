@@ -97,7 +97,9 @@ class _AddRulesViewState extends ConsumerState<AddRulesView> {
     final res = await dialogs.showMessage(
       title: appLocalizations.tip,
       message: TextSpan(
-        text: appLocalizations.deleteMultipTip(rule.content ?? rule.ruleAction.name),
+        text: appLocalizations.deleteMultipTip(
+          rule.content ?? rule.ruleAction.name,
+        ),
       ),
     );
     if (res == true) {
@@ -125,358 +127,415 @@ class _AddRulesViewState extends ConsumerState<AddRulesView> {
       child: CommonScaffold(
         title: appLocalizations.addRules,
         body: SafeArea(
-        child: Column(
-          children: [
-            // Top Section: Input Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-                  borderRadius: BorderRadius.circular(AppCorner.lg),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.25),
-                    width: 1,
-                  ),
+          child: Column(
+            children: [
+              // Top Section: Input Card
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Slider / Segmented Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: SegmentedButton<CustomRuleMode>(
-                        segments: [
-                          ButtonSegment<CustomRuleMode>(
-                            value: CustomRuleMode.domain,
-                            icon: const Icon(Icons.language_rounded, size: 18),
-                            label: Text(
-                              appLocalizations.ruleDomain,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.35,
+                    ),
+                    borderRadius: BorderRadius.circular(AppCorner.lg),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Slider / Segmented Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: SegmentedButton<CustomRuleMode>(
+                          segments: [
+                            ButtonSegment<CustomRuleMode>(
+                              value: CustomRuleMode.domain,
+                              icon: const Icon(
+                                Icons.language_rounded,
+                                size: 18,
+                              ),
+                              label: Text(
+                                appLocalizations.ruleDomain,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            ButtonSegment<CustomRuleMode>(
+                              value: CustomRuleMode.app,
+                              icon: const Icon(Icons.apps_rounded, size: 18),
+                              label: Text(
+                                appLocalizations.ruleApp,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                          selected: {_mode},
+                          onSelectionChanged: (newSelection) {
+                            setState(() {
+                              _mode = newSelection.first;
+                              _inputController.clear();
+                            });
+                          },
+                          style: ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppCorner.md,
+                                ),
+                              ),
                             ),
                           ),
-                          ButtonSegment<CustomRuleMode>(
-                            value: CustomRuleMode.app,
-                            icon: const Icon(Icons.apps_rounded, size: 18),
-                            label: Text(
-                              appLocalizations.ruleApp,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Input Field with Trailing Button
+                      TextField(
+                        controller: _inputController,
+                        focusNode: _focusNode,
+                        style: textTheme.bodyMedium?.toJetBrainsMono,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.3),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          hintText: _mode == CustomRuleMode.domain
+                              ? appLocalizations.ruleDomainHint
+                              : appLocalizations.ruleProcessHint,
+                          hintStyle: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                          prefixIcon: Icon(
+                            _mode == CustomRuleMode.domain
+                                ? Icons.public
+                                : Icons.widgets_outlined,
+                            size: 20,
+                            color: colorScheme.primary,
+                          ),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_mode == CustomRuleMode.app)
+                                IconButton(
+                                  icon: const Icon(Icons.apps_rounded),
+                                  tooltip:
+                                      appLocalizations.ruleSelectAppTooltip,
+                                  onPressed: _handlePickApp,
+                                ),
+                              if (_inputController.text.isNotEmpty)
+                                IconButton(
+                                  icon: const Icon(Icons.clear, size: 18),
+                                  onPressed: () {
+                                    setState(() {
+                                      _inputController.clear();
+                                    });
+                                  },
+                                ),
+                            ],
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(AppCorner.md),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(AppCorner.md),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(AppCorner.md),
+                            borderSide: BorderSide(
+                              color: colorScheme.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        onSubmitted: (_) => _handleAddRule(),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Route destination badge & Add button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // DIRECT route destination badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(AppCorner.sm),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.4),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.alt_route_rounded,
+                                  size: 14,
+                                  color: Color(0xFF10B981),
+                                ),
+                                SizedBox(width: 6),
+                                Text(
+                                  'DIRECT',
+                                  style: TextStyle(
+                                    color: Color(0xFF10B981),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'monospace',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Add Button
+                          FilledButton.icon(
+                            onPressed: _handleAddRule,
+                            icon: const Icon(Icons.add_rounded, size: 18),
+                            label: Text(appLocalizations.add),
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppCorner.md,
+                                ),
+                              ),
                             ),
                           ),
                         ],
-                        selected: {_mode},
-                        onSelectionChanged: (newSelection) {
-                          setState(() {
-                            _mode = newSelection.first;
-                            _inputController.clear();
-                          });
-                        },
-                        style: ButtonStyle(
-                          visualDensity: VisualDensity.compact,
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppCorner.md),
-                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Glider / Divider separator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
+                        thickness: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        '${appLocalizations.rules} (${customRules.length})',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.7,
                           ),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
-
-                    // Input Field with Trailing Button
-                    TextField(
-                      controller: _inputController,
-                      focusNode: _focusNode,
-                      style: textTheme.bodyMedium?.toJetBrainsMono,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
+                    Expanded(
+                      child: Divider(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
                         ),
-                        hintText: _mode == CustomRuleMode.domain
-                            ? appLocalizations.ruleDomainHint
-                            : appLocalizations.ruleProcessHint,
-                        hintStyle: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                        ),
-                        prefixIcon: Icon(
-                          _mode == CustomRuleMode.domain
-                              ? Icons.public
-                              : Icons.widgets_outlined,
-                          size: 20,
-                          color: colorScheme.primary,
-                        ),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (_mode == CustomRuleMode.app)
-                              IconButton(
-                                icon: const Icon(Icons.apps_rounded),
-                                tooltip: appLocalizations.ruleSelectAppTooltip,
-                                onPressed: _handlePickApp,
-                              ),
-                            if (_inputController.text.isNotEmpty)
-                              IconButton(
-                                icon: const Icon(Icons.clear, size: 18),
-                                onPressed: () {
-                                  setState(() {
-                                    _inputController.clear();
-                                  });
-                                },
-                              ),
-                          ],
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppCorner.md),
-                          borderSide: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppCorner.md),
-                          borderSide: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppCorner.md),
-                          borderSide: BorderSide(
-                            color: colorScheme.primary,
-                            width: 1.5,
-                          ),
-                        ),
+                        thickness: 1,
                       ),
-                      onSubmitted: (_) => _handleAddRule(),
                     ),
-                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
 
-                    // Route destination badge & Add button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // DIRECT route destination badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(AppCorner.sm),
-                            border: Border.all(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.4),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Row(
+              // Rules List
+              Expanded(
+                child: customRules.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.alt_route_rounded,
-                                size: 14,
-                                color: Color(0xFF10B981),
+                                Icons.playlist_add_check_rounded,
+                                size: 48,
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.4,
+                                ),
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(height: 12),
                               Text(
-                                'DIRECT',
-                                style: TextStyle(
-                                  color: Color(0xFF10B981),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'monospace',
+                                appLocalizations.noAddedRulesYet,
+                                textAlign: TextAlign.center,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        itemCount: customRules.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final rule = customRules[index];
+                          final isProcess =
+                              rule.ruleAction == RuleAction.PROCESS_NAME;
+                          final typeLabel = isProcess
+                              ? appLocalizations.ruleApp
+                              : appLocalizations.ruleDomain;
 
-                        // Add Button
-                        FilledButton.icon(
-                          onPressed: _handleAddRule,
-                          icon: const Icon(Icons.add_rounded, size: 18),
-                          label: Text(appLocalizations.add),
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(AppCorner.md),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Glider / Divider separator
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                      thickness: 1,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      '${appLocalizations.rules} (${customRules.length})',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                      thickness: 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 4),
-
-            // Rules List
-            Expanded(
-              child: customRules.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.playlist_add_check_rounded,
-                              size: 48,
-                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              appLocalizations.noAddedRulesYet,
-                              textAlign: TextAlign.center,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                              border: Border.all(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.2,
+                                ),
+                                width: 1,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: customRules.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        final rule = customRules[index];
-                        final isProcess = rule.ruleAction == RuleAction.PROCESS_NAME;
-                        final typeLabel = isProcess
-                            ? appLocalizations.ruleApp
-                            : appLocalizations.ruleDomain;
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
-                            borderRadius: BorderRadius.circular(AppCorner.md),
-                            border: Border.all(
-                              color: colorScheme.outlineVariant.withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: ListTile(
-                            dense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 2,
-                            ),
-                            leading: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 3,
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 2,
                               ),
-                              decoration: BoxDecoration(
-                                color: (isProcess ? colorScheme.tertiary : colorScheme.primary)
-                                    .withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(AppCorner.sm),
-                              ),
-                              child: Text(
-                                typeLabel,
-                                style: TextStyle(
-                                  color: isProcess ? colorScheme.tertiary : colorScheme.primary,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
+                              leading: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      (isProcess
+                                              ? colorScheme.tertiary
+                                              : colorScheme.primary)
+                                          .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(
+                                    AppCorner.sm,
+                                  ),
+                                ),
+                                child: Text(
+                                  typeLabel,
+                                  style: TextStyle(
+                                    color: isProcess
+                                        ? colorScheme.tertiary
+                                        : colorScheme.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              rule.content ?? '',
-                              style: textTheme.bodyMedium?.toJetBrainsMono.copyWith(
-                                fontWeight: FontWeight.w500,
+                              title: Text(
+                                rule.content ?? '',
+                                style: textTheme.bodyMedium?.toJetBrainsMono
+                                    .copyWith(fontWeight: FontWeight.w500),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              rule.ruleAction.value,
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                                fontFamily: 'monospace',
-                                fontSize: 10,
+                              subtitle: Text(
+                                rule.ruleAction.value,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.6),
+                                  fontFamily: 'monospace',
+                                  fontSize: 10,
+                                ),
                               ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(AppCorner.sm),
-                                  ),
-                                  child: const Text(
-                                    'DIRECT',
-                                    style: TextStyle(
-                                      color: Color(0xFF10B981),
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'monospace',
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(
+                                        AppCorner.sm,
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'DIRECT',
+                                      style: TextStyle(
+                                        color: Color(0xFF10B981),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'monospace',
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 4),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete_outline_rounded,
-                                    size: 20,
-                                    color: colorScheme.error.withValues(alpha: 0.8),
+                                  const SizedBox(width: 4),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete_outline_rounded,
+                                      size: 20,
+                                      color: colorScheme.error.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                    tooltip: appLocalizations.delete,
+                                    onPressed: () => _handleDeleteRule(rule),
                                   ),
-                                  tooltip: appLocalizations.delete,
-                                  onPressed: () => _handleDeleteRule(rule),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -513,21 +572,19 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
       if (system.isAndroid) {
         final packages = await App().getPackages();
         for (final pkg in packages) {
-          list.add(_AppItem(
-            name: pkg.label.isNotEmpty ? pkg.label : pkg.packageName,
-            identifier: pkg.packageName,
-            isPackage: true,
-          ));
+          list.add(
+            _AppItem(
+              name: pkg.label.isNotEmpty ? pkg.label : pkg.packageName,
+              identifier: pkg.packageName,
+              isPackage: true,
+            ),
+          );
         }
       } else {
         // Desktop (Linux / Windows / macOS)
         final processes = await _fetchDesktopProcesses();
         for (final p in processes) {
-          list.add(_AppItem(
-            name: p,
-            identifier: p,
-            isPackage: false,
-          ));
+          list.add(_AppItem(name: p, identifier: p, isPackage: false));
         }
       }
     } catch (e) {
@@ -551,7 +608,9 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
           final lines = (res.stdout as String).split('\n');
           for (final line in lines.skip(1)) {
             final name = line.trim();
-            if (name.isNotEmpty && !name.startsWith('[') && !processSet.contains(name)) {
+            if (name.isNotEmpty &&
+                !name.startsWith('[') &&
+                !processSet.contains(name)) {
               processSet.add(name);
             }
           }
@@ -586,7 +645,8 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
       }
     }
 
-    final sorted = processSet.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final sorted = processSet.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     return sorted;
   }
 
@@ -610,141 +670,154 @@ class _AppPickerSheetState extends ConsumerState<_AppPickerSheet> {
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.75,
         ),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppCorner.xxl),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppCorner.xxl),
+          ),
         ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 10, bottom: 6),
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(AppCorner.full),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 6),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(AppCorner.full),
+                ),
               ),
-            ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      appLocalizations.selectAppTitle,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        appLocalizations.selectAppTitle,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-            ),
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: TextField(
-                controller: _searchController,
-                style: textTheme.bodyMedium,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                  hintText: appLocalizations.searchAppHint,
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                            });
-                          },
-                        )
-                      : null,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppCorner.md),
-                    borderSide: BorderSide.none,
-                  ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
                 ),
-                onChanged: (_) => setState(() {}),
               ),
-            ),
-            const SizedBox(height: 8),
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  style: textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.4,
+                    ),
+                    hintText: appLocalizations.searchAppHint,
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                              });
+                            },
+                          )
+                        : null,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+              ),
+              const SizedBox(height: 8),
 
-            // Content
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : filtered.isEmpty
-                      ? Center(
-                          child: Text(
-                            appLocalizations.noAddedRulesYet,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              // Content
+              Expanded(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : filtered.isEmpty
+                    ? Center(
+                        child: Text(
+                          appLocalizations.noAddedRulesYet,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.6,
                             ),
                           ),
-                        )
-                      : ListView.builder(
-                          itemCount: filtered.length,
-                          itemBuilder: (context, index) {
-                            final item = filtered[index];
-                            return ListTile(
-                              dense: true,
-                              leading: item.isPackage
-                                  ? PackageIcon(
-                                      packageName: item.identifier,
-                                      size: 36,
-                                    )
-                                  : CircleAvatar(
-                                      radius: 18,
-                                      backgroundColor: colorScheme.primaryContainer,
-                                      child: Icon(
-                                        Icons.memory_rounded,
-                                        size: 20,
-                                        color: colorScheme.primary,
-                                      ),
-                                    ),
-                              title: Text(
-                                item.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              subtitle: Text(
-                                item.identifier,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodySmall?.toJetBrainsMono.copyWith(
-                                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                  fontSize: 11,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pop(item.identifier);
-                              },
-                            );
-                          },
                         ),
-            ),
-          ],
+                      )
+                    : ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final item = filtered[index];
+                          return ListTile(
+                            dense: true,
+                            leading: item.isPackage
+                                ? PackageIcon(
+                                    packageName: item.identifier,
+                                    size: 36,
+                                  )
+                                : CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        colorScheme.primaryContainer,
+                                    child: Icon(
+                                      Icons.memory_rounded,
+                                      size: 20,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                            title: Text(
+                              item.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              item.identifier,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodySmall?.toJetBrainsMono
+                                  .copyWith(
+                                    color: colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.7),
+                                    fontSize: 11,
+                                  ),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop(item.identifier);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

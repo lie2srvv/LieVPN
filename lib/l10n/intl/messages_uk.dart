@@ -886,10 +886,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "insertSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
       "Вставити посилання",
     ),
-    "installedAppsPermissionDeniedMessage":
-        MessageLookupByLibrary.simpleMessage(
-          "Разрешеніе на зпізок додатків відклонено, поэтому узтановленные додаткі недозтупны. Предозтавьте его вручную в зізтемных налаштуваннях.",
-        ),
+    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
+      "Разрешеніе на зпізок додатків відклонено, поэтому узтановленные додаткі недозтупны. Предозтавьте его вручную в зізтемных налаштуваннях.",
+    ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта зізтема не выдаёт зпізок узтановленных додатків без разрешенія. Предозтавьте его, чтобы назтроіть прокзі для віддельных додатків.",
     ),

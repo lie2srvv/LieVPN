@@ -172,18 +172,29 @@ String resolveConnectedServerName({
   // In Rule mode, never pick Clash internal groups (GLOBAL, DIRECT, REJECT)
   final candidateGroups = groups.where((g) {
     final upper = g.name.toUpperCase();
-    return upper != 'GLOBAL' && upper != 'DIRECT' && upper != 'REJECT' && g.hidden != true;
+    return upper != 'GLOBAL' &&
+        upper != 'DIRECT' &&
+        upper != 'REJECT' &&
+        g.hidden != true;
   }).toList();
 
   final effectiveGroups = candidateGroups.isNotEmpty ? candidateGroups : groups;
 
-  final root = effectiveGroups.firstWhereOrNull((g) => g.name == 'PROXY') ??
-      effectiveGroups.firstWhereOrNull((g) => g.type == GroupType.Selector || g.type.isComputedSelected) ??
+  final root =
+      effectiveGroups.firstWhereOrNull((g) => g.name == 'PROXY') ??
+      effectiveGroups.firstWhereOrNull(
+        (g) => g.type == GroupType.Selector || g.type.isComputedSelected,
+      ) ??
       effectiveGroups.first;
 
   String current = root.type.isComputedSelected
-      ? (root.now?.isNotEmpty == true && root.now != root.name ? root.now! : (selectedMap[root.name] ?? ''))
-      : (selectedMap[root.name] ?? (root.now?.isNotEmpty == true && root.now != root.name ? root.now! : ''));
+      ? (root.now?.isNotEmpty == true && root.now != root.name
+            ? root.now!
+            : (selectedMap[root.name] ?? ''))
+      : (selectedMap[root.name] ??
+            (root.now?.isNotEmpty == true && root.now != root.name
+                ? root.now!
+                : ''));
 
   if (current.isEmpty || current == 'DIRECT' || current == 'REJECT') {
     final validFirst = root.all.firstWhereOrNull(
@@ -203,14 +214,26 @@ String resolveConnectedServerName({
       return current;
     }
     final next = group.type.isComputedSelected
-        ? (group.now?.isNotEmpty == true && group.now != group.name ? group.now! : (selectedMap[group.name] ?? ''))
-        : (selectedMap[group.name] ?? (group.now?.isNotEmpty == true && group.now != group.name ? group.now! : ''));
+        ? (group.now?.isNotEmpty == true && group.now != group.name
+              ? group.now!
+              : (selectedMap[group.name] ?? ''))
+        : (selectedMap[group.name] ??
+              (group.now?.isNotEmpty == true && group.now != group.name
+                  ? group.now!
+                  : ''));
 
-    if (next.isNotEmpty && next != current && next != 'DIRECT' && next != 'REJECT') {
+    if (next.isNotEmpty &&
+        next != current &&
+        next != 'DIRECT' &&
+        next != 'REJECT') {
       current = next;
     } else {
       final validChild = group.all.firstWhereOrNull(
-        (p) => p.name != 'DIRECT' && p.name != 'REJECT' && p.name != 'GLOBAL' && !visited.contains(p.name),
+        (p) =>
+            p.name != 'DIRECT' &&
+            p.name != 'REJECT' &&
+            p.name != 'GLOBAL' &&
+            !visited.contains(p.name),
       );
       if (validChild != null) {
         current = validChild.name;

@@ -11,16 +11,29 @@ import 'package:flutter/services.dart';
 
 /// Milestone days that trigger celebratory notifications.
 const List<int> streakMilestones = [
-  10, 30, 50, 100, 200, 300, 365, 400, 500, 600, 700, 800, 900, 1000
+  10,
+  30,
+  50,
+  100,
+  200,
+  300,
+  365,
+  400,
+  500,
+  600,
+  700,
+  800,
+  900,
+  1000,
 ];
 
 /// Encapsulates the verified persistent streak state.
 class StreakState {
   final int count;
   final String lastActiveDateMsk; // YYYY-MM-DD
-  final String lastCheckDateMsk;  // YYYY-MM-DD
+  final String lastCheckDateMsk; // YYYY-MM-DD
   final int restoresUsedThisMonth;
-  final String currentMonthMsk;   // YYYY-MM
+  final String currentMonthMsk; // YYYY-MM
   final int lastMilestoneDismissed;
   final bool isActiveToday;
   final bool canRestore;
@@ -50,9 +63,11 @@ class StreakState {
       count: count ?? this.count,
       lastActiveDateMsk: lastActiveDateMsk ?? this.lastActiveDateMsk,
       lastCheckDateMsk: lastCheckDateMsk ?? this.lastCheckDateMsk,
-      restoresUsedThisMonth: restoresUsedThisMonth ?? this.restoresUsedThisMonth,
+      restoresUsedThisMonth:
+          restoresUsedThisMonth ?? this.restoresUsedThisMonth,
       currentMonthMsk: currentMonthMsk ?? this.currentMonthMsk,
-      lastMilestoneDismissed: lastMilestoneDismissed ?? this.lastMilestoneDismissed,
+      lastMilestoneDismissed:
+          lastMilestoneDismissed ?? this.lastMilestoneDismissed,
       isActiveToday: isActiveToday ?? this.isActiveToday,
       canRestore: canRestore ?? this.canRestore,
     );
@@ -67,13 +82,17 @@ class StreakState {
     'lastMilestoneDismissed': lastMilestoneDismissed,
   };
 
-  factory StreakState.fromJson(Map<String, dynamic> json, {required String todayMsk}) {
+  factory StreakState.fromJson(
+    Map<String, dynamic> json, {
+    required String todayMsk,
+  }) {
     final count = (json['count'] as num?)?.toInt() ?? 0;
     final lastActiveDateMsk = (json['lastActiveDateMsk'] as String?) ?? '';
     final lastCheckDateMsk = (json['lastCheckDateMsk'] as String?) ?? '';
     var restoresUsed = (json['restoresUsedThisMonth'] as num?)?.toInt() ?? 0;
     var currentMonth = (json['currentMonthMsk'] as String?) ?? '';
-    final lastMilestone = (json['lastMilestoneDismissed'] as num?)?.toInt() ?? 0;
+    final lastMilestone =
+        (json['lastMilestoneDismissed'] as num?)?.toInt() ?? 0;
 
     final thisMonthMsk = todayMsk.length >= 7 ? todayMsk.substring(0, 7) : '';
     if (currentMonth != thisMonthMsk) {
@@ -114,7 +133,9 @@ class StreakManager {
   static StreakManager? _instance;
   static StreakManager get instance => _instance ??= StreakManager._();
 
-  final ValueNotifier<StreakState> streakNotifier = ValueNotifier(StreakState.initial);
+  final ValueNotifier<StreakState> streakNotifier = ValueNotifier(
+    StreakState.initial,
+  );
   final ValueNotifier<int?> pendingMilestoneNotifier = ValueNotifier(null);
 
   Duration _networkTimeOffset = Duration.zero;
@@ -182,7 +203,9 @@ class StreakManager {
           receiveTimeout: const Duration(seconds: 4),
         ),
       );
-      final response = await dio.head('https://clck.lie2srvv.com/files/version.json');
+      final response = await dio.head(
+        'https://clck.lie2srvv.com/files/version.json',
+      );
       final dateHeader = response.headers.value('date');
       if (dateHeader != null && dateHeader.isNotEmpty) {
         final serverUtc = HttpDate.parse(dateHeader).toUtc();
@@ -202,7 +225,8 @@ class StreakManager {
 
   /// HMAC signature computation
   String _computeSignature(Map<String, dynamic> data) {
-    final payload = '${data['count']}|${data['lastActiveDateMsk']}|${data['restoresUsedThisMonth']}|${data['currentMonthMsk']}|$_deviceSalt';
+    final payload =
+        '${data['count']}|${data['lastActiveDateMsk']}|${data['restoresUsedThisMonth']}|${data['currentMonthMsk']}|$_deviceSalt';
     final key = utf8.encode('LieVPN_Flame_Streak_Secret_2026_@#!');
     final hmac = Hmac(sha256, key);
     return hmac.convert(utf8.encode(payload)).toString();
@@ -222,7 +246,8 @@ class StreakManager {
       }
 
       final raw = await file.readAsString();
-      final decodedJson = json.decode(utf8.decode(base64.decode(raw))) as Map<String, dynamic>;
+      final decodedJson =
+          json.decode(utf8.decode(base64.decode(raw))) as Map<String, dynamic>;
 
       final signature = decodedJson['sig'] as String?;
       final expectedSig = _computeSignature(decodedJson);
@@ -240,7 +265,8 @@ class StreakManager {
       // Check if streak was broken (missed yesterday)
       if (loaded.count > 0 && !loaded.isActiveToday) {
         final yesterday = yesterdayMskDateString;
-        if (loaded.lastActiveDateMsk != yesterday && loaded.lastActiveDateMsk != today) {
+        if (loaded.lastActiveDateMsk != yesterday &&
+            loaded.lastActiveDateMsk != today) {
           // Streak broke: keep count display for restoration prompt, or mark inactive
           loaded = loaded.copyWith(
             isActiveToday: false,

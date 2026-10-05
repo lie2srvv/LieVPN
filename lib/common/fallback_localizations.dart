@@ -1,23 +1,33 @@
 import 'package:flutter/cupertino.dart' as flutter_cupertino;
 import 'package:flutter/material.dart' as flutter_material;
 import 'package:flutter/widgets.dart' as flutter_widgets;
-import 'package:flutter_localizations/flutter_localizations.dart' as flutter_l10n;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    as flutter_l10n;
 import 'package:material_ui/material_ui.dart' as modern_material;
 
 /// Fallback for `package:material_ui`'s [MaterialLocalizations]
 class ModernFallbackMaterialLocalizationsDelegate
-    extends flutter_widgets.LocalizationsDelegate<modern_material.MaterialLocalizations> {
+    extends
+        flutter_widgets.LocalizationsDelegate<
+          modern_material.MaterialLocalizations
+        > {
   const ModernFallbackMaterialLocalizationsDelegate();
 
   @override
   bool isSupported(flutter_widgets.Locale locale) => true;
 
   @override
-  Future<modern_material.MaterialLocalizations> load(flutter_widgets.Locale locale) {
-    if (modern_material.GlobalMaterialLocalizations.delegate.isSupported(locale)) {
+  Future<modern_material.MaterialLocalizations> load(
+    flutter_widgets.Locale locale,
+  ) {
+    if (modern_material.GlobalMaterialLocalizations.delegate.isSupported(
+      locale,
+    )) {
       return modern_material.GlobalMaterialLocalizations.delegate.load(locale);
     }
-    return modern_material.GlobalMaterialLocalizations.delegate.load(const flutter_widgets.Locale('ru'));
+    return modern_material.GlobalMaterialLocalizations.delegate.load(
+      const flutter_widgets.Locale('ru'),
+    );
   }
 
   @override
@@ -26,18 +36,25 @@ class ModernFallbackMaterialLocalizationsDelegate
 
 /// Fallback for Flutter SDK's [MaterialLocalizations]
 class FallbackMaterialLocalizationsDelegate
-    extends flutter_widgets.LocalizationsDelegate<flutter_material.MaterialLocalizations> {
+    extends
+        flutter_widgets.LocalizationsDelegate<
+          flutter_material.MaterialLocalizations
+        > {
   const FallbackMaterialLocalizationsDelegate();
 
   @override
   bool isSupported(flutter_widgets.Locale locale) => true;
 
   @override
-  Future<flutter_material.MaterialLocalizations> load(flutter_widgets.Locale locale) {
+  Future<flutter_material.MaterialLocalizations> load(
+    flutter_widgets.Locale locale,
+  ) {
     if (flutter_l10n.GlobalMaterialLocalizations.delegate.isSupported(locale)) {
       return flutter_l10n.GlobalMaterialLocalizations.delegate.load(locale);
     }
-    return flutter_l10n.GlobalMaterialLocalizations.delegate.load(const flutter_widgets.Locale('ru'));
+    return flutter_l10n.GlobalMaterialLocalizations.delegate.load(
+      const flutter_widgets.Locale('ru'),
+    );
   }
 
   @override
@@ -46,18 +63,27 @@ class FallbackMaterialLocalizationsDelegate
 
 /// Fallback for Flutter SDK's [CupertinoLocalizations]
 class FallbackCupertinoLocalizationsDelegate
-    extends flutter_widgets.LocalizationsDelegate<flutter_cupertino.CupertinoLocalizations> {
+    extends
+        flutter_widgets.LocalizationsDelegate<
+          flutter_cupertino.CupertinoLocalizations
+        > {
   const FallbackCupertinoLocalizationsDelegate();
 
   @override
   bool isSupported(flutter_widgets.Locale locale) => true;
 
   @override
-  Future<flutter_cupertino.CupertinoLocalizations> load(flutter_widgets.Locale locale) {
-    if (flutter_l10n.GlobalCupertinoLocalizations.delegate.isSupported(locale)) {
+  Future<flutter_cupertino.CupertinoLocalizations> load(
+    flutter_widgets.Locale locale,
+  ) {
+    if (flutter_l10n.GlobalCupertinoLocalizations.delegate.isSupported(
+      locale,
+    )) {
       return flutter_l10n.GlobalCupertinoLocalizations.delegate.load(locale);
     }
-    return flutter_l10n.GlobalCupertinoLocalizations.delegate.load(const flutter_widgets.Locale('ru'));
+    return flutter_l10n.GlobalCupertinoLocalizations.delegate.load(
+      const flutter_widgets.Locale('ru'),
+    );
   }
 
   @override
@@ -66,18 +92,25 @@ class FallbackCupertinoLocalizationsDelegate
 
 /// Fallback for Flutter SDK's [WidgetsLocalizations]
 class FallbackWidgetsLocalizationsDelegate
-    extends flutter_widgets.LocalizationsDelegate<flutter_widgets.WidgetsLocalizations> {
+    extends
+        flutter_widgets.LocalizationsDelegate<
+          flutter_widgets.WidgetsLocalizations
+        > {
   const FallbackWidgetsLocalizationsDelegate();
 
   @override
   bool isSupported(flutter_widgets.Locale locale) => true;
 
   @override
-  Future<flutter_widgets.WidgetsLocalizations> load(flutter_widgets.Locale locale) {
+  Future<flutter_widgets.WidgetsLocalizations> load(
+    flutter_widgets.Locale locale,
+  ) {
     if (flutter_l10n.GlobalWidgetsLocalizations.delegate.isSupported(locale)) {
       return flutter_l10n.GlobalWidgetsLocalizations.delegate.load(locale);
     }
-    return flutter_l10n.GlobalWidgetsLocalizations.delegate.load(const flutter_widgets.Locale('ru'));
+    return flutter_l10n.GlobalWidgetsLocalizations.delegate.load(
+      const flutter_widgets.Locale('ru'),
+    );
   }
 
   @override

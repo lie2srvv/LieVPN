@@ -27,10 +27,7 @@ void main() {
         isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/'),
         isFalse,
       );
-      expect(
-        isValidLieVpnSubscriptionUrl('https://google.com/test'),
-        isFalse,
-      );
+      expect(isValidLieVpnSubscriptionUrl('https://google.com/test'), isFalse);
       expect(isValidLieVpnSubscriptionUrl('not a url'), isFalse);
       expect(isValidLieVpnSubscriptionUrl(''), isFalse);
     });
@@ -40,10 +37,7 @@ void main() {
     test('finds url in mixed text', () {
       const text =
           'Here is your subscription: https://vpn.lie2srvv.com/mytoken please enjoy';
-      expect(
-        extractLieVpnUrl(text),
-        'https://vpn.lie2srvv.com/mytoken',
-      );
+      expect(extractLieVpnUrl(text), 'https://vpn.lie2srvv.com/mytoken');
     });
 
     test('returns null for text without LieVPN url', () {
@@ -58,9 +52,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) - 3600;
       final profile = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: pastTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: pastTimestamp));
       expect(isSubscriptionExpired(profile), isTrue);
       expect(hasActiveLieVpnSubscription(profile), isFalse);
 
@@ -74,9 +66,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 30;
       final profile = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: futureTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: futureTimestamp));
       expect(isSubscriptionExpired(profile), isFalse);
       expect(hasActiveLieVpnSubscription(profile), isTrue);
 
@@ -91,9 +81,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 2 + 3600;
       final profile2Days = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: twoDaysTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: twoDaysTimestamp));
       final status2Days = getSubscriptionExpiryStatus(profile2Days);
       expect(status2Days.isExpiringSoon, isTrue);
       expect(status2Days.remainingDays, 2);
@@ -104,9 +92,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 1 + 3600;
       final profile1Day = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: oneDayTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: oneDayTimestamp));
       final status1Day = getSubscriptionExpiryStatus(profile1Day);
       expect(status1Day.isExpiringSoon, isTrue);
       expect(status1Day.remainingDays, 1);
@@ -125,10 +111,7 @@ proxies:
     server: 1.2.3.4
     port: 443
 ''';
-      expect(
-        checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))),
-        isTrue,
-      );
+      expect(checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))), isTrue);
     });
 
     test('returns true when proxy-providers exist', () {
@@ -139,10 +122,7 @@ proxy-providers:
     type: http
     url: "https://example.com"
 ''';
-      expect(
-        checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))),
-        isTrue,
-      );
+      expect(checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))), isTrue);
     });
 
     test('returns false when proxies is empty or gibberish', () {

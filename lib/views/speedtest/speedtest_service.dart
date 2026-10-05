@@ -4,14 +4,16 @@ import 'package:dio/dio.dart';
 import 'speedtest_models.dart';
 
 class SpeedtestService {
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 8),
-    receiveTimeout: const Duration(seconds: 12),
-    headers: {
-      'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    },
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 8),
+      receiveTimeout: const Duration(seconds: 12),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    ),
+  );
 
   bool _isCanceled = false;
   CancelToken? _currentCancelToken;
@@ -46,14 +48,16 @@ class SpeedtestService {
       }
     } catch (e) {
       if (!_isCanceled) {
-        onUpdate(state.copyWith(
-          phase: SpeedtestPhase.error,
-          currentSpeedMbps: 0.0,
-          downloadMbps: 0.0,
-          uploadMbps: 0.0,
-          pingMs: 0,
-          errorMessage: null,
-        ));
+        onUpdate(
+          state.copyWith(
+            phase: SpeedtestPhase.error,
+            currentSpeedMbps: 0.0,
+            downloadMbps: 0.0,
+            uploadMbps: 0.0,
+            pingMs: 0,
+            errorMessage: null,
+          ),
+        );
       }
     }
   }
@@ -98,7 +102,9 @@ class SpeedtestService {
           if (_isCanceled) return;
           final rawUrl = (s['url'] ?? '').toString();
           if (rawUrl.isEmpty) continue;
-          final base = rawUrl.split('/speedtest')[0].replaceAll(RegExp(r'/+$'), '');
+          final base = rawUrl
+              .split('/speedtest')[0]
+              .replaceAll(RegExp(r'/+$'), '');
           if (base.isEmpty) continue;
 
           try {
@@ -117,7 +123,8 @@ class SpeedtestService {
               cancelToken: _currentCancelToken,
             );
             sw.stop();
-            if (sw.elapsedMilliseconds > 0 && sw.elapsedMilliseconds < lowestPing) {
+            if (sw.elapsedMilliseconds > 0 &&
+                sw.elapsedMilliseconds < lowestPing) {
               lowestPing = sw.elapsedMilliseconds;
               chosenBase = base;
             }
@@ -176,10 +183,9 @@ class SpeedtestService {
             final elapsedSec = elapsedMs / 1000.0;
             final mbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
             finalDownloadMbps = mbps;
-            onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              downloadMbps: mbps,
-            ));
+            onUpdate(
+              state.copyWith(currentSpeedMbps: mbps, downloadMbps: mbps),
+            );
           }
           if (downloadStopwatch.elapsedMilliseconds > 6500) {
             cancelToken.cancel();
@@ -191,8 +197,10 @@ class SpeedtestService {
     downloadStopwatch.stop();
 
     if (finalDownloadMbps <= 0.0 && bytesReceived > 0) {
-      final elapsedSec =
-          (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
+      final elapsedSec = (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(
+        0.1,
+        10.0,
+      );
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
     }
     if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
@@ -240,10 +248,7 @@ class SpeedtestService {
           final elapsedSec = elapsedMs / 1000.0;
           final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
           finalUploadMbps = mbps;
-          onUpdate(state.copyWith(
-            currentSpeedMbps: mbps,
-            uploadMbps: mbps,
-          ));
+          onUpdate(state.copyWith(currentSpeedMbps: mbps, uploadMbps: mbps));
         }
       } catch (_) {
         break;
@@ -252,8 +257,10 @@ class SpeedtestService {
     uploadStopwatch.stop();
 
     if (finalUploadMbps <= 0.0 && bytesUploaded > 0) {
-      final elapsedSec =
-          (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
+      final elapsedSec = (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(
+        0.1,
+        10.0,
+      );
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
     }
     if (finalUploadMbps < 0.0 || bytesUploaded == 0) {
@@ -330,7 +337,8 @@ class SpeedtestService {
   ) async {
     SpeedtestState state = initialState;
 
-    String dlUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/probes/50mb';
+    String dlUrl =
+        'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/probes/50mb';
     String? ulPostUrl;
     String pingUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/ping';
 
@@ -345,17 +353,20 @@ class SpeedtestService {
       );
       final data = probeRes.data;
       if (data != null) {
-        final dlProbes = (data['download']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        final dlProbes = (data['download']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
         if (dlProbes != null && dlProbes.isNotEmpty) {
           final first = dlProbes.first['url']?.toString();
           if (first != null && first.isNotEmpty) dlUrl = first;
         }
-        final ulProbes = (data['upload']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        final ulProbes = (data['upload']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
         if (ulProbes != null && ulProbes.isNotEmpty) {
           final first = ulProbes.first['postUrl']?.toString();
           if (first != null && first.isNotEmpty) ulPostUrl = first;
         }
-        final latProbes = (data['latency']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
+        final latProbes = (data['latency']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
         if (latProbes != null && latProbes.isNotEmpty) {
           final first = latProbes.first['url']?.toString();
           if (first != null && first.isNotEmpty) pingUrl = first;
@@ -403,10 +414,9 @@ class SpeedtestService {
             final elapsedSec = elapsedMs / 1000.0;
             final mbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
             finalDownloadMbps = mbps;
-            onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              downloadMbps: mbps,
-            ));
+            onUpdate(
+              state.copyWith(currentSpeedMbps: mbps, downloadMbps: mbps),
+            );
           }
           if (downloadStopwatch.elapsedMilliseconds > 7000) {
             cancelToken.cancel();
@@ -418,8 +428,10 @@ class SpeedtestService {
     downloadStopwatch.stop();
 
     if (finalDownloadMbps <= 0.0 && bytesReceived > 0) {
-      final elapsedSec =
-          (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
+      final elapsedSec = (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(
+        0.1,
+        10.0,
+      );
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
     }
     if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
@@ -465,10 +477,7 @@ class SpeedtestService {
             final elapsedSec = elapsedMs / 1000.0;
             final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
             finalUploadMbps = mbps;
-            onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              uploadMbps: mbps,
-            ));
+            onUpdate(state.copyWith(currentSpeedMbps: mbps, uploadMbps: mbps));
           }
         } catch (_) {
           break;
@@ -478,8 +487,10 @@ class SpeedtestService {
     uploadStopwatch.stop();
 
     if (finalUploadMbps <= 0.0 && bytesUploaded > 0) {
-      final elapsedSec =
-          (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
+      final elapsedSec = (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(
+        0.1,
+        10.0,
+      );
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
     }
     if (finalUploadMbps < 0.0 || bytesUploaded == 0) {

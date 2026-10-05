@@ -129,8 +129,8 @@ SubscriptionExpiryStatus getSubscriptionExpiryStatus(Profile? profile) {
     final hourSuffix = (mod10 == 1 && mod100 != 11)
         ? 'час'
         : ([2, 3, 4].contains(mod10) && ![12, 13, 14].contains(mod100))
-            ? 'часа'
-            : 'часов';
+        ? 'часа'
+        : 'часов';
     timeText = '$hours $hourSuffix';
   } else if (minutes > 0) {
     timeText = '$minutes мин.';

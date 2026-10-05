@@ -195,10 +195,12 @@ class AppPath {
     }
 
     final targetEntities = targetDir.listSync();
-    final hasExistingData = targetEntities.any((e) =>
-        basename(e.path) == 'database.sqlite' ||
-        basename(e.path) == 'config.yaml' ||
-        basename(e.path) == 'profiles');
+    final hasExistingData = targetEntities.any(
+      (e) =>
+          basename(e.path) == 'database.sqlite' ||
+          basename(e.path) == 'config.yaml' ||
+          basename(e.path) == 'profiles',
+    );
 
     if (hasExistingData) {
       return;
@@ -207,7 +209,10 @@ class AppPath {
     await _copyDirectory(legacyDir, targetDir);
   }
 
-  static Future<void> _copyDirectory(Directory source, Directory destination) async {
+  static Future<void> _copyDirectory(
+    Directory source,
+    Directory destination,
+  ) async {
     await for (final entity in source.list(recursive: false)) {
       final name = basename(entity.path);
       if (name.endsWith('.lock') || name.endsWith('.sock')) {

@@ -57,7 +57,10 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
     } else if (_upCount < _totalCount) {
       iconColor = const Color(0xFFF59E0B);
       iconData = Icons.warning_amber_rounded;
-      statusTitle = appLocalizations.statusPartialOutagesDesc(_upCount, _totalCount);
+      statusTitle = appLocalizations.statusPartialOutagesDesc(
+        _upCount,
+        _totalCount,
+      );
     } else {
       iconColor = const Color(0xFF10B981);
       iconData = Icons.check_circle_outline_rounded;
@@ -79,11 +82,7 @@ class _ServerStatusCardState extends State<ServerStatusCard> {
                 color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppCorner.md),
               ),
-              child: Icon(
-                iconData,
-                size: 22,
-                color: iconColor,
-              ),
+              child: Icon(iconData, size: 22, color: iconColor),
             ),
             const SizedBox(width: 12),
             Expanded(

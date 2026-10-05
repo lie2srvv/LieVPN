@@ -229,37 +229,37 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                               const ServerStatusCard(),
                               SizedBox(height: spacing),
                               LayoutBuilder(
-                            builder: (_, constraints) {
-                              final band = DashboardGridBand.of(
-                                constraints.maxWidth,
-                              );
-                              final columns = band.columns;
-                              final grid = SuperGrid(
-                                key: key,
-                                editing: isEdit,
-                                crossAxisCount: columns,
-                                crossAxisSpacing: spacing,
-                                mainAxisSpacing: spacing,
-                                onChanged: _saveDashboardWidgets,
-                                revealPadding: padding.copyWith(
-                                  left: 0,
-                                  right: 0,
-                                ),
-                                children: children,
-                              );
-                              return DashboardWidgetMetrics(
-                                unitHeight: dashboardUnitHeight(
-                                  constraints.maxWidth,
-                                ),
-                                child: isEdit
-                                    ? BackLayerScope(
-                                        onBack: _handleExitEdit,
-                                        child: grid,
-                                      )
-                                    : grid,
-                              );
-                            },
-                          ),
+                                builder: (_, constraints) {
+                                  final band = DashboardGridBand.of(
+                                    constraints.maxWidth,
+                                  );
+                                  final columns = band.columns;
+                                  final grid = SuperGrid(
+                                    key: key,
+                                    editing: isEdit,
+                                    crossAxisCount: columns,
+                                    crossAxisSpacing: spacing,
+                                    mainAxisSpacing: spacing,
+                                    onChanged: _saveDashboardWidgets,
+                                    revealPadding: padding.copyWith(
+                                      left: 0,
+                                      right: 0,
+                                    ),
+                                    children: children,
+                                  );
+                                  return DashboardWidgetMetrics(
+                                    unitHeight: dashboardUnitHeight(
+                                      constraints.maxWidth,
+                                    ),
+                                    child: isEdit
+                                        ? BackLayerScope(
+                                            onBack: _handleExitEdit,
+                                            child: grid,
+                                          )
+                                        : grid,
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),

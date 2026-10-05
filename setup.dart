@@ -157,14 +157,18 @@ void _showHelp(ArgParser parser) {
 /// Removes .note.gnu.property section from Linux ELF binaries so they run on older CPUs/LTS kernels
 Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
   if (!Platform.isLinux) return;
-  final bundleDir = Directory(p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'));
+  final bundleDir = Directory(
+    p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'),
+  );
   if (!bundleDir.existsSync()) return;
 
   final elfPaths = <String>[];
   for (final entity in bundleDir.listSync(recursive: true)) {
     if (entity is File) {
       final name = p.basename(entity.path);
-      if (name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
+      if (name == 'LieVPN' ||
+          name.startsWith('FlClash') ||
+          name.endsWith('.so')) {
         elfPaths.add(entity.path);
       }
     }
@@ -172,9 +176,14 @@ Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
 
   for (final elfPath in elfPaths) {
     try {
-      final res = await Process.run('objcopy', ['--remove-section=.note.gnu.property', elfPath]);
+      final res = await Process.run('objcopy', [
+        '--remove-section=.note.gnu.property',
+        elfPath,
+      ]);
       if (res.exitCode == 0) {
-        stdout.writeln('Sanitized CPU ISA constraints for ${p.basename(elfPath)}');
+        stdout.writeln(
+          'Sanitized CPU ISA constraints for ${p.basename(elfPath)}',
+        );
       }
     } catch (_) {}
   }
@@ -206,7 +215,9 @@ Future<int> _package(
 
   // On Linux: build bundle first if packaging AppImage/deb to sanitize binaries before packaging
   if (platform == 'linux') {
-    stdout.writeln('Pre-building Linux bundle to sanitize CPU architecture requirements...');
+    stdout.writeln(
+      'Pre-building Linux bundle to sanitize CPU architecture requirements...',
+    );
     final buildBundleArgs = [
       'build',
       'linux',
@@ -215,7 +226,11 @@ Future<int> _package(
         for (final arg in flutterBuildArgs)
           if (arg == 'verbose') '-v' else '--$arg',
     ];
-    final buildProcess = await Process.start('flutter', buildBundleArgs, runInShell: true);
+    final buildProcess = await Process.start(
+      'flutter',
+      buildBundleArgs,
+      runInShell: true,
+    );
     buildProcess.stdout.listen((data) => stdout.write(utf8.decode(data)));
     buildProcess.stderr.listen((data) => stderr.write(utf8.decode(data)));
     final buildExit = await buildProcess.exitCode;
@@ -243,7 +258,12 @@ Future<int> _package(
   }
 
   final homeDir = Platform.environment['HOME'] ?? '';
-  final localPubBin = p.join(homeDir, '.pub-cache', 'bin', 'flutter_distributor');
+  final localPubBin = p.join(
+    homeDir,
+    '.pub-cache',
+    'bin',
+    'flutter_distributor',
+  );
   final distributorCmd = await _hasCommand('flutter_distributor')
       ? 'flutter_distributor'
       : (File(localPubBin).existsSync() ? localPubBin : 'flutter_distributor');
@@ -322,8 +342,11 @@ Future<int> _ensureMacosDependencies() async {
 
 Future<int> _ensureLinuxDependencies() async {
   if (!await _hasCommand('dpkg')) {
-    stdout.writeln('Non-Debian system detected, skipping apt dependency checks.');
-    if (await _hasCommand('appimagetool') || File('/usr/local/bin/appimagetool').existsSync()) {
+    stdout.writeln(
+      'Non-Debian system detected, skipping apt dependency checks.',
+    );
+    if (await _hasCommand('appimagetool') ||
+        File('/usr/local/bin/appimagetool').existsSync()) {
       return 0;
     }
     return 0;
