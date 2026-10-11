@@ -132,10 +132,41 @@ class System {
         'stat',
         statArguments(targetPath, isMacOS: false),
       );
-      return isPrivilegedStatOutput(
+      final isPrivileged = isPrivilegedStatOutput(
         result.stdout.toString(),
         ownerPrefix: 'root:',
       );
+      if (!isPrivileged) {
+        return false;
+      }
+
+      // External core check: ensure process inspection capabilities and up-to-date binary
+      if (targetPath == AppPath.linuxExternalCorePath) {
+        try {
+          final capResult = await runProcess('getcap', [targetPath]);
+          final capOutput = capResult.stdout.toString();
+          if (capOutput.isNotEmpty) {
+            final hasProcessCaps = capOutput.contains('cap_sys_ptrace') &&
+                capOutput.contains('cap_net_admin');
+            if (!hasProcessCaps) {
+              return false;
+            }
+          }
+        } catch (_) {}
+
+        if (File(appPath.bundledCorePath).existsSync()) {
+          try {
+            final bundledSize = File(appPath.bundledCorePath).lengthSync();
+            final externalSize = File(targetPath).lengthSync();
+            if (bundledSize > 0 &&
+                externalSize > 0 &&
+                bundledSize != externalSize) {
+              return false;
+            }
+          } catch (_) {}
+        }
+      }
+      return true;
     }
     return true;
   }

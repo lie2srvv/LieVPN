@@ -55,9 +55,11 @@ chmod 644 "$_targetFilePath"
 mkdir -p /opt/flclash
 if [ -f "$stagePath" ]; then
     mv -f "$stagePath" /opt/flclash/FlClashCore
+fi
+if [ -f /opt/flclash/FlClashCore ]; then
     chown root:root /opt/flclash/FlClashCore
     chmod 4755 /opt/flclash/FlClashCore
-    setcap cap_net_admin,cap_net_bind_service,cap_dac_override,cap_dac_read_search+ep /opt/flclash/FlClashCore 2>/dev/null || true
+    setcap cap_net_admin,cap_net_bind_service,cap_sys_ptrace,cap_dac_read_search,cap_dac_override+ep /opt/flclash/FlClashCore 2>/dev/null || true
 fi
 
 cat << 'EOF' > "$_wrapperPath"
