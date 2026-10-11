@@ -3,23 +3,23 @@
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.1:\n• Исправлен запуск установщика на Android (поддержка Android 8–17)\n• Устранена ошибка 'Текстовый файл занят' при автообновлении AppImage на Linux\n• Повышена общая стабильность и оптимизирована работа TUN-режима",
+  "releaseNotes": "LieVPN 1.1.1:\n• Исправлен запуск установщика на Android (поддержка Android 8–17)\n• Устранена ошибка 'Текстовый файл занят' при автообновлении AppImage на Linux\n• Windows: исправлен запуск из трея/фона и бесшовный запуск обновления",
   "android": {
     "version": "1.1.1",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.1 для Android: исправлен запуск системного установщика пакетов, поддержка Android 8–17, корректное обновление без суффикса .dev."
+    "releaseNotes": "LieVPN 1.1.1 для Android: исправлен запуск системного установщика пакетов, поддержка Android 8–17, корректное обновление пакета."
   },
   "windows": {
     "version": "1.1.1",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.1 для Windows: повышение стабильности ядра и автообновлений."
+    "releaseNotes": "LieVPN 1.1.1 для Windows: исправлен запуск приложения и восстановление окна из трея, автозапуск установщика обновления."
   },
   "linux": {
-    "version": "1.1.1",
+    "version": "1.1.2",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.1 для Linux: устранена ошибка 'Текстовый файл занят' (errno 26) при замене AppImage, атомарный перезапуск."
+    "releaseNotes": "LieVPN 1.1.2 для Linux:\n• Гарантированное восстановление окна при повторном запуске (из трея, меню или терминала)\n• Стабильная работа системного трея (StatusNotifierItem) на Wayland\n• Устранение конфликтов доступа к D-Bus сессии"
   }
 }
