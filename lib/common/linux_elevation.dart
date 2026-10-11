@@ -4,7 +4,6 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 
 const String _wrapperPath = '/usr/local/bin/lievpn';
-const String _sudoersPath = '/etc/sudoers.d/lievpn';
 const String _configDir = '/etc/lievpn';
 const String _targetFilePath = '$_configDir/appimage_path';
 
@@ -37,6 +36,15 @@ Future<bool> canSudoWithoutPassword() async {
 
 Future<bool> setupPasswordlessRootOnce() async {
   final currentExec = getLinuxCurrentExecutable();
+  final sourceCore = appPath.bundledCorePath;
+
+  // Staging core binary to /tmp for pkexec access
+  final stagePath = '/tmp/.lievpn_core_stage_$pid';
+  try {
+    if (await File(sourceCore).exists()) {
+      await File(sourceCore).copy(stagePath);
+    }
+  } catch (_) {}
 
   final setupScript = '''
 set -e
@@ -44,14 +52,18 @@ mkdir -p "$_configDir"
 echo "$currentExec" > "$_targetFilePath"
 chmod 644 "$_targetFilePath"
 
+mkdir -p /opt/flclash
+if [ -f "$stagePath" ]; then
+    mv -f "$stagePath" /opt/flclash/FlClashCore
+    chown root:root /opt/flclash/FlClashCore
+    chmod 4755 /opt/flclash/FlClashCore
+    setcap cap_net_admin,cap_net_bind_service,cap_dac_override,cap_dac_read_search+ep /opt/flclash/FlClashCore 2>/dev/null || true
+fi
+
 cat << 'EOF' > "$_wrapperPath"
 #!/bin/bash
 if [ "\$1" = "--check" ]; then
     exit 0
-fi
-
-if [ "\$(id -u)" -ne 0 ]; then
-    exec sudo "$_wrapperPath" "\$@"
 fi
 
 CONFIG_DIR="$_configDir"
@@ -74,48 +86,15 @@ if [ -z "\$APP_PATH" ] || [ ! -f "\$APP_PATH" ]; then
     exit 1
 fi
 
-if [ -n "\$SUDO_USER" ] && [ "\$SUDO_USER" != "root" ]; then
-    USER_HOME=\$(getent passwd "\$SUDO_USER" | cut -d: -f6)
-    if [ -n "\$USER_HOME" ]; then
-        export HOME="\$USER_HOME"
-        export XDG_DATA_HOME="\$USER_HOME/.local/share"
-        export XDG_CONFIG_HOME="\$USER_HOME/.config"
-        export XDG_CACHE_HOME="\$USER_HOME/.cache"
-    fi
-fi
-
-export DISPLAY="\${DISPLAY:-:0}"
-if [ -n "\$XDG_RUNTIME_DIR" ]; then
-    export XDG_RUNTIME_DIR="\$XDG_RUNTIME_DIR"
-fi
-if [ -n "\$WAYLAND_DISPLAY" ]; then
-    export WAYLAND_DISPLAY="\$WAYLAND_DISPLAY"
-fi
-if [ -n "\$DBUS_SESSION_BUS_ADDRESS" ]; then
-    export DBUS_SESSION_BUS_ADDRESS="\$DBUS_SESSION_BUS_ADDRESS"
-fi
-
-if [ -z "\$XAUTHORITY" ] && [ -n "\$USER_HOME" ]; then
-    if [ -f "\$USER_HOME/.Xauthority" ]; then
-        export XAUTHORITY="\$USER_HOME/.Xauthority"
-    fi
-fi
-
-if [ -n "\$DISPLAY" ] && command -v xhost >/dev/null 2>&1; then
-    xhost +si:localuser:root >/dev/null 2>&1 || true
+# Ensure GUI runs in user session context so D-Bus and Wayland work properly
+if [ "\$(id -u)" -eq 0 ] && [ -n "\$SUDO_USER" ] && [ "\$SUDO_USER" != "root" ]; then
+    exec sudo -u "\$SUDO_USER" "\$APP_PATH" "\$@"
 fi
 
 exec "\$APP_PATH" "\$@"
 EOF
 
 chmod 755 "$_wrapperPath"
-
-cat << 'EOF' > "$_sudoersPath"
-Defaults env_keep += "DISPLAY XAUTHORITY WAYLAND_DISPLAY XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS"
-ALL ALL=(ALL) NOPASSWD: SETENV: $_wrapperPath
-EOF
-
-chmod 440 "$_sudoersPath"
 ''';
 
   try {
@@ -125,58 +104,16 @@ chmod 440 "$_sudoersPath"
   } catch (e) {
     commonPrint.log('pkexec setup failed: $e', logLevel: LogLevel.error);
     return false;
+  } finally {
+    try {
+      final f = File(stagePath);
+      if (await f.exists()) await f.delete();
+    } catch (_) {}
   }
 }
 
 Future<bool> handleLinuxElevation(List<String> args) async {
-  if (!Platform.isLinux || isLinuxRoot()) {
-    return false;
-  }
-
-  try {
-    await Process.run('xhost', ['+si:localuser:root']);
-  } catch (_) {}
-
-  final currentExec = getLinuxCurrentExecutable();
-
-  // 1. Check if passwordless sudo is already configured
-  final hasSudo = await canSudoWithoutPassword();
-  if (hasSudo) {
-    try {
-      await Process.run(
-        'sudo',
-        ['-n', _wrapperPath, '--set-target', currentExec],
-      );
-      final proc = await Process.start(
-        'sudo',
-        [_wrapperPath, ...args],
-        mode: ProcessStartMode.inheritStdio,
-      );
-      final exitCode = await proc.exitCode;
-      exit(exitCode);
-    } catch (e) {
-      commonPrint.log('Failed to start via sudo: $e', logLevel: LogLevel.error);
-    }
-  }
-
-  // 2. First time setup: request elevation once via pkexec
-  final setupOk = await setupPasswordlessRootOnce();
-  if (setupOk) {
-    try {
-      final proc = await Process.start(
-        'sudo',
-        [_wrapperPath, ...args],
-        mode: ProcessStartMode.inheritStdio,
-      );
-      final exitCode = await proc.exitCode;
-      exit(exitCode);
-    } catch (e) {
-      commonPrint.log(
-        'Failed to start after setup: $e',
-        logLevel: LogLevel.error,
-      );
-    }
-  }
-
+  // GUI must run in user desktop session to preserve D-Bus session and Wayland integration.
+  // TUN privileges are delegated directly to /opt/flclash/FlClashCore.
   return false;
 }

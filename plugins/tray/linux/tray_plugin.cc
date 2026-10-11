@@ -129,7 +129,9 @@ static void attach_menu(TrayPlugin* self, FlValue* items) {
   g_object_ref_sink(menu);
   self->menu = menu;
 
-  app_indicator_set_menu(self->indicator, GTK_MENU(menu));
+  if (self->indicator != nullptr) {
+    app_indicator_set_menu(self->indicator, GTK_MENU(menu));
+  }
   gtk_widget_show_all(menu);
 
   if (previous != nullptr) {
@@ -139,6 +141,9 @@ static void attach_menu(TrayPlugin* self, FlValue* items) {
 }
 
 static void apply_title(TrayPlugin* self, const char* title) {
+  if (self->indicator == nullptr) {
+    return;
+  }
   if (title == nullptr || title[0] == '\0') {
     app_indicator_set_label(self->indicator, nullptr, nullptr);
   } else {
@@ -180,6 +185,10 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
   if (is_new) {
     self->indicator =
         app_indicator_new_with_path(id, icon_base, APP_INDICATOR_CATEGORY_APPLICATION_STATUS, icon_dir);
+  }
+
+  if (self->indicator == nullptr) {
+    return respond(false);
   }
 
   app_indicator_set_icon_theme_path(self->indicator, icon_dir);

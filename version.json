@@ -17,9 +17,9 @@
     "releaseNotes": "LieVPN 1.1.1 для Windows: исправлен запуск приложения и восстановление окна из трея, автозапуск установщика обновления."
   },
   "linux": {
-    "version": "1.1.1",
+    "version": "1.1.2",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.1 для Linux: устранена ошибка 'Текстовый файл занят' (errno 26) при замене AppImage, атомарный перезапуск."
+    "releaseNotes": "LieVPN 1.1.2 для Linux:\n• Гарантированное восстановление окна при повторном запуске (из трея, меню или терминала)\n• Стабильная работа системного трея (StatusNotifierItem) на Wayland\n• Устранение конфликтов доступа к D-Bus сессии"
   }
 }

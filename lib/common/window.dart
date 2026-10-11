@@ -32,8 +32,16 @@ class Window implements WindowPort {
   Future<void> init(int version, WindowProps props) async {
     final acquire = await singleInstanceLock.acquire();
     if (!acquire) {
-      commonPrint.log('another instance owns the data directory, exiting');
+      commonPrint.log('another instance owns the data directory, notifying and exiting');
+      if (system.isLinux) {
+        await singleInstanceLock.notifyRunningInstance();
+      }
       exit(0);
+    }
+    if (system.isLinux) {
+      unawaited(singleInstanceLock.startListening(() {
+        show();
+      }));
     }
     if (system.isWindows) {
       for (final scheme in protocolSchemes) {

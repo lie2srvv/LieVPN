@@ -17,10 +17,21 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
+static void restore_and_present_window(GApplication* application) {
+  GList* windows = gtk_application_get_windows(GTK_APPLICATION(application));
+  if (windows != nullptr) {
+    GtkWindow* window = GTK_WINDOW(windows->data);
+    gtk_widget_show_all(GTK_WIDGET(window));
+    gtk_window_deiconify(window);
+    gtk_window_present(window);
+  }
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
   if (self->had_window_before_emit) {
+    restore_and_present_window(application);
     return;
   }
   GtkWindow* window =
@@ -102,6 +113,7 @@ static void my_application_before_emit(GApplication* application, GVariant* plat
 static void my_application_after_emit(GApplication* application, GVariant* platform_data) {
   MyApplication* self = MY_APPLICATION(application);
   if (self->had_window_before_emit) {
+    restore_and_present_window(application);
     window_manager_plugin_activate();
   }
   G_APPLICATION_CLASS(my_application_parent_class)->after_emit(application, platform_data);
@@ -109,19 +121,13 @@ static void my_application_after_emit(GApplication* application, GVariant* platf
 
 // Implements GApplication::startup.
 static void my_application_startup(GApplication* application) {
-  //MyApplication* self = MY_APPLICATION(object);
-
   // Perform any actions required at application startup.
-
   G_APPLICATION_CLASS(my_application_parent_class)->startup(application);
 }
 
 // Implements GApplication::shutdown.
 static void my_application_shutdown(GApplication* application) {
-  //MyApplication* self = MY_APPLICATION(object);
-
   // Perform any actions required at application shutdown.
-
   G_APPLICATION_CLASS(my_application_parent_class)->shutdown(application);
 }
 

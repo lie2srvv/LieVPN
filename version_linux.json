@@ -1,0 +1,6 @@
+{
+  "version": "1.1.2",
+  "url": "https://clck.lie2srvv.com/files/LieVPN.AppImage",
+  "linuxUrl": "https://clck.lie2srvv.com/files/LieVPN.AppImage",
+  "releaseNotes": "LieVPN 1.1.2 для Linux:\n• Гарантированное восстановление окна при повторном запуске (из трея, меню или терминала)\n• Стабильная работа системного трея (StatusNotifierItem) на Wayland\n• Устранение конфликтов доступа к D-Bus сессии"
+}
