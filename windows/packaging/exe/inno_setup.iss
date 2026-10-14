@@ -21,16 +21,27 @@ ArchitecturesInstallIn64BitMode={{ARCH}}
 [Code]
 procedure KillProcesses;
 var
-  Processes: TArrayOfString;
-  i: Integer;
+  AppPath: String;
+  InstallerName: String;
   ResultCode: Integer;
 begin
-  Processes := ['LieVPN.exe', 'FlClash.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
+  AppPath := ExpandConstant('{app}\\LieVPN.exe');
+  InstallerName := LowerCase(ExtractFileName(ExpandConstant('{srcexe}')));
 
-  for i := 0 to GetArrayLength(Processes)-1 do
+  // If the installer itself is NOT named LieVPN.exe, standard taskkill is safe.
+  // Otherwise, only terminate the installed app from {app} to prevent self-termination.
+  if InstallerName <> 'lievpn.exe' then
   begin
-    Exec('taskkill', '/f /im ' + Processes[i], '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('taskkill', '/f /im LieVPN.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end
+  else if FileExists(AppPath) then
+  begin
+    Exec('powershell', '-NoProfile -NonInteractive -Command "Get-Process -Name LieVPN -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq ''' + AppPath + ''' } | Stop-Process -Force"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
+
+  Exec('taskkill', '/f /im FlClash.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('taskkill', '/f /im FlClashCore.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('taskkill', '/f /im FlClashHelperService.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;
 
 procedure UnregisterHelperService;

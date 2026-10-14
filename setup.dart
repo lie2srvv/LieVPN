@@ -316,3 +316,7 @@ Future<int> _ensureDependencies(String platform) async {
   }
   return 0;
 }
+
+String appImageToolArch(String arch) {
+  return arch == 'arm64' ? 'aarch64' : 'x86_64';
+}
