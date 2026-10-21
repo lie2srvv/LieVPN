@@ -158,8 +158,9 @@ class AppUpdateManager {
 
     // 1. Primary: check latest versions manifest from GitHub
     try {
+      final cacheBuster = DateTime.now().millisecondsSinceEpoch;
       final response = await dio.get<Map<String, dynamic>>(
-        _primaryGitHubVersionUrl,
+        "$_primaryGitHubVersionUrl?t=$cacheBuster",
         options: Options(responseType: ResponseType.json),
       );
       if (response.statusCode == 200 && response.data != null) {
