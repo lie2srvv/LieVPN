@@ -39,10 +39,11 @@ class SpeedtestService {
     onUpdate(state);
 
     try {
-      if (isVpnConnected) {
-        await _runOoklaSpeedtest(onUpdate, state);
-      } else {
-        await _runYandexSpeedtest(onUpdate, state);
+      // Primary engine: Yandex Internetometer (accurate & responsive, both with and without VPN)
+      final success = await _runYandexSpeedtest(onUpdate, state);
+      if (!success && !_isCanceled) {
+        // High-reliability global fallback: Cloudflare Speed CDN
+        await _runCloudflareSpeedtest(onUpdate, state);
       }
     } catch (e) {
       if (!_isCanceled) {
@@ -59,81 +60,77 @@ class SpeedtestService {
   }
 
   // ========================================================
-  // SPEEDTEST.NET (OOKLA) ENGINE (When VPN is Connected)
+  // YANDEX INTERNETOMETER ENGINE
   // Download -> Upload -> Ping
   // ========================================================
-  Future<void> _runOoklaSpeedtest(
+  Future<bool> _runYandexSpeedtest(
     void Function(SpeedtestState state) onUpdate,
     SpeedtestState initialState,
   ) async {
     SpeedtestState state = initialState;
 
-    // Default fast European CDN endpoint if Speedtest server listing fails
-    String serverBase = 'https://fra.speedtest.clouvider.net/backend';
-    String dlPath = 'garbage.php?ckSize=35';
-    String ulPath = 'empty.php';
-    String pingPath = 'empty.php';
+    final List<String> downloadUrls = [
+      'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/probes/50mb',
+    ];
+    String? ulPostUrl;
+    String pingUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/ping';
 
+    // 1. Discover probes from Yandex Internetometer API
     try {
-      final res = await _dio.get<List<dynamic>>(
-        'https://www.speedtest.net/api/js/servers?engine=js&limit=10',
+      final probeRes = await _dio.get<Map<String, dynamic>>(
+        'https://yandex.ru/internet/api/v0/get-probes',
         options: Options(
-          headers: {
-            'Referer': 'https://www.speedtest.net/',
-            'Origin': 'https://www.speedtest.net',
-            'Accept': 'application/json, text/plain, */*',
-          },
-          sendTimeout: const Duration(seconds: 4),
-          receiveTimeout: const Duration(seconds: 4),
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 6),
         ),
         cancelToken: _currentCancelToken,
       );
-
-      if (res.data != null && res.data!.isNotEmpty) {
-        final candidates = res.data!.take(6).toList();
-        int lowestPing = 99999;
-        String? chosenBase;
-
-        for (final s in candidates) {
-          if (_isCanceled) return;
-          final rawUrl = (s['url'] ?? '').toString();
-          if (rawUrl.isEmpty) continue;
-          final base = rawUrl.split('/speedtest')[0].replaceAll(RegExp(r'/+$'), '');
-          if (base.isEmpty) continue;
-
-          try {
-            final sw = Stopwatch()..start();
-            await _dio.get(
-              '$base/speedtest/latency.txt',
-              options: Options(
-                headers: {
-                  'Referer': 'https://www.speedtest.net/',
-                  'Origin': 'https://www.speedtest.net',
-                },
-                sendTimeout: const Duration(seconds: 2),
-                receiveTimeout: const Duration(seconds: 2),
-                responseType: ResponseType.bytes,
-              ),
-              cancelToken: _currentCancelToken,
-            );
-            sw.stop();
-            if (sw.elapsedMilliseconds > 0 && sw.elapsedMilliseconds < lowestPing) {
-              lowestPing = sw.elapsedMilliseconds;
-              chosenBase = base;
+      final data = probeRes.data;
+      if (data != null) {
+        final dlProbes = (data['download']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
+        if (dlProbes != null && dlProbes.isNotEmpty) {
+          final urls = <String>[];
+          for (final p in dlProbes) {
+            final u = p['url']?.toString();
+            if (u != null && u.isNotEmpty && (u.contains('50mb') || !u.contains('100kb'))) {
+              urls.add(u);
             }
-          } catch (_) {}
+            final fb = p['fallbackUrl']?.toString();
+            if (fb != null && fb.isNotEmpty && (fb.contains('50mb') || !fb.contains('100kb'))) {
+              urls.add(fb);
+            }
+          }
+          if (urls.isNotEmpty) {
+            downloadUrls.clear();
+            downloadUrls.addAll(urls);
+          }
         }
 
-        if (chosenBase != null) {
-          serverBase = chosenBase;
-          dlPath = 'speedtest/random2500x2500.jpg';
-          ulPath = 'speedtest/upload.php';
-          pingPath = 'speedtest/latency.txt';
+        final ulProbes = (data['upload']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
+        if (ulProbes != null && ulProbes.isNotEmpty) {
+          for (final p in ulProbes) {
+            final pUrl = p['postUrl']?.toString();
+            if (pUrl != null && pUrl.isNotEmpty) {
+              ulPostUrl = pUrl;
+              break;
+            }
+          }
+        }
+
+        final latProbes = (data['latency']?['probes'] as List?)
+            ?.cast<Map<dynamic, dynamic>>();
+        if (latProbes != null && latProbes.isNotEmpty) {
+          final first = latProbes.first['url']?.toString();
+          if (first != null && first.isNotEmpty) pingUrl = first;
         }
       }
-    } catch (_) {}
+    } catch (_) {
+      // Yandex API might fail or be unreachable on certain routes
+    }
 
-    if (_isCanceled) return;
+    if (_isCanceled) return false;
 
     // ================= STEP 1: DOWNLOAD =================
     state = state.copyWith(
@@ -145,58 +142,77 @@ class SpeedtestService {
     final downloadStopwatch = Stopwatch()..start();
     double finalDownloadMbps = 0.0;
     int bytesReceived = 0;
+    int lastWindowBytes = 0;
+    int lastWindowMs = 0;
 
-    try {
-      final cancelToken = CancelToken();
-      _currentCancelToken = cancelToken;
+    int probeIndex = 0;
+    while (downloadStopwatch.elapsedMilliseconds < 6500 && !_isCanceled) {
+      final currentUrl = downloadUrls[probeIndex % downloadUrls.length];
+      probeIndex++;
 
-      final downloadUrl = '$serverBase/$dlPath';
-      final response = await _dio.get<ResponseBody>(
-        downloadUrl,
-        options: Options(
-          headers: {
-            'Referer': 'https://www.speedtest.net/',
-            'Origin': 'https://www.speedtest.net',
-          },
-          responseType: ResponseType.stream,
-        ),
-        cancelToken: cancelToken,
-      );
+      try {
+        final cancelToken = CancelToken();
+        _currentCancelToken = cancelToken;
 
-      final stream = response.data?.stream;
-      if (stream != null) {
-        await for (final chunk in stream) {
-          if (_isCanceled) {
-            cancelToken.cancel();
-            return;
-          }
-          bytesReceived += chunk.length;
-          final elapsedMs = downloadStopwatch.elapsedMilliseconds;
-          if (elapsedMs > 150) {
-            final elapsedSec = elapsedMs / 1000.0;
-            final mbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
-            finalDownloadMbps = mbps;
-            onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              downloadMbps: mbps,
-            ));
-          }
-          if (downloadStopwatch.elapsedMilliseconds > 6500) {
-            cancelToken.cancel();
-            break;
+        final response = await _dio.get<ResponseBody>(
+          currentUrl,
+          options: Options(
+            sendTimeout: const Duration(seconds: 4),
+            receiveTimeout: const Duration(seconds: 8),
+            responseType: ResponseType.stream,
+          ),
+          cancelToken: cancelToken,
+        );
+
+        final stream = response.data?.stream;
+        if (stream != null) {
+          await for (final chunk in stream) {
+            if (_isCanceled) {
+              cancelToken.cancel();
+              return false;
+            }
+            bytesReceived += chunk.length;
+            final elapsedMs = downloadStopwatch.elapsedMilliseconds;
+            if (elapsedMs - lastWindowMs >= 200) {
+              final windowDeltaMs = elapsedMs - lastWindowMs;
+              final windowDeltaBytes = bytesReceived - lastWindowBytes;
+              final windowSec = windowDeltaMs / 1000.0;
+              final instantMbps =
+                  (windowDeltaBytes * 8.0) / (windowSec * 1000000.0);
+
+              final elapsedSec = elapsedMs / 1000.0;
+              final cumulativeMbps =
+                  (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
+
+              finalDownloadMbps = cumulativeMbps;
+              onUpdate(state.copyWith(
+                currentSpeedMbps: instantMbps,
+                downloadMbps: cumulativeMbps,
+              ));
+
+              lastWindowMs = elapsedMs;
+              lastWindowBytes = bytesReceived;
+            }
+
+            if (downloadStopwatch.elapsedMilliseconds >= 6500) {
+              cancelToken.cancel();
+              break;
+            }
           }
         }
+      } catch (_) {
+        // If current stream failed and we already got sufficient bytes or test timed out, stop
+        if (downloadStopwatch.elapsedMilliseconds >= 6500 || bytesReceived > 10 * 1024 * 1024) {
+          break;
+        }
       }
-    } catch (_) {}
+    }
     downloadStopwatch.stop();
 
-    if (finalDownloadMbps <= 0.0 && bytesReceived > 0) {
+    if (bytesReceived > 0) {
       final elapsedSec =
           (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
-    }
-    if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
-      finalDownloadMbps = 0.0;
     }
 
     state = state.copyWith(
@@ -206,58 +222,80 @@ class SpeedtestService {
     );
     onUpdate(state);
 
-    if (_isCanceled) return;
+    if (_isCanceled) return false;
 
     // ================= STEP 2: UPLOAD =================
     final uploadStopwatch = Stopwatch()..start();
     double finalUploadMbps = 0.0;
     int bytesUploaded = 0;
+    int lastUlWindowBytes = 0;
+    int lastUlWindowMs = 0;
 
-    final uploadUrl = '$serverBase/$ulPath';
-    final chunkData = Uint8List(512 * 1024); // 512KB payload
+    String uploadTarget = ulPostUrl ?? 'https://speed.cloudflare.com/__up';
+    final uploadPayload = Uint8List(1024 * 1024); // 1MB payload
 
-    while (uploadStopwatch.elapsedMilliseconds < 5000 && !_isCanceled) {
-      try {
-        final cancelToken = CancelToken();
-        _currentCancelToken = cancelToken;
+    Future<void> runUploadWorker() async {
+      while (uploadStopwatch.elapsedMilliseconds < 5000 && !_isCanceled) {
+        try {
+          final cancelToken = CancelToken();
+          _currentCancelToken = cancelToken;
 
-        await _dio.post(
-          uploadUrl,
-          data: Stream.fromIterable([chunkData]),
-          options: Options(
-            headers: {
-              'Referer': 'https://www.speedtest.net/',
-              'Origin': 'https://www.speedtest.net',
-              'Content-Type': 'application/octet-stream',
-              'Content-Length': chunkData.length.toString(),
-            },
-          ),
-          cancelToken: cancelToken,
-        );
-        bytesUploaded += chunkData.length;
-        final elapsedMs = uploadStopwatch.elapsedMilliseconds;
-        if (elapsedMs > 150) {
-          final elapsedSec = elapsedMs / 1000.0;
-          final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
-          finalUploadMbps = mbps;
-          onUpdate(state.copyWith(
-            currentSpeedMbps: mbps,
-            uploadMbps: mbps,
-          ));
+          await _dio.post(
+            uploadTarget,
+            data: Stream.fromIterable([uploadPayload]),
+            options: Options(
+              headers: {
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': uploadPayload.length.toString(),
+              },
+              sendTimeout: const Duration(seconds: 4),
+              receiveTimeout: const Duration(seconds: 4),
+            ),
+            cancelToken: cancelToken,
+          );
+          bytesUploaded += uploadPayload.length;
+          final elapsedMs = uploadStopwatch.elapsedMilliseconds;
+          if (elapsedMs - lastUlWindowMs >= 200) {
+            final windowDeltaMs = elapsedMs - lastUlWindowMs;
+            final windowDeltaBytes = bytesUploaded - lastUlWindowBytes;
+            final windowSec = windowDeltaMs / 1000.0;
+            final instantMbps =
+                (windowDeltaBytes * 8.0) / (windowSec * 1000000.0);
+
+            final elapsedSec = elapsedMs / 1000.0;
+            final cumulativeMbps =
+                (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
+
+            finalUploadMbps = cumulativeMbps;
+            onUpdate(state.copyWith(
+              currentSpeedMbps: instantMbps,
+              uploadMbps: cumulativeMbps,
+            ));
+
+            lastUlWindowMs = elapsedMs;
+            lastUlWindowBytes = bytesUploaded;
+          }
+        } catch (_) {
+          break;
         }
-      } catch (_) {
-        break;
       }
     }
+
+    // Run 2 concurrent upload streams to saturate upload pipeline over VPN/high-latency routes
+    await Future.wait([runUploadWorker(), runUploadWorker()]);
+
+    // If Yandex upload endpoint failed to accept any payload, retry with Cloudflare upload
+    if (bytesUploaded == 0 && !_isCanceled && uploadTarget != 'https://speed.cloudflare.com/__up') {
+      uploadTarget = 'https://speed.cloudflare.com/__up';
+      await Future.wait([runUploadWorker(), runUploadWorker()]);
+    }
+
     uploadStopwatch.stop();
 
-    if (finalUploadMbps <= 0.0 && bytesUploaded > 0) {
+    if (bytesUploaded > 0) {
       final elapsedSec =
           (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
-    }
-    if (finalUploadMbps < 0.0 || bytesUploaded == 0) {
-      finalUploadMbps = 0.0;
     }
 
     // ================= STEP 3: PING =================
@@ -268,23 +306,18 @@ class SpeedtestService {
     );
     onUpdate(state);
 
-    if (_isCanceled) return;
+    if (_isCanceled) return false;
 
-    final pingUrl = '$serverBase/$pingPath';
     int bestPing = 9999;
     for (int i = 0; i < 3; i++) {
-      if (_isCanceled) return;
+      if (_isCanceled) return false;
       try {
         final sw = Stopwatch()..start();
         await _dio.get(
           pingUrl,
           options: Options(
-            headers: {
-              'Referer': 'https://www.speedtest.net/',
-              'Origin': 'https://www.speedtest.net',
-            },
-            sendTimeout: const Duration(seconds: 2),
-            receiveTimeout: const Duration(seconds: 2),
+            sendTimeout: const Duration(seconds: 3),
+            receiveTimeout: const Duration(seconds: 3),
             responseType: ResponseType.bytes,
           ),
           cancelToken: _currentCancelToken,
@@ -297,17 +330,9 @@ class SpeedtestService {
     }
     final int finalPing = (bestPing == 9999) ? 0 : bestPing;
 
+    // If neither download nor upload transferred any data, signal failure for fallback
     if (finalDownloadMbps <= 0.0 && finalUploadMbps <= 0.0) {
-      state = state.copyWith(
-        downloadMbps: 0.0,
-        uploadMbps: 0.0,
-        pingMs: 0,
-        currentSpeedMbps: 0.0,
-        phase: SpeedtestPhase.error,
-        errorMessage: null,
-      );
-      onUpdate(state);
-      return;
+      return false;
     }
 
     state = state.copyWith(
@@ -318,52 +343,18 @@ class SpeedtestService {
       phase: SpeedtestPhase.completed,
     );
     onUpdate(state);
+    return true;
   }
 
   // ========================================================
-  // YANDEX INTERNETOMETER ENGINE (When VPN is Disconnected)
+  // CLOUDFLARE SPEED ENGINE (Global Fallback)
   // Download -> Upload -> Ping
   // ========================================================
-  Future<void> _runYandexSpeedtest(
+  Future<void> _runCloudflareSpeedtest(
     void Function(SpeedtestState state) onUpdate,
     SpeedtestState initialState,
   ) async {
     SpeedtestState state = initialState;
-
-    String dlUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/probes/50mb';
-    String? ulPostUrl;
-    String pingUrl = 'https://cdnrphoszsa2sp7ilm7a.svc.cdn.yandex.net/ping';
-
-    try {
-      final probeRes = await _dio.get<Map<String, dynamic>>(
-        'https://yandex.ru/internet/api/v0/get-probes',
-        options: Options(
-          sendTimeout: const Duration(seconds: 3),
-          receiveTimeout: const Duration(seconds: 3),
-        ),
-        cancelToken: _currentCancelToken,
-      );
-      final data = probeRes.data;
-      if (data != null) {
-        final dlProbes = (data['download']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
-        if (dlProbes != null && dlProbes.isNotEmpty) {
-          final first = dlProbes.first['url']?.toString();
-          if (first != null && first.isNotEmpty) dlUrl = first;
-        }
-        final ulProbes = (data['upload']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
-        if (ulProbes != null && ulProbes.isNotEmpty) {
-          final first = ulProbes.first['postUrl']?.toString();
-          if (first != null && first.isNotEmpty) ulPostUrl = first;
-        }
-        final latProbes = (data['latency']?['probes'] as List?)?.cast<Map<dynamic, dynamic>>();
-        if (latProbes != null && latProbes.isNotEmpty) {
-          final first = latProbes.first['url']?.toString();
-          if (first != null && first.isNotEmpty) pingUrl = first;
-        }
-      }
-    } catch (_) {}
-
-    if (_isCanceled) return;
 
     // ================= STEP 1: DOWNLOAD =================
     state = state.copyWith(
@@ -375,16 +366,18 @@ class SpeedtestService {
     final downloadStopwatch = Stopwatch()..start();
     double finalDownloadMbps = 0.0;
     int bytesReceived = 0;
+    int lastWindowBytes = 0;
+    int lastWindowMs = 0;
 
     try {
       final cancelToken = CancelToken();
       _currentCancelToken = cancelToken;
 
       final response = await _dio.get<ResponseBody>(
-        dlUrl,
+        'https://speed.cloudflare.com/__down?bytes=50000000',
         options: Options(
-          sendTimeout: const Duration(seconds: 4),
-          receiveTimeout: const Duration(seconds: 8),
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 10),
           responseType: ResponseType.stream,
         ),
         cancelToken: cancelToken,
@@ -399,16 +392,28 @@ class SpeedtestService {
           }
           bytesReceived += chunk.length;
           final elapsedMs = downloadStopwatch.elapsedMilliseconds;
-          if (elapsedMs > 150) {
+          if (elapsedMs - lastWindowMs >= 200) {
+            final windowDeltaMs = elapsedMs - lastWindowMs;
+            final windowDeltaBytes = bytesReceived - lastWindowBytes;
+            final windowSec = windowDeltaMs / 1000.0;
+            final instantMbps =
+                (windowDeltaBytes * 8.0) / (windowSec * 1000000.0);
+
             final elapsedSec = elapsedMs / 1000.0;
-            final mbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
-            finalDownloadMbps = mbps;
+            final cumulativeMbps =
+                (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
+
+            finalDownloadMbps = cumulativeMbps;
             onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              downloadMbps: mbps,
+              currentSpeedMbps: instantMbps,
+              downloadMbps: cumulativeMbps,
             ));
+
+            lastWindowMs = elapsedMs;
+            lastWindowBytes = bytesReceived;
           }
-          if (downloadStopwatch.elapsedMilliseconds > 7000) {
+
+          if (downloadStopwatch.elapsedMilliseconds >= 6500) {
             cancelToken.cancel();
             break;
           }
@@ -417,13 +422,10 @@ class SpeedtestService {
     } catch (_) {}
     downloadStopwatch.stop();
 
-    if (finalDownloadMbps <= 0.0 && bytesReceived > 0) {
+    if (bytesReceived > 0) {
       final elapsedSec =
           (downloadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalDownloadMbps = (bytesReceived * 8.0) / (elapsedSec * 1000000.0);
-    }
-    if (finalDownloadMbps < 0.0 || bytesReceived == 0) {
-      finalDownloadMbps = 0.0;
     }
 
     state = state.copyWith(
@@ -439,51 +441,65 @@ class SpeedtestService {
     final uploadStopwatch = Stopwatch()..start();
     double finalUploadMbps = 0.0;
     int bytesUploaded = 0;
+    int lastUlWindowBytes = 0;
+    int lastUlWindowMs = 0;
 
-    if (ulPostUrl != null && ulPostUrl.isNotEmpty) {
-      final uploadPayload = Uint8List(512 * 1024); // 512KB probe
+    final uploadPayload = Uint8List(1024 * 1024); // 1MB payload
 
+    Future<void> runUploadWorker() async {
       while (uploadStopwatch.elapsedMilliseconds < 5000 && !_isCanceled) {
         try {
           final cancelToken = CancelToken();
           _currentCancelToken = cancelToken;
 
           await _dio.post(
-            ulPostUrl,
+            'https://speed.cloudflare.com/__up',
             data: Stream.fromIterable([uploadPayload]),
             options: Options(
               headers: {
                 'Content-Type': 'application/octet-stream',
                 'Content-Length': uploadPayload.length.toString(),
               },
+              sendTimeout: const Duration(seconds: 4),
+              receiveTimeout: const Duration(seconds: 4),
             ),
             cancelToken: cancelToken,
           );
           bytesUploaded += uploadPayload.length;
           final elapsedMs = uploadStopwatch.elapsedMilliseconds;
-          if (elapsedMs > 150) {
+          if (elapsedMs - lastUlWindowMs >= 200) {
+            final windowDeltaMs = elapsedMs - lastUlWindowMs;
+            final windowDeltaBytes = bytesUploaded - lastUlWindowBytes;
+            final windowSec = windowDeltaMs / 1000.0;
+            final instantMbps =
+                (windowDeltaBytes * 8.0) / (windowSec * 1000000.0);
+
             final elapsedSec = elapsedMs / 1000.0;
-            final mbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
-            finalUploadMbps = mbps;
+            final cumulativeMbps =
+                (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
+
+            finalUploadMbps = cumulativeMbps;
             onUpdate(state.copyWith(
-              currentSpeedMbps: mbps,
-              uploadMbps: mbps,
+              currentSpeedMbps: instantMbps,
+              uploadMbps: cumulativeMbps,
             ));
+
+            lastUlWindowMs = elapsedMs;
+            lastUlWindowBytes = bytesUploaded;
           }
         } catch (_) {
           break;
         }
       }
     }
+
+    await Future.wait([runUploadWorker(), runUploadWorker()]);
     uploadStopwatch.stop();
 
-    if (finalUploadMbps <= 0.0 && bytesUploaded > 0) {
+    if (bytesUploaded > 0) {
       final elapsedSec =
           (uploadStopwatch.elapsedMilliseconds / 1000.0).clamp(0.1, 10.0);
       finalUploadMbps = (bytesUploaded * 8.0) / (elapsedSec * 1000000.0);
-    }
-    if (finalUploadMbps < 0.0 || bytesUploaded == 0) {
-      finalUploadMbps = 0.0;
     }
 
     // ================= STEP 3: PING =================
@@ -502,10 +518,10 @@ class SpeedtestService {
       try {
         final sw = Stopwatch()..start();
         await _dio.get(
-          pingUrl,
+          'https://speed.cloudflare.com/__down?bytes=0',
           options: Options(
-            sendTimeout: const Duration(seconds: 2),
-            receiveTimeout: const Duration(seconds: 2),
+            sendTimeout: const Duration(seconds: 3),
+            receiveTimeout: const Duration(seconds: 3),
             responseType: ResponseType.bytes,
           ),
           cancelToken: _currentCancelToken,
