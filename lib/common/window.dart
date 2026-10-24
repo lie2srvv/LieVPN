@@ -11,12 +11,23 @@ import 'package:window_manager/window_manager.dart';
 class Window implements WindowPort {
   static Window? _instance;
   bool _supportsPosition = false;
+  bool _isReady = false;
   late final WindowVisibilityController _visibility =
       WindowVisibilityController(
         showWindow: _showWindow,
         hideWindow: _hideWindow,
         isWindowVisible: _isWindowVisible,
-        setSkipTaskbar: (skip) => windowManager.setSkipTaskbar(skip),
+        setSkipTaskbar: (skip) async {
+          if (!_isReady) return;
+          try {
+            await windowManager.setSkipTaskbar(skip);
+          } catch (e) {
+            commonPrint.log(
+              'setSkipTaskbar failed: $e',
+              logLevel: LogLevel.warning,
+            );
+          }
+        },
         dockSettleDuration: system.isMacOS
             ? const Duration(seconds: 1)
             : Duration.zero,
@@ -32,16 +43,20 @@ class Window implements WindowPort {
   Future<void> init(int version, WindowProps props) async {
     final acquire = await singleInstanceLock.acquire();
     if (!acquire) {
-      commonPrint.log('another instance owns the data directory, notifying and exiting');
+      commonPrint.log(
+        'another instance owns the data directory, notifying and exiting',
+      );
       if (system.isLinux) {
         await singleInstanceLock.notifyRunningInstance();
       }
       exit(0);
     }
     if (system.isLinux) {
-      unawaited(singleInstanceLock.startListening(() {
-        show();
-      }));
+      unawaited(
+        singleInstanceLock.startListening(() {
+          show();
+        }),
+      );
     }
     if (system.isWindows) {
       for (final scheme in protocolSchemes) {
@@ -70,6 +85,7 @@ class Window implements WindowPort {
       await _windowPosition(props);
     }
     await windowManager.waitUntilReadyToShow(windowOptions);
+    _isReady = true;
     if (system.isLinux) {
       await _windowPosition(props);
     }
@@ -149,6 +165,7 @@ class Window implements WindowPort {
       await windowManager.waitUntilReadyToShow(
         const WindowOptions(size: Size(680, 580), center: true),
       );
+      _isReady = true;
       await windowManager.show();
       await windowManager.focus();
     } catch (e) {

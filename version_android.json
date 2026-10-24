@@ -1,6 +1,6 @@
 {
-  "version": "1.1.4",
+  "version": "1.1.5",
   "url": "https://clck.lie2srvv.com/files/LieVPN.apk",
   "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
-  "releaseNotes": "LieVPN 1.1.4 для Android: поддержка любых субдоменов *.lie2srvv.com для импорта подписки."
+  "releaseNotes": "LieVPN 1.1.5 для Android: исправлена установка обновлений APK внутри приложения и доступ к системному установщику пакетов."
 }

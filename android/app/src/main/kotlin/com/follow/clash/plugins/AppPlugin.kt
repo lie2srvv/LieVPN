@@ -94,7 +94,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 return
             }
             val addedByUpdate = intent.action == Intent.ACTION_PACKAGE_ADDED &&
-                intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                    intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
             if (addedByUpdate) {
                 return
             }
@@ -221,6 +221,16 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 }
             }
 
+            "canRequestPackageInstalls" -> {
+                val canInstall = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val context = activity ?: GlobalState.application
+                    context.packageManager.canRequestPackageInstalls()
+                } else {
+                    true
+                }
+                result.success(canInstall)
+            }
+
             "installApk" -> {
                 val filePath = call.argument<String>("filePath")
                 if (filePath == null) {
@@ -263,10 +273,14 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 setDataAndType(uri, "application/vnd.android.package-archive")
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
-            val resInfoList = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            for (resolveInfo in resInfoList) {
-                val packageName = resolveInfo.activityInfo.packageName
-                context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            try {
+                val resInfoList =
+                    context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            } catch (_: Exception) {
             }
             context.startActivity(intent)
             true
@@ -559,34 +573,32 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         if (requestCode != VPN_PERMISSION_REQUEST_CODE) {
             return false
         }
-        invokeVpnPrepareCallback(resultCode == Activity.RESULT_OK)
+        val isGranted = resultCode == Activity.RESULT_OK
+        invokeVpnPrepareCallback(isGranted)
         return true
     }
 
     private fun onRequestPermissionsResultListener(
         requestCode: Int,
-        permissions: Array<String>,
+        permissions: Array<out String>,
         grantResults: IntArray,
-    ): Boolean = when (requestCode) {
-        NOTIFICATION_PERMISSION_REQUEST_CODE -> {
-            val granted = grantResults.isNotEmpty() &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED
+    ): Boolean {
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            val granted =
+                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             invokeRequestNotificationCallback(granted)
-            true
+            return true
         }
-
-        INSTALLED_APPS_PERMISSION_REQUEST_CODE -> {
-            invokeRequestInstalledAppsCallback(
-                grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED,
-            )
-            true
+        if (requestCode == INSTALLED_APPS_PERMISSION_REQUEST_CODE) {
+            val granted =
+                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            invokeRequestInstalledAppsCallback(granted)
+            return true
         }
-
-        else -> false
+        return false
     }
 
-    private companion object {
+    companion object {
         const val VPN_PERMISSION_REQUEST_CODE = 1001
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003

@@ -60,5 +60,4 @@ void main(List<String> args) async {
       );
     },
   );
-  window?.show();
 }

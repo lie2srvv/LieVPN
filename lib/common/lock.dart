@@ -27,7 +27,7 @@ class SingleInstanceLock {
     try {
       final lockFilePath = await resolvePath();
       final lockFile = File(lockFilePath);
-      await lockFile.create();
+      await lockFile.create(recursive: true);
       _accessFile = await lockFile.open(mode: FileMode.write);
       await _accessFile?.lock();
       return true;

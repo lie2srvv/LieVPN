@@ -1,6 +1,6 @@
 {
-  "version": "1.1.4",
+  "version": "1.1.5",
   "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.4 для Linux: поддержка любых субдоменов *.lie2srvv.com для импорта подписки."
+  "releaseNotes": "LieVPN 1.1.5 для Linux: оптимизация стабильности и синхронизация версий."
 }

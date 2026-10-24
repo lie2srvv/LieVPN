@@ -8,27 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-enum UpdateStatus {
-  idle,
-  downloading,
-  readyToRestart,
-  installing,
-  error,
-}
+enum UpdateStatus { idle, downloading, readyToRestart, installing, error }
 
 class InAppUpdateDialog extends StatefulWidget {
   final AppUpdateInfo updateInfo;
 
-  const InAppUpdateDialog({
-    super.key,
-    required this.updateInfo,
-  });
+  const InAppUpdateDialog({super.key, required this.updateInfo});
 
   @override
   State<InAppUpdateDialog> createState() => _InAppUpdateDialogState();
 }
 
-class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
+class _InAppUpdateDialogState extends State<InAppUpdateDialog>
+    with WidgetsBindingObserver {
   UpdateStatus _status = UpdateStatus.idle;
   double _progress = 0.0;
   String _downloadedSizeStr = '';
@@ -38,9 +30,29 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
   CancelToken? _cancelToken;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _cancelToken?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && Platform.isAndroid) {
+      if (_downloadedFilePath != null &&
+          File(_downloadedFilePath!).existsSync()) {
+        if (_status == UpdateStatus.readyToRestart ||
+            _status == UpdateStatus.error) {
+          _installAndroidApk(_downloadedFilePath!);
+        }
+      }
+    }
   }
 
   String _formatBytes(int bytes) {
@@ -66,17 +78,41 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
 
     try {
       final downloadUrl = widget.updateInfo.downloadUrl;
-      final tempDir = await getTemporaryDirectory();
-      String savePath;
-
+      final String downloadDirPath;
       if (Platform.isAndroid) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.apk');
-      } else if (Platform.isWindows) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.exe');
-      } else if (Platform.isLinux) {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.AppImage');
+        final extDirs = await getExternalStorageDirectories();
+        if (extDirs != null && extDirs.isNotEmpty) {
+          downloadDirPath = extDirs.first.path;
+        } else {
+          final tempDir = await getTemporaryDirectory();
+          downloadDirPath = tempDir.path;
+        }
       } else {
-        savePath = p.join(tempDir.path, 'LieVPN-update-${widget.updateInfo.version}.bin');
+        final tempDir = await getTemporaryDirectory();
+        downloadDirPath = tempDir.path;
+      }
+
+      String savePath;
+      if (Platform.isAndroid) {
+        savePath = p.join(
+          downloadDirPath,
+          'LieVPN-update-${widget.updateInfo.version}.apk',
+        );
+      } else if (Platform.isWindows) {
+        savePath = p.join(
+          downloadDirPath,
+          'LieVPN-update-${widget.updateInfo.version}.exe',
+        );
+      } else if (Platform.isLinux) {
+        savePath = p.join(
+          downloadDirPath,
+          'LieVPN-update-${widget.updateInfo.version}.AppImage',
+        );
+      } else {
+        savePath = p.join(
+          downloadDirPath,
+          'LieVPN-update-${widget.updateInfo.version}.bin',
+        );
       }
 
       final file = File(savePath);
@@ -135,8 +171,13 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       final success = await App().installApk(filePath);
       if (!success && mounted) {
         setState(() {
-          _status = UpdateStatus.error;
-          _errorMessage = 'Не удалось запустить установщик пакета. Разрешите установку из неизвестных источников в настройках устройства.';
+          _status = UpdateStatus.readyToRestart;
+          _errorMessage =
+              'Разрешите установку из неизвестных источников в настройках устройства, затем нажмите «Установить».';
+        });
+      } else if (success && mounted) {
+        setState(() {
+          _errorMessage = null;
         });
       }
     } catch (e) {
@@ -183,17 +224,9 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
             } catch (_) {}
           }
 
-          await Process.start(
-            target.path,
-            [],
-            mode: ProcessStartMode.detached,
-          );
+          await Process.start(target.path, [], mode: ProcessStartMode.detached);
         } else {
-          await Process.start(
-            filePath,
-            [],
-            mode: ProcessStartMode.detached,
-          );
+          await Process.start(filePath, [], mode: ProcessStartMode.detached);
         }
 
         exit(0);
@@ -207,19 +240,13 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       }
     } else if (Platform.isWindows) {
       try {
-        await Process.start(
-          filePath,
-          ['/SILENT'],
-          mode: ProcessStartMode.detached,
-        );
+        await Process.start(filePath, [
+          '/SILENT',
+        ], mode: ProcessStartMode.detached);
         exit(0);
       } catch (e) {
         try {
-          await Process.start(
-            filePath,
-            [],
-            mode: ProcessStartMode.detached,
-          );
+          await Process.start(filePath, [], mode: ProcessStartMode.detached);
           exit(0);
         } catch (err) {
           if (mounted) {
@@ -322,7 +349,9 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                   value: _progress > 0 ? _progress : null,
                   minHeight: 8,
                   backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF22C55E)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFF22C55E),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -381,9 +410,10 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        Platform.isAndroid
-                            ? 'Обновление загружено. Нажмите для завершения установки.'
-                            : 'Обновление загружено и готово к установке.',
+                        _errorMessage ??
+                            (Platform.isAndroid
+                                ? 'Обновление загружено. Нажмите для завершения установки.'
+                                : 'Обновление загружено и готово к установке.'),
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -408,13 +438,18 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF22C55E)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF22C55E),
+                          ),
                         ),
                       ),
                       SizedBox(width: 14),
                       Text(
                         'Перезапуск и установка обновления...',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -433,7 +468,11 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: colorScheme.error, size: 22),
+                    Icon(
+                      Icons.error_outline,
+                      color: colorScheme.error,
+                      size: 22,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -462,7 +501,11 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                       ),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: Text(_status == UpdateStatus.readyToRestart ? 'Позже' : loc.updateLater),
+                    child: Text(
+                      _status == UpdateStatus.readyToRestart
+                          ? 'Позже'
+                          : loc.updateLater,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -476,11 +519,22 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: _status == UpdateStatus.downloading || _status == UpdateStatus.installing
+                    onPressed:
+                        _status == UpdateStatus.downloading ||
+                            _status == UpdateStatus.installing
                         ? null
                         : () {
                             if (_status == UpdateStatus.readyToRestart) {
-                              if (Platform.isAndroid && _downloadedFilePath != null) {
+                              if (Platform.isAndroid &&
+                                  _downloadedFilePath != null) {
+                                _installAndroidApk(_downloadedFilePath!);
+                              } else {
+                                _applyDesktopUpdateAndRestart();
+                              }
+                            } else if (_status == UpdateStatus.error &&
+                                _downloadedFilePath != null &&
+                                File(_downloadedFilePath!).existsSync()) {
+                              if (Platform.isAndroid) {
                                 _installAndroidApk(_downloadedFilePath!);
                               } else {
                                 _applyDesktopUpdateAndRestart();
@@ -491,8 +545,12 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
                           },
                     child: Text(
                       _status == UpdateStatus.readyToRestart
-                          ? (Platform.isAndroid ? 'Установить' : 'Перезапустить')
-                          : (_status == UpdateStatus.error ? 'Повторить' : loc.updateNow),
+                          ? (Platform.isAndroid
+                                ? 'Установить'
+                                : 'Перезапустить')
+                          : (_status == UpdateStatus.error
+                                ? 'Повторить'
+                                : loc.updateNow),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
