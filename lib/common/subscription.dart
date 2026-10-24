@@ -4,6 +4,16 @@ import 'dart:typed_data';
 import 'package:fl_clash/models/models.dart';
 import 'package:yaml/yaml.dart';
 
+/// Checks whether the given host matches *.lie2srvv.com or lie2srvv.com.
+bool isLieVpnHost(String? host) {
+  if (host == null) return false;
+  var h = host.trim().toLowerCase();
+  if (h.contains(':')) {
+    h = h.split(':').first;
+  }
+  return h == 'lie2srvv.com' || h.endsWith('.lie2srvv.com');
+}
+
 /// Validates whether the given URL string points to a valid LieVPN subscription endpoint.
 bool isValidLieVpnSubscriptionUrl(String url) {
   var target = url.trim();
@@ -12,7 +22,7 @@ bool isValidLieVpnSubscriptionUrl(String url) {
     target = 'https://$target';
   }
   final uri = Uri.tryParse(target);
-  if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+  if (uri == null || !isLieVpnHost(uri.host)) {
     return false;
   }
   final path = uri.path.trim();
@@ -33,7 +43,7 @@ String? extractLieVpnUrl(String text) {
   final trimmed = text.trim();
   if (trimmed.isEmpty) return null;
   final regex = RegExp(
-    r'https?://vpn\.lie2srvv\.com[^\s]*',
+    r'https?://(?:[a-zA-Z0-9-]+\.)*lie2srvv\.com(?::\d+)?[^\s]*',
     caseSensitive: false,
   );
   final match = regex.firstMatch(trimmed);
@@ -44,7 +54,7 @@ String? extractLieVpnUrl(String text) {
     }
   }
   final noProtoRegex = RegExp(
-    r'(?:^|\s)(vpn\.lie2srvv\.com[^\s]*)',
+    r'(?:^|[\s<(\[])((?:[a-zA-Z0-9-]+\.)*lie2srvv\.com(?::\d+)?[^\s>)\],]*)',
     caseSensitive: false,
   );
   final noProtoMatch = noProtoRegex.firstMatch(trimmed);

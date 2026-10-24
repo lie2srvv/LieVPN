@@ -13,8 +13,6 @@ class AddProfileView extends ConsumerWidget {
 
   const AddProfileView({super.key, required this.context});
 
-
-
   Future<void> _toScan(WidgetRef ref) async {
     final profilesAction = ref.read(profilesActionProvider.notifier);
     if (system.isDesktop) {
@@ -46,12 +44,8 @@ class AddProfileView extends ConsumerWidget {
           if (!value.isUrl) {
             return appLocalizations.urlTip('').trim();
           }
-          var val = value.trim();
-          if (!val.startsWith('http://') && !val.startsWith('https://')) {
-            val = 'https://$val';
-          }
-          final uri = Uri.tryParse(val);
-          if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+          final val = value.trim();
+          if (!isValidLieVpnSubscriptionUrl(val)) {
             return appLocalizations.notLieVpnSubscription;
           }
           return null;
@@ -98,12 +92,8 @@ class _URLFormDialogState extends State<URLFormDialog> {
   Future<void> _handleAddProfileFormURL() async {
     final url = _urlController.value.text;
     if (url.isEmpty) return;
-    var val = url.trim();
-    if (!val.startsWith('http://') && !val.startsWith('https://')) {
-      val = 'https://$val';
-    }
-    final uri = Uri.tryParse(val);
-    if (uri == null || uri.host.toLowerCase() != 'vpn.lie2srvv.com') {
+    final val = url.trim();
+    if (!isValidLieVpnSubscriptionUrl(val)) {
       dialogs.showNotifier(
         context.appLocalizations.notLieVpnSubscription,
         level: MessageLevel.error,

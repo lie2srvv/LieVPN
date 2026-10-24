@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'print.dart';
 import 'protocol.dart';
+import 'subscription.dart';
 
 typedef InstallConfigCallBack = void Function(String url);
 
@@ -61,10 +62,11 @@ class LinkManager {
     if (uri.host == 'install-config') {
       targetUrl = uri.queryParameters['url'];
     } else if ((uri.scheme == 'http' || uri.scheme == 'https') &&
-        (uri.host == 'vpn.lie2srvv.com' || uri.path.startsWith('/sub'))) {
+        (isLieVpnHost(uri.host) || uri.path.startsWith('/sub'))) {
       targetUrl = uri.toString();
     } else if (protocolSchemes.contains(uri.scheme)) {
-      targetUrl = uri.queryParameters['url'] ?? (uri.path.isNotEmpty ? uri.path : null);
+      targetUrl =
+          uri.queryParameters['url'] ?? (uri.path.isNotEmpty ? uri.path : null);
     }
 
     if (targetUrl == null || targetUrl.trim().isEmpty) {

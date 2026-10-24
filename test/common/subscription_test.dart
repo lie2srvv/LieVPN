@@ -6,20 +6,41 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LieVPN Subscription URL validation', () {
-    test('accepts valid LieVPN URLs', () {
-      expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/sub/abcdef123'),
-        isTrue,
-      );
-      expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/token123'),
-        isTrue,
-      );
-      expect(
-        isValidLieVpnSubscriptionUrl('http://vpn.lie2srvv.com/user/config'),
-        isTrue,
-      );
-    });
+    test(
+      'accepts valid LieVPN URLs with various *.lie2srvv.com subdomains',
+      () {
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://vpn.lie2srvv.com/sub/abcdef123',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('https://sub.lie2srvv.com/abcdef123'),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://panel.lie2srvv.com/api/v1/client/subscribe?token=xyz',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://node1.vpn.lie2srvv.com/user/config',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('http://custom.lie2srvv.com/sub'),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('https://lie2srvv.com/sub/profile'),
+          isTrue,
+        );
+      },
+    );
 
     test('rejects invalid, external, or root URLs', () {
       expect(isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com'), isFalse);
@@ -27,8 +48,20 @@ void main() {
         isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/'),
         isFalse,
       );
+      expect(isValidLieVpnSubscriptionUrl('https://sub.lie2srvv.com'), isFalse);
+      expect(isValidLieVpnSubscriptionUrl('https://google.com/test'), isFalse);
       expect(
-        isValidLieVpnSubscriptionUrl('https://google.com/test'),
+        isValidLieVpnSubscriptionUrl('https://fake-lie2srvv.com/sub/123'),
+        isFalse,
+      );
+      expect(
+        isValidLieVpnSubscriptionUrl('https://notlie2srvv.com/sub/123'),
+        isFalse,
+      );
+      expect(
+        isValidLieVpnSubscriptionUrl(
+          'https://lie2srvv.com.attacker.com/sub/123',
+        ),
         isFalse,
       );
       expect(isValidLieVpnSubscriptionUrl('not a url'), isFalse);
@@ -37,18 +70,25 @@ void main() {
   });
 
   group('Extract LieVPN URL from text/clipboard', () {
-    test('finds url in mixed text', () {
-      const text =
+    test('finds url in mixed text with various subdomains', () {
+      const text1 =
           'Here is your subscription: https://vpn.lie2srvv.com/mytoken please enjoy';
+      expect(extractLieVpnUrl(text1), 'https://vpn.lie2srvv.com/mytoken');
+
+      const text2 = 'Your sub link: https://sub.lie2srvv.com/token123_abc';
+      expect(extractLieVpnUrl(text2), 'https://sub.lie2srvv.com/token123_abc');
+
+      const textNoProto = 'Import profile: any-node.lie2srvv.com/sub/key';
       expect(
-        extractLieVpnUrl(text),
-        'https://vpn.lie2srvv.com/mytoken',
+        extractLieVpnUrl(textNoProto),
+        'https://any-node.lie2srvv.com/sub/key',
       );
     });
 
     test('returns null for text without LieVPN url', () {
       expect(extractLieVpnUrl('hello world 123'), isNull);
       expect(extractLieVpnUrl('https://other-vpn.com/sub'), isNull);
+      expect(extractLieVpnUrl('https://notlie2srvv.com/sub/token'), isNull);
     });
   });
 
@@ -58,9 +98,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) - 3600;
       final profile = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: pastTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: pastTimestamp));
       expect(isSubscriptionExpired(profile), isTrue);
       expect(hasActiveLieVpnSubscription(profile), isFalse);
 
@@ -74,9 +112,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 30;
       final profile = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: futureTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: futureTimestamp));
       expect(isSubscriptionExpired(profile), isFalse);
       expect(hasActiveLieVpnSubscription(profile), isTrue);
 
@@ -91,9 +127,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 2 + 3600;
       final profile2Days = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: twoDaysTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: twoDaysTimestamp));
       final status2Days = getSubscriptionExpiryStatus(profile2Days);
       expect(status2Days.isExpiringSoon, isTrue);
       expect(status2Days.remainingDays, 2);
@@ -104,9 +138,7 @@ void main() {
           (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 86400 * 1 + 3600;
       final profile1Day = Profile.normal(
         url: 'https://vpn.lie2srvv.com/sub123',
-      ).copyWith(
-        subscriptionInfo: SubscriptionInfo(expire: oneDayTimestamp),
-      );
+      ).copyWith(subscriptionInfo: SubscriptionInfo(expire: oneDayTimestamp));
       final status1Day = getSubscriptionExpiryStatus(profile1Day);
       expect(status1Day.isExpiringSoon, isTrue);
       expect(status1Day.remainingDays, 1);
@@ -125,10 +157,7 @@ proxies:
     server: 1.2.3.4
     port: 443
 ''';
-      expect(
-        checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))),
-        isTrue,
-      );
+      expect(checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))), isTrue);
     });
 
     test('returns true when proxy-providers exist', () {
@@ -139,10 +168,7 @@ proxy-providers:
     type: http
     url: "https://example.com"
 ''';
-      expect(
-        checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))),
-        isTrue,
-      );
+      expect(checkHasProxies(Uint8List.fromList(utf8.encode(yamlStr))), isTrue);
     });
 
     test('returns false when proxies is empty or gibberish', () {
