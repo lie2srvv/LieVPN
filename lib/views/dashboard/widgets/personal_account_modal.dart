@@ -1,3 +1,4 @@
+import 'package:fl_clash/views/payment/lie_payment_sheet.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -603,7 +604,13 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
               width: double.infinity,
               height: 48,
               child: FilledButton.icon(
-                onPressed: () => dialogs.openUrl('https://t.me/liesubbot'),
+                onPressed: () {
+                  showLiePaymentDialog(
+                    context,
+                    currentProfile: currentProfile,
+                    isRenewal: true,
+                  );
+                },
                 icon: const Icon(Icons.bolt_rounded),
                 label: const Text(
                   'Продлить подписку',

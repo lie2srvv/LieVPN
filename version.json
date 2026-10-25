@@ -1,25 +1,25 @@
 {
-  "version": "1.1.5",
+  "version": "1.1.6",
   "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.5:\n• Исправлен сбой запуска приложения на Windows (window_manager)\n• Исправлена установка обновлений APK внутри приложения на Android",
+  "releaseNotes": "LieVPN 1.1.6:\n• Встроенная быстрая оплата и продление подписки LiePay\n• Автоматическая бесшовная активация подписки после оплаты\n• Повышена безопасность идентификаторов платежей",
   "android": {
-    "version": "1.1.5",
+    "version": "1.1.6",
     "url": "https://clck.lie2srvv.com/files/LieVPN.apk",
     "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.5 для Android: исправлена установка обновлений APK внутри приложения и доступ к системному установщику пакетов."
+    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
   },
   "windows": {
-    "version": "1.1.5",
+    "version": "1.1.6",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.5 для Windows: исправлен сбой при запуске приложения (window_manager Access Violation)."
+    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
   },
   "linux": {
-    "version": "1.1.5",
+    "version": "1.1.6",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.5 для Linux: оптимизация стабильности и синхронизация версий."
+    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
   }
 }

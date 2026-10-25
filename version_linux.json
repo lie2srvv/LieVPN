@@ -1,6 +1,6 @@
 {
-  "version": "1.1.5",
+  "version": "1.1.6",
   "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.5 для Linux: оптимизация стабильности и синхронизация версий."
+  "releaseNotes": "LieVPN 1.1.6 для Linux: встроенная быстрая оплата LiePay и авто-активация подписки."
 }

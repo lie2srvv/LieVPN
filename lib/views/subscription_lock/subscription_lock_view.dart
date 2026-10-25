@@ -1,3 +1,4 @@
+import 'package:fl_clash/views/payment/lie_payment_sheet.dart';
 import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -402,8 +403,35 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                       children: [
                         FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: accentColor,
+                            backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(AppCorner.lg),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: _isProcessing
+                              ? null
+                              : () {
+                                  showLiePaymentDialog(
+                                    context,
+                                    currentProfile: currentProfile,
+                                    isRenewal: isExpired,
+                                  );
+                                },
+                          icon: const Icon(Icons.bolt_rounded),
+                          label: Text(
+                            isExpired ? 'Продлить подписку LieVPN' : 'Купить подписку LieVPN',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        FilledButton.tonalIcon(
+                          style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(AppCorner.lg),
