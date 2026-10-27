@@ -1,25 +1,25 @@
 {
-  "version": "1.1.7",
+  "version": "1.1.8",
   "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.7:\n• Повышена стабильность сетевого подключения (устранен сброс VPN при потере пинга)\n• Сохранен бесперебойный подсчет огненного стрика и актуальный пинг",
+  "releaseNotes": "LieVPN 1.1.8:\n• Открытие встроенного меню продления подписки LiePay прямо с карточки на главном экране\n• Повышена стабильность сетевого подключения",
   "android": {
-    "version": "1.1.7",
+    "version": "1.1.8",
     "url": "https://clck.lie2srvv.com/files/LieVPN.apk",
     "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.7 для Android: повышена стабильность сети и устранен разрыв соединения при потере пинга."
+    "releaseNotes": "LieVPN 1.1.8 для Android: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
   },
   "windows": {
-    "version": "1.1.7",
+    "version": "1.1.8",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.7 для Windows: повышена стабильность сети и устранен разрыв соединения при потере пинга."
+    "releaseNotes": "LieVPN 1.1.8 для Windows: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
   },
   "linux": {
-    "version": "1.1.7",
+    "version": "1.1.8",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.7 для Linux: повышена стабильность сети и устранен разрыв соединения при потере пинга."
+    "releaseNotes": "LieVPN 1.1.8 для Linux: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
   }
 }

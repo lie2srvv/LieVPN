@@ -1,6 +1,6 @@
 {
-  "version": "1.1.7",
+  "version": "1.1.8",
   "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.7 для Linux: повышена стабильность сети и устранен разрыв соединения при потере пинга."
+  "releaseNotes": "LieVPN 1.1.8 для Linux: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
 }
