@@ -1,25 +1,25 @@
 {
-  "version": "1.1.6",
+  "version": "1.1.7",
   "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.6:\n• Встроенная быстрая оплата и продление подписки LiePay\n• Автоматическая бесшовная активация подписки после оплаты\n• Повышена безопасность идентификаторов платежей",
+  "releaseNotes": "LieVPN 1.1.7:\n• Повышена стабильность сетевого подключения (устранен сброс VPN при потере пинга)\n• Сохранен бесперебойный подсчет огненного стрика и актуальный пинг",
   "android": {
-    "version": "1.1.6",
+    "version": "1.1.7",
     "url": "https://clck.lie2srvv.com/files/LieVPN.apk",
     "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
+    "releaseNotes": "LieVPN 1.1.7 для Android: повышена стабильность сети и устранен разрыв соединения при потере пинга."
   },
   "windows": {
-    "version": "1.1.6",
+    "version": "1.1.7",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
+    "releaseNotes": "LieVPN 1.1.7 для Windows: повышена стабильность сети и устранен разрыв соединения при потере пинга."
   },
   "linux": {
-    "version": "1.1.6",
+    "version": "1.1.7",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.6: Встроенная оплата и авто-активация подписки LiePay."
+    "releaseNotes": "LieVPN 1.1.7 для Linux: повышена стабильность сети и устранен разрыв соединения при потере пинга."
   }
 }
