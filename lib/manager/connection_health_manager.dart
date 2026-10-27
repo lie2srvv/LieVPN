@@ -20,7 +20,6 @@ class ConnectionHealthManager extends ConsumerStatefulWidget {
 class _ConnectionHealthManagerState
     extends ConsumerState<ConnectionHealthManager> {
   Timer? _healthTimer;
-  int _consecutiveFailures = 0;
   bool _isChecking = false;
   DateTime? _connectedAt;
 
@@ -30,11 +29,9 @@ class _ConnectionHealthManagerState
     ref.listenManual(isStartProvider, (prev, next) {
       if (next) {
         _connectedAt = DateTime.now();
-        _consecutiveFailures = 0;
         _startHealthTimer();
       } else {
         _stopHealthTimer();
-        _consecutiveFailures = 0;
         _connectedAt = null;
         ref.read(currentServerPingProvider.notifier).updatePing(0);
       }
@@ -113,42 +110,19 @@ class _ConnectionHealthManagerState
       final delay = await coreController.getDelay(testUrl, proxyName);
       final isAlive = delay != null && (delay.value ?? 0) > 0;
       if (isAlive) {
-        _consecutiveFailures = 0;
-        ref.read(currentServerPingProvider.notifier).updatePing(delay.value ?? 0);
+        ref
+            .read(currentServerPingProvider.notifier)
+            .updatePing(delay.value ?? 0);
         unawaited(StreakManager.instance.onSuccessfulConnection());
       } else {
-        _consecutiveFailures++;
         ref.read(currentServerPingProvider.notifier).updatePing(0);
         commonPrint.log(
-          'Health check: proxy $proxyName ping failed (failure #$_consecutiveFailures)',
+          'Health check: proxy $proxyName ping failed',
           logLevel: LogLevel.warning,
         );
-        if (_consecutiveFailures >= 2) {
-          _consecutiveFailures = 0;
-          if (mounted && ref.read(isStartProvider)) {
-            commonPrint.log(
-              'Server stopped responding to ping. Auto-reconnecting VPN...',
-              logLevel: LogLevel.info,
-            );
-            dialogs.showNotifier(
-              currentAppLocalizations.serverNotRespondingReconnecting,
-              level: MessageLevel.warning,
-            );
-            final setupAction = ref.read(setupActionProvider.notifier);
-            await setupAction.setRunning(false);
-            await Future.delayed(const Duration(milliseconds: 600));
-            if (mounted && ref.read(isStartProvider) == false) {
-              _connectedAt = DateTime.now();
-              await setupAction.setRunning(true);
-            }
-          }
-        }
       }
     } catch (e) {
-      commonPrint.log(
-        'Health check error: $e',
-        logLevel: LogLevel.warning,
-      );
+      commonPrint.log('Health check error: $e', logLevel: LogLevel.warning);
     } finally {
       _isChecking = false;
     }
