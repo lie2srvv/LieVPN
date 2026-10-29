@@ -62,7 +62,10 @@ class Preferences {
       final preferences = await sharedPreferencesCompleter.future;
       final clashConfigString = preferences?.getString(clashConfigKey);
       if (clashConfigString == null) return null;
-      return json.decode(clashConfigString);
+      final Map<String, Object?>? clashConfigMap = json.decode(
+        clashConfigString,
+      );
+      return clashConfigMap;
     } catch (e) {
       commonPrint.log(
         'getClashConfigMap error ${e.toString()}',
@@ -76,37 +79,21 @@ class Preferences {
     try {
       final preferences = await sharedPreferencesCompleter.future;
       await preferences?.remove(clashConfigKey);
-      return;
     } catch (e) {
       commonPrint.log(
         'clearClashConfig error ${e.toString()}',
         logLevel: LogLevel.warning,
       );
-      return;
     }
-  }
-
-  Future<Config?> getConfig() async {
-    final configMap = await getConfigMap();
-    if (configMap == null) {
-      return null;
-    }
-    return Config.fromJson(configMap);
-  }
-
-  Future<bool> saveConfig(Config config) async {
-    final preferences = await sharedPreferencesCompleter.future;
-    return preferences?.setString(configKey, json.encode(config)) ?? false;
   }
 
   Future<SystemDnsRecord?> getSystemDnsRecord() async {
     try {
       final sharedPreferencesIns = await sharedPreferencesCompleter.future;
       final raw = sharedPreferencesIns?.getString(systemDnsRecordKey);
-      if (raw == null) {
-        return null;
-      }
-      return SystemDnsRecord.fromJson(json.decode(raw));
+      if (raw == null) return null;
+      final Map<String, dynamic> jsonMap = json.decode(raw);
+      return SystemDnsRecord.fromJson(jsonMap);
     } catch (e) {
       commonPrint.log(
         'getSystemDnsRecord error ${e.toString()}',
@@ -120,7 +107,7 @@ class Preferences {
     final sharedPreferencesIns = await sharedPreferencesCompleter.future;
     await sharedPreferencesIns?.setString(
       systemDnsRecordKey,
-      json.encode(record),
+      json.encode(record.toJson()),
     );
   }
 
@@ -129,14 +116,18 @@ class Preferences {
     await sharedPreferencesIns?.remove(systemDnsRecordKey);
   }
 
+  Future<bool> saveConfig(Config config) async {
+    final preferences = await sharedPreferencesCompleter.future;
+    return preferences?.setString(configKey, json.encode(config)) ?? false;
+  }
+
   Future<BootRecord?> getBootRecord() async {
     try {
       final sharedPreferencesIns = await sharedPreferencesCompleter.future;
       final raw = sharedPreferencesIns?.getString(bootRecordKey);
-      if (raw == null) {
-        return null;
-      }
-      return BootRecord.fromJson(json.decode(raw));
+      if (raw == null) return null;
+      final Map<String, dynamic> jsonMap = json.decode(raw);
+      return BootRecord.fromJson(jsonMap);
     } catch (e) {
       commonPrint.log(
         'getBootRecord error ${e.toString()}',
@@ -164,6 +155,40 @@ class Preferences {
   Future<void> clearSubNotifyStage(int profileId) async {
     final sharedPreferencesIns = await sharedPreferencesCompleter.future;
     await sharedPreferencesIns?.remove('sub_notify_stage_$profileId');
+  }
+
+  // Pending payment persistence
+  Future<Map<String, dynamic>?> getPendingPayment() async {
+    final sp = await sharedPreferencesCompleter.future;
+    final str = sp?.getString('liepay_pending_payment');
+    if (str == null) return null;
+    try {
+      return json.decode(str) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> savePendingPayment({
+    required String orderId,
+    required String clientSecret,
+    required String username,
+    bool isRenewal = false,
+  }) async {
+    final sp = await sharedPreferencesCompleter.future;
+    final data = {
+      'order_id': orderId,
+      'client_secret': clientSecret,
+      'username': username,
+      'is_renewal': isRenewal,
+      'created_at': DateTime.now().millisecondsSinceEpoch,
+    };
+    await sp?.setString('liepay_pending_payment', json.encode(data));
+  }
+
+  Future<void> clearPendingPayment() async {
+    final sp = await sharedPreferencesCompleter.future;
+    await sp?.remove('liepay_pending_payment');
   }
 
   Future<void> clearPreferences() async {

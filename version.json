@@ -1,13 +1,13 @@
 {
   "version": "1.1.8",
-  "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
+  "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
   "releaseNotes": "LieVPN 1.1.8:\n• Открытие встроенного меню продления подписки LiePay прямо с карточки на главном экране\n• Повышена стабильность сетевого подключения",
   "android": {
     "version": "1.1.8",
-    "url": "https://clck.lie2srvv.com/files/LieVPN.apk",
-    "apkUrl": "https://clck.lie2srvv.com/files/LieVPN.apk",
+    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
+    "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "releaseNotes": "LieVPN 1.1.8 для Android: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
   },
   "windows": {

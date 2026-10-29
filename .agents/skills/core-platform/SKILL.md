@@ -77,4 +77,4 @@ Always follow the project release and versioning policy defined in `VERSIONING.m
 - Current baseline version: `1.0.0`
 - Minor/patch fixes: `1.0.1`, `1.0.2`, ..., `1.0.20`, etc.
 - Colossal/major updates: `1.1.0`
-- On release, update `pubspec.yaml`, `/var/www/files/version.json` on the server, and push to GitHub.
+- On release, update `pubspec.yaml`, `version.json` in the repo, and publish release on GitHub.

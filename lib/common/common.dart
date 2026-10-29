@@ -55,3 +55,4 @@ export 'task_pool.dart';
 export 'text.dart';
 export 'webdav.dart';
 export 'yaml.dart';
+export 'payment_manager.dart';

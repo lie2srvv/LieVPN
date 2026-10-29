@@ -182,7 +182,7 @@ class StreakManager {
           receiveTimeout: const Duration(seconds: 4),
         ),
       );
-      final response = await dio.head('https://clck.lie2srvv.com/files/version.json');
+      final response = await dio.head('https://api.github.com');
       final dateHeader = response.headers.value('date');
       if (dateHeader != null && dateHeader.isNotEmpty) {
         final serverUtc = HttpDate.parse(dateHeader).toUtc();

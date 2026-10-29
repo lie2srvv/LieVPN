@@ -1,11 +1,13 @@
-import 'package:fl_clash/enum/enum.dart';
 import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentPlan {
   final String id;
@@ -47,7 +49,7 @@ const List<PaymentPlan> kPaymentPlans = [
     days: 180,
     price: 500,
     desc: 'Популярный выбор • 180 дней',
-    badge: 'Хит',
+    badge: '-17%',
   ),
   PaymentPlan(
     id: '12m',
@@ -55,9 +57,10 @@ const List<PaymentPlan> kPaymentPlans = [
     days: 365,
     price: 950,
     desc: 'Максимальная выгода • 365 дней',
-    badge: 'Выгода',
+    badge: '-21%',
   ),
 ];
+
 
 Future<void> showLiePaymentDialog(
   BuildContext context, {
@@ -65,18 +68,11 @@ Future<void> showLiePaymentDialog(
   Profile? currentProfile,
   bool isRenewal = false,
 }) {
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppCorner.xxl)),
-    ),
-    builder: (_) => LiePaymentSheet(
-      initialUsername: initialUsername,
-      currentProfile: currentProfile,
-      isRenewal: isRenewal,
-    ),
+  return LiePaymentSheet.show(
+    context,
+    initialUsername: initialUsername,
+    currentProfile: currentProfile,
+    isRenewal: isRenewal,
   );
 }
 
@@ -92,6 +88,24 @@ class LiePaymentSheet extends ConsumerStatefulWidget {
     this.isRenewal = false,
   });
 
+  static Future<void> show(
+    BuildContext context, {
+    String? initialUsername,
+    Profile? currentProfile,
+    bool isRenewal = false,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => LiePaymentSheet(
+        initialUsername: initialUsername,
+        currentProfile: currentProfile,
+        isRenewal: isRenewal,
+      ),
+    );
+  }
+
   @override
   ConsumerState<LiePaymentSheet> createState() => _LiePaymentSheetState();
 }
@@ -101,6 +115,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   String _selectedPlanId = '1m';
   bool _isLoading = false;
   String? _activeOrderId;
+  String? _activeClientSecret;
   String? _paymentUrl;
   Timer? _pollTimer;
   int _pollCount = 0;
@@ -120,6 +135,30 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       defaultUser = widget.currentProfile!.label;
     }
     _usernameController = TextEditingController(text: defaultUser);
+    _checkExistingPendingPayment();
+  }
+
+  Future<void> _checkExistingPendingPayment() async {
+    final pending = await preferences.getPendingPayment();
+    if (pending != null && mounted) {
+      final orderId = pending['order_id']?.toString() ?? '';
+      final clientSecret = pending['client_secret']?.toString() ?? '';
+      final savedUser = pending['username']?.toString() ?? '';
+      final createdAt = pending['created_at'] as int? ?? 0;
+      final diffMs = DateTime.now().millisecondsSinceEpoch - createdAt;
+
+      if (orderId.isNotEmpty && diffMs < 48 * 3600 * 1000) {
+        if (savedUser.isNotEmpty && _usernameController.text.isEmpty) {
+          _usernameController.text = savedUser;
+        }
+        setState(() {
+          _activeOrderId = orderId;
+          _activeClientSecret = clientSecret;
+          _paymentUrl = 'https://pay.lie2srvv.com/pay/$orderId';
+        });
+        _startPolling(orderId, clientSecret);
+      }
+    }
   }
 
   @override
@@ -127,6 +166,19 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     _pollTimer?.cancel();
     _usernameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _launchPayment(String payUrl) async {
+    try {
+      final uri = Uri.parse(payUrl);
+      if (Platform.isAndroid) {
+        await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      commonPrint.log('Error launching payment url: $e');
+    }
   }
 
   Future<void> _createOrderAndPay() async {
@@ -152,20 +204,29 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       if (response.statusCode == 200 && response.data is Map) {
         final data = response.data as Map;
         final orderId = data['order_id']?.toString() ?? '';
+        final clientSecret = data['client_secret']?.toString() ?? '';
         final payUrl = data['payment_url']?.toString() ?? '';
 
         if (orderId.isNotEmpty && payUrl.isNotEmpty) {
+          await preferences.savePendingPayment(
+            orderId: orderId,
+            clientSecret: clientSecret,
+            username: rawUser,
+            isRenewal: widget.isRenewal,
+          );
+
           setState(() {
             _activeOrderId = orderId;
+            _activeClientSecret = clientSecret;
             _paymentUrl = payUrl;
             _isLoading = false;
           });
 
-          // Open browser for payment
-          await dialogs.openUrl(payUrl);
+          // Open directly via In-App Browser (Android) or external browser (Desktop)
+          await _launchPayment(payUrl);
 
           // Start polling order status
-          _startPolling(orderId);
+          _startPolling(orderId, clientSecret);
           return;
         }
       }
@@ -183,7 +244,10 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     }
   }
 
-  void _startPolling(String orderId) {
+  void _startPolling([String? orderId, String? clientSecret]) {
+    final targetOrderId = orderId ?? _activeOrderId;
+    final targetSecret = clientSecret ?? _activeClientSecret ?? '';
+    if (targetOrderId == null) return;
     _pollTimer?.cancel();
     _pollCount = 0;
 
@@ -198,7 +262,10 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       try {
         final resp = await _dio.get(
           'https://pay.lie2srvv.com/api/check-order',
-          queryParameters: {'order_id': orderId},
+          queryParameters: {
+            'order_id': targetOrderId,
+            if (targetSecret.isNotEmpty) 'client_secret': targetSecret,
+          },
         );
 
         if (resp.statusCode == 200 && resp.data is Map) {
@@ -221,6 +288,8 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
 
   Future<void> _handlePaymentSuccess(String subUrl) async {
     if (!mounted) return;
+
+    await preferences.clearPendingPayment();
 
     dialogs.showNotifier(
       'Оплата успешно подтверждена! Активируем подписку...',
@@ -272,188 +341,193 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 12,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(AppCorner.lg),
-                    ),
-                    child: const Icon(
-                      Icons.credit_card_rounded,
-                      color: Color(0xFF10B981),
-                      size: 26,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.isRenewal
-                              ? 'Продление подписки'
-                              : 'Оплата подписки LieVPN',
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Быстрая оплата картой или СБП через ЮMoney',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.7,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        top: 16,
+        left: 20,
+        right: 20,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 16),
 
-              // Waiting payment state
-              if (_activeOrderId != null) ...[
+            // Title & Subtitle
+            Row(
+              children: [
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(AppCorner.xl),
-                    border: Border.all(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
-                    ),
+                    color: colorScheme.primaryContainer,
+                    shape: BoxShape.circle,
                   ),
+                  child: Icon(
+                    Icons.bolt_rounded,
+                    color: colorScheme.onPrimaryContainer,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        width: 32,
-                        height: 32,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation(Color(0xFF10B981)),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
                       Text(
-                        'Ожидаем подтверждения оплаты...',
-                        style: textTheme.titleSmall?.copyWith(
+                        widget.isRenewal
+                            ? 'Продление подписки'
+                            : 'Оформление подписки',
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF10B981),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 6),
                       Text(
-                        'Завершите перевод в открывшемся окне браузера. Подписка автоматически применится здесь сразу после оплаты.',
+                        'Быстрое автоматическое подключение через LiePay',
                         style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withValues(
-                            alpha: 0.8,
-                          ),
-                          height: 1.4,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      FilledButton.tonalIcon(
-                        onPressed: _paymentUrl != null
-                            ? () => dialogs.openUrl(_paymentUrl!)
-                            : null,
-                        icon: const Icon(
-                          Icons.open_in_browser_rounded,
-                          size: 18,
-                        ),
-                        label: const Text('Открыть страницу оплаты ещё раз'),
-                        style: FilledButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppCorner.md),
-                          ),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-              ] else ...[
-                // Username field
-                Text(
-                  'Никнейм в Telegram',
-                  style: textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    hintText: 'например, lie2srvv',
-                    prefixIcon: const Icon(
-                      Icons.alternate_email_rounded,
-                      size: 20,
-                    ),
-                    filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.5,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppCorner.lg),
-                      borderSide: BorderSide(
-                        color: colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
-                        ),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppCorner.lg),
-                      borderSide: BorderSide(
-                        color: colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
-                        ),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppCorner.lg),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF10B981),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
+              ],
+            ),
+            const SizedBox(height: 20),
 
-                // Plans selection
-                Text(
-                  'Выберите тариф',
-                  style: textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurfaceVariant,
+            if (_activeOrderId != null) ...[
+              // Active payment pending banner
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppCorner.lg),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.3),
                   ),
                 ),
-                const SizedBox(height: 8),
-                ...kPaymentPlans.map((plan) {
-                  final isSelected = plan.id == _selectedPlanId;
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation(Color(0xFF10B981)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Ожидаем подтверждения оплаты...',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF10B981),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Завершите перевод в открывшемся окне. Подписка автоматически применится здесь сразу после оплаты.',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.8,
+                        ),
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.tonalIcon(
+                      onPressed: _paymentUrl != null
+                          ? () => _launchPayment(_paymentUrl!)
+                          : null,
+                      icon: const Icon(Icons.open_in_browser_rounded, size: 18),
+                      label: const Text('Открыть страницу оплаты ещё раз'),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppCorner.md),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () async {
+                        _pollTimer?.cancel();
+                        await preferences.clearPendingPayment();
+                        if (mounted) {
+                          setState(() {
+                            _activeOrderId = null;
+                            _activeClientSecret = null;
+                            _paymentUrl = null;
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.close_rounded, size: 16),
+                      label: const Text('Отменить и создать новый платёж'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ] else ...[
+              // Username field
+              Text(
+                'Никнейм в Telegram',
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  hintText: 'например, durov',
+                  prefixIcon: const Icon(
+                    Icons.alternate_email_rounded,
+                    size: 20,
+                  ),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppCorner.md),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Plan selection
+              Text(
+                'Выберите тариф',
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Column(
+                children: kPaymentPlans.map((plan) {
+                  final isSelected = _selectedPlanId == plan.id;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: InkWell(
@@ -462,30 +536,43 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                           _selectedPlanId = plan.id;
                         });
                       },
-                      borderRadius: BorderRadius.circular(AppCorner.lg),
-                      child: Container(
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: 14,
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                              ? colorScheme.primaryContainer.withValues(
+                                  alpha: 0.6,
+                                )
                               : colorScheme.surfaceContainerHighest.withValues(
                                   alpha: 0.4,
                                 ),
-                          borderRadius: BorderRadius.circular(AppCorner.lg),
+                          borderRadius: BorderRadius.circular(AppCorner.md),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF10B981)
-                                : colorScheme.outlineVariant.withValues(
-                                    alpha: 0.3,
-                                  ),
-                            width: isSelected ? 1.5 : 1.0,
+                                ? colorScheme.primary
+                                : Colors.transparent,
+                            width: 1.5,
                           ),
                         ),
                         child: Row(
                           children: [
+                            Radio<String>(
+                              value: plan.id,
+                              groupValue: _selectedPlanId,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    _selectedPlanId = val;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,7 +581,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                                     children: [
                                       Text(
                                         plan.title,
-                                        style: textTheme.titleSmall?.copyWith(
+                                        style: textTheme.bodyMedium?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -502,44 +589,43 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                                         const SizedBox(width: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
+                                            horizontal: 6,
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF10B981),
+                                            color: colorScheme.primary,
                                             borderRadius: BorderRadius.circular(
-                                              AppCorner.full,
+                                              6,
                                             ),
                                           ),
                                           child: Text(
                                             plan.badge,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: textTheme.labelSmall
+                                                ?.copyWith(
+                                                  color: colorScheme.onPrimary,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 10,
+                                                ),
                                           ),
                                         ),
                                       ],
                                     ],
                                   ),
-                                  const SizedBox(height: 2),
                                   Text(
                                     plan.desc,
                                     style: textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.onSurfaceVariant
-                                          .withValues(alpha: 0.7),
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             Text(
-                              '${plan.price.toStringAsFixed(0)} ₽',
+                              '${plan.price.toInt()} ₽',
                               style: textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isSelected
-                                    ? const Color(0xFF10B981)
+                                    ? colorScheme.primary
                                     : colorScheme.onSurface,
                               ),
                             ),
@@ -548,43 +634,44 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                       ),
                     ),
                   );
-                }),
-                const SizedBox(height: 14),
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
 
-                // Pay Button
-                SizedBox(
-                  height: 50,
-                  child: FilledButton.icon(
-                    onPressed: _isLoading ? null : _createOrderAndPay,
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.arrow_forward_rounded),
-                    label: Text(
-                      _isLoading ? 'Формируем заказ...' : 'Перейти к оплате',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppCorner.lg),
-                      ),
-                    ),
+              // Pay button
+              FilledButton(
+                onPressed: _isLoading ? null : _createOrderAndPay,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppCorner.md),
                   ),
                 ),
-              ],
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.credit_card_rounded, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            widget.isRenewal
+                                ? 'Продлить подписку'
+                                : 'Оплатить через LiePay',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

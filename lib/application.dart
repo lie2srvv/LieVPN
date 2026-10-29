@@ -57,7 +57,7 @@ class Application extends ConsumerStatefulWidget {
   ConsumerState<Application> createState() => ApplicationState();
 }
 
-class ApplicationState extends ConsumerState<Application> {
+class ApplicationState extends ConsumerState<Application> with WidgetsBindingObserver {
   Timer? _autoUpdateProfilesTaskTimer;
   bool _preHasVpn = false;
 
@@ -77,6 +77,7 @@ class ApplicationState extends ConsumerState<Application> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     SystemNavigator.setFrameworkHandlesBack(true);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (globalState.navigatorKey.currentContext != null) {
@@ -92,9 +93,18 @@ class ApplicationState extends ConsumerState<Application> {
       );
       unawaited(AppUpdateManager.autoCheckUpdate(ref));
       unawaited(StreakManager.instance.init());
+      unawaited(LiePaymentManager.checkPendingPayment(ref));
       _initLink();
       unawaited(app?.initShortcuts());
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      unawaited(LiePaymentManager.checkPendingPayment(ref));
+    }
   }
 
   void _initLink() {
@@ -219,6 +229,7 @@ class ApplicationState extends ConsumerState<Application> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     linkManager.destroy();
     _autoUpdateProfilesTaskTimer?.cancel();
     super.dispose();
