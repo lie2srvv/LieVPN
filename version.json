@@ -1,25 +1,25 @@
 {
-  "version": "1.1.8",
+  "version": "1.1.9",
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.8:\n• Открытие встроенного меню продления подписки LiePay прямо с карточки на главном экране\n• Повышена стабильность сетевого подключения",
+  "releaseNotes": "LieVPN 1.1.9:\n• Бесшовное открытие оплаты через встроенную шторку приложения\n• Автоматическое восстановление и активация подписки при закрытии приложения во время оплаты\n• Защита от перехвата ссылок подписки (клиентский секретный токен и TTL)\n• Перевод обновлений всех платформ напрямую на GitHub Releases",
   "android": {
-    "version": "1.1.8",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.8 для Android: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
+    "releaseNotes": "LieVPN 1.1.9 для Android:\n• Встроенная шторка оплаты Chrome Custom Tabs без выхода из приложения\n• Автоматическая активация подписки при возврате из банка"
   },
   "windows": {
-    "version": "1.1.8",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.8 для Windows: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
+    "releaseNotes": "LieVPN 1.1.9 для Windows:\n• Улучшена стабильность оплаты LiePay\n• Прямая загрузка обновлений с GitHub"
   },
   "linux": {
-    "version": "1.1.8",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.8 для Linux: открытие встроенного меню продления подписки LiePay с карточки на главном экране."
+    "releaseNotes": "LieVPN 1.1.9 для Linux:\n• Улучшена стабильность оплаты LiePay\n• Прямая загрузка обновлений с GitHub"
   }
 }
