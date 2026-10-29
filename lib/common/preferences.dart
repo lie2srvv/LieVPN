@@ -191,6 +191,17 @@ class Preferences {
     await sp?.remove('liepay_pending_payment');
   }
 
+  // Commission warning persistence
+  Future<bool> getCommissionWarningDismissed() async {
+    final sp = await sharedPreferencesCompleter.future;
+    return sp?.getBool('liepay_commission_warning_dismissed') ?? false;
+  }
+
+  Future<void> saveCommissionWarningDismissed(bool value) async {
+    final sp = await sharedPreferencesCompleter.future;
+    await sp?.setBool('liepay_commission_warning_dismissed', value);
+  }
+
   Future<void> clearPreferences() async {
     final sharedPreferencesIns = await sharedPreferencesCompleter.future;
     await sharedPreferencesIns?.clear();
