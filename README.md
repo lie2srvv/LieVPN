@@ -13,7 +13,7 @@
 
 <br/>
 
-[📥 **Скачать последнюю версию**](https://github.com/lie2srvv/LieVPN/releases/latest) • [💬 **Поддержка / Чат**](https://t.me/lie2srvv) • [🌐 **Официальный сайт**](https://lievpn.ru)
+[📥 **Скачать последнюю версию**](https://github.com/lie2srvv/LieVPN/releases/latest) • [💬 **Поддержка / Чат**](https://t.me/lie2srvv) • [🌐 **Официальный сайт**](https://vpn.lie2srvv.com)
 
 <br/>
 
