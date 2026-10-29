@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/lie2srvv/assets/main/lie.png" alt="LieVPN" width="104" style="border-radius: 50%;">
+<img src="assets/images/icon.png" alt="LieVPN" width="100">
 
 # LieVPN
 
