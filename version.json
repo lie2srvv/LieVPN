@@ -1,25 +1,25 @@
 {
-  "version": "1.1.3",
+  "version": "1.1.9",
   "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
   "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
   "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.1.3:\n• Исправлен замер скорости при активном VPN: точное многопоточное измерение через Яндекс Интернетометр с фоллбэком на Cloudflare Speed\n• Устранено занижение скорости и сбои Upload при VPN-маршрутизации",
+  "releaseNotes": "LieVPN 1.1.9:\n• Бесшовное открытие оплаты через встроенную шторку приложения\n• Автоматическое восстановление и активация подписки при закрытии приложения во время оплаты\n• Защита от перехвата ссылок подписки (клиентский секретный токен и TTL)\n• Перевод обновлений всех платформ напрямую на GitHub Releases",
   "android": {
-    "version": "1.1.3",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
     "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.1.3 для Android: исправлен спидтест при включённом VPN, многопоточное измерение через Яндекс Интернетометр."
+    "releaseNotes": "LieVPN 1.1.9 для Android:\n• Встроенная шторка оплаты Chrome Custom Tabs без выхода из приложения\n• Автоматическая активация подписки при возврате из банка"
   },
   "windows": {
-    "version": "1.1.3",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
     "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.1.3 для Windows: исправлен спидтест при включённом VPN, многопоточное измерение через Яндекс Интернетометр."
+    "releaseNotes": "LieVPN 1.1.9 для Windows:\n• Улучшена стабильность оплаты LiePay\n• Прямая загрузка обновлений с GitHub"
   },
   "linux": {
-    "version": "1.1.3",
+    "version": "1.1.9",
     "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
     "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.1.3 для Linux:\n• Исправлен спидтест при включённом VPN, многопоточное измерение через Яндекс Интернетометр\n• Гарантированное восстановление окна при повторном запуске\n• Стабильный трей на Wayland"
+    "releaseNotes": "LieVPN 1.1.9 для Linux:\n• Улучшена стабильность оплаты LiePay\n• Прямая загрузка обновлений с GitHub"
   }
 }
