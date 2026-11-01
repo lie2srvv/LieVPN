@@ -213,7 +213,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   }
 
   Future<void> _checkPromoCode() async {
-    final code = _promoController.text.trim().toUpperCase();
+    final code = _promoController.text.trim();
     if (code.isEmpty) return;
 
     setState(() {
@@ -248,6 +248,19 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
         }
       }
       throw Exception('Неверный ответ сервера');
+    } on DioException catch (e) {
+      String msg = 'Промокод не найден или недействителен';
+      if (e.response?.data is Map) {
+        final err = (e.response!.data as Map)['error'];
+        if (err != null && err.toString().trim().isNotEmpty) {
+          msg = err.toString();
+        }
+      }
+      setState(() {
+        _appliedPromo = null;
+        _promoError = msg;
+        _isCheckingPromo = false;
+      });
     } catch (e) {
       setState(() {
         _appliedPromo = null;
