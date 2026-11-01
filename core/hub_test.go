@@ -2,12 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/x509"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net"
-	"net/url"
 	"os"
 	"path/filepath"
 	"slices"
@@ -15,7 +11,6 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"testing"
 	"time"
 
@@ -24,15 +19,11 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/adapter/provider"
 	"github.com/metacubex/mihomo/common/utils"
-	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
 	cp "github.com/metacubex/mihomo/constant/provider"
-	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/log"
-	rp "github.com/metacubex/mihomo/rules/provider"
 	"github.com/metacubex/mihomo/tunnel"
-	D "github.com/miekg/dns"
 )
 
 func namedProxy(name string) constant.Proxy {
@@ -102,6 +93,82 @@ func TestPatchSelectGroupRestoresASelectionWithoutValidatingIt(t *testing.T) {
 	patchSelectGroup(map[string]string{"group": "a name the provider dropped"})
 	if got := groupNow(t, group); got != "node-a" {
 		t.Errorf("group resolved to %q after a stale selection, want it to fall through to the first member", got)
+	}
+}
+
+// Coming out of Doze has to re-probe. The health checks that ran while the app
+// had no network at all left every proxy marked dead and every delay reading
+// Timeout, and a lazy provider skips its next tick because nothing touched it
+// in the meantime.
+func TestHandleSuspendRefreshesHealthChecksOnResume(t *testing.T) {
+	var refreshes atomic.Int32
+
+	previous := refreshHealthChecks
+	previousRunning := isRunning.Load()
+	refreshHealthChecks = func() { refreshes.Add(1) }
+	t.Cleanup(func() {
+		refreshHealthChecks = previous
+		isRunning.Store(previousRunning)
+		isSuspended.Store(false)
+		tunnel.OnRunning()
+	})
+
+	isSuspended.Store(false)
+	isRunning.Store(true)
+
+	handleSuspend(false)
+	if got := refreshes.Load(); got != 0 {
+		t.Errorf("refreshes = %d, want none: the device was never suspended", got)
+	}
+
+	handleSuspend(true)
+	if !isSuspended.Load() {
+		t.Error("handleSuspend(true) did not record the suspension")
+	}
+	if got := refreshes.Load(); got != 0 {
+		t.Errorf("refreshes = %d, want none while the device is still suspended", got)
+	}
+
+	handleSuspend(false)
+	if isSuspended.Load() {
+		t.Error("handleSuspend(false) did not clear the suspension")
+	}
+	if got := refreshes.Load(); got != 1 {
+		t.Errorf("refreshes = %d, want exactly one on resume", got)
+	}
+
+	handleSuspend(false)
+	if got := refreshes.Load(); got != 1 {
+		t.Errorf("refreshes = %d, want a redundant resume to change nothing", got)
+	}
+
+	// The service resumes the core on its way down, and probing every node
+	// through a teardown only produces failures nobody asked for.
+	isRunning.Store(false)
+	handleSuspend(true)
+	handleSuspend(false)
+	if got := refreshes.Load(); got != 1 {
+		t.Errorf("refreshes = %d, want no probe while the listeners are stopped", got)
+	}
+}
+
+func TestShouldPublishDelayDropsFailuresMeasuredInDoze(t *testing.T) {
+	t.Cleanup(func() { isSuspended.Store(false) })
+
+	isSuspended.Store(false)
+	if !shouldPublishDelay(0) {
+		t.Error("a failure measured while the device is awake is a real result")
+	}
+	if !shouldPublishDelay(120) {
+		t.Error("a successful probe while awake must reach the host")
+	}
+
+	isSuspended.Store(true)
+	if shouldPublishDelay(0) {
+		t.Error("a failure measured in Doze says nothing about the node, want it dropped")
+	}
+	if !shouldPublishDelay(120) {
+		t.Error("a probe that succeeded anyway is still worth publishing")
 	}
 }
 
@@ -304,66 +371,6 @@ func TestHandleValidateConfigAcceptsAValidFile(t *testing.T) {
 	}
 }
 
-func TestHandleValidateProxiesReportsEachProxyInPlace(t *testing.T) {
-	got := handleValidateProxies([]map[string]any{
-		{"name": "ok", "type": "socks5", "server": "127.0.0.1", "port": 1080},
-		{"name": "untyped", "server": "127.0.0.1", "port": 1080},
-		{"name": "unknown", "type": "nope"},
-	})
-
-	if len(got) != 3 {
-		t.Fatalf("handleValidateProxies returned %d results, want 3", len(got))
-	}
-	if got[0] != "" {
-		t.Errorf("valid proxy reported %q", got[0])
-	}
-	if !strings.Contains(got[1], "missing type") {
-		t.Errorf("untyped proxy reported %q, want missing type", got[1])
-	}
-	if !strings.Contains(got[2], "unsupport") {
-		t.Errorf("unknown type reported %q, want unsupported", got[2])
-	}
-}
-
-type answeringDNSClient struct{}
-
-func (answeringDNSClient) Address() string  { return "answering" }
-func (answeringDNSClient) ResetConnection() {}
-func (answeringDNSClient) ExchangeContext(_ context.Context, m *D.Msg) (*D.Msg, error) {
-	return new(D.Msg).SetReply(m), nil
-}
-
-func TestHandleValidateProxiesLeavesARunningProxysResolverInPlace(t *testing.T) {
-	t.Cleanup(dns.RegisterEasyTierDnsClient("mesh", answeringDNSClient{}))
-	easyTier := func(name string) map[string]any {
-		return map[string]any{
-			"name":         name,
-			"type":         "easytier",
-			"network-name": "net",
-			"peers":        []any{"tcp://127.0.0.1:11010"},
-		}
-	}
-
-	got := handleValidateProxies([]map[string]any{
-		easyTier("mesh"),
-		easyTier("../../../../../../../../../../outside"),
-	})
-
-	if got[0] != "" {
-		t.Fatalf("easytier proxy reported %q", got[0])
-	}
-	if !strings.Contains(got[1], "/outside") || strings.Contains(got[1], "\x00") {
-		t.Errorf("unsafe state dir reported %q, want the proxy's own name", got[1])
-	}
-	resolvers := dns.NewResolver(dns.Config{
-		Main: []dns.NameServer{{Net: "easytier", Addr: "mesh"}},
-	})
-	query := new(D.Msg).SetQuestion("host.mesh.", D.TypeA)
-	if _, err := resolvers.ExchangeContext(context.Background(), query); err != nil {
-		t.Fatalf("the running proxy lost its resolver: %v", err)
-	}
-}
-
 func TestHandleValidateConfigReportsAMissingFile(t *testing.T) {
 	got := handleValidateConfig(filepath.Join(t.TempDir(), "absent.yaml"))
 
@@ -468,7 +475,7 @@ func TestHandleChangeProxyDoesNotWaitOutAConfigApply(t *testing.T) {
 
 	answered := make(chan string, 1)
 	go func() {
-		answered <- handleChangeProxy(&ChangeProxyParams{GroupName: "absent", ProxyName: "node"}).Message
+		answered <- handleChangeProxy(&ChangeProxyParams{GroupName: "absent", ProxyName: "node"})
 	}()
 
 	select {
@@ -591,72 +598,19 @@ func (p *failingProxyProvider) Update() error {
 	return p.err
 }
 
-func TestClassifyProviderRequestError(t *testing.T) {
+func TestProviderRequestErrorCode(t *testing.T) {
 	tests := []struct {
 		err  error
-		want providerRequestFailure
-		ok   bool
+		want string
 	}{
-		{
-			err:  errors.New("503 Service Unavailable"),
-			want: providerRequestFailure{code: "request_bad_response", statusCode: 503},
-			ok:   true,
-		},
-		{
-			err:  fmt.Errorf("fetch: %w", context.DeadlineExceeded),
-			want: providerRequestFailure{code: "request_error", reason: "timeout"},
-			ok:   true,
-		},
-		{
-			err:  &url.Error{Op: "Get", URL: "https://sub.example", Err: &net.DNSError{Err: "no such host", Name: "sub.example"}},
-			want: providerRequestFailure{code: "request_error", reason: "dns"},
-			ok:   true,
-		},
-		{
-			err:  fmt.Errorf("dial: %w", resolver.ErrIPNotFound),
-			want: providerRequestFailure{code: "request_error", reason: "dns"},
-			ok:   true,
-		},
-		{
-			err:  &url.Error{Op: "Get", URL: "https://sub.example", Err: x509.UnknownAuthorityError{}},
-			want: providerRequestFailure{code: "request_error", reason: "tls"},
-			ok:   true,
-		},
-		{
-			err:  &url.Error{Op: "Get", URL: "https://sub.example", Err: &net.OpError{Op: "dial", Net: "tcp", Err: syscall.ECONNREFUSED}},
-			want: providerRequestFailure{code: "request_error", reason: "connection"},
-			ok:   true,
-		},
-		{
-			err:  &url.Error{Op: "Get", URL: "https://sub.example", Err: errors.New("unexpected")},
-			want: providerRequestFailure{code: "request_error"},
-			ok:   true,
-		},
-		{err: errors.New("proxy 0: unsupported type")},
+		{err: errors.New("503 Service Unavailable"), want: "request_bad_response"},
+		{err: fmt.Errorf("fetch: %w", context.DeadlineExceeded), want: "request_error"},
+		{err: errors.New("proxy 0: unsupported type"), want: ""},
 	}
 	for _, test := range tests {
-		got, ok := classifyProviderRequestError(test.err)
-		if got != test.want || ok != test.ok {
-			t.Errorf("classifyProviderRequestError(%q) = %+v, %v, want %+v, %v", test.err, got, ok, test.want, test.ok)
+		if got := providerRequestErrorCode(test.err); got != test.want {
+			t.Errorf("providerRequestErrorCode(%q) = %q, want %q", test.err, got, test.want)
 		}
-	}
-}
-
-func TestUpdateExternalProviderReportsRequestFailureDetails(t *testing.T) {
-	const name = "subscription"
-	provider := &failingProxyProvider{
-		fakeProxyProvider: fakeProxyProvider{name: name, vehicle: cp.HTTP},
-		err:               errors.New("403 Forbidden"),
-	}
-	withTunnelProviders(t, map[string]cp.ProxyProvider{name: provider}, nil)
-
-	methodError := handleUpdateExternalProvider(name)
-	if methodError == nil || methodError.Code != "request_bad_response" {
-		t.Fatalf("methodError = %+v, want request_bad_response", methodError)
-	}
-	details, ok := methodError.Details.(map[string]any)
-	if !ok || details["providerName"] != name || details["statusCode"] != 403 {
-		t.Errorf("details = %#v, want providerName %q and statusCode 403", methodError.Details, name)
 	}
 }
 
@@ -869,27 +823,6 @@ func TestForceGCReleasesTheProxyCache(t *testing.T) {
 	}
 }
 
-func TestHandleGetMemoryStatsReportsALiveRuntime(t *testing.T) {
-	stats := handleGetMemoryStats()
-
-	if stats.HeapInuse == 0 {
-		t.Error("a running Go program always has heap in use; a zero means the runtime read was dropped")
-	}
-	encoded, err := json.Marshal(stats)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var fields map[string]uint64
-	if err := json.Unmarshal(encoded, &fields); err != nil {
-		t.Fatal(err)
-	}
-	for _, key := range []string{"rss", "heapInuse", "heapIdle", "stackInuse", "runtimeOther"} {
-		if _, ok := fields[key]; !ok {
-			t.Errorf("memory stats lost the %q field the Dart model reads", key)
-		}
-	}
-}
-
 func TestAllProxiesFollowsAProviderUpdate(t *testing.T) {
 	provider := newCachingProvider("subscription", "node-a")
 	withTunnelProviders(t, map[string]cp.ProxyProvider{"subscription": provider}, nil)
@@ -943,93 +876,5 @@ func TestHandleGetProxiesSeesAProviderUpdate(t *testing.T) {
 	}
 	if _, exist := data.Proxies["node-a"]; exist {
 		t.Error("a proxy the refresh removed is still reported")
-	}
-}
-
-func TestProxyViewKeepsWhatTheHostReads(t *testing.T) {
-	encode := func(proxy constant.Proxy) map[string]any {
-		t.Helper()
-		data, err := json.Marshal(proxyView(proxy))
-		if err != nil {
-			t.Fatalf("marshal %s: %v", proxy.Name(), err)
-		}
-		view := map[string]any{}
-		if err := json.Unmarshal(data, &view); err != nil {
-			t.Fatalf("unmarshal %s: %v", proxy.Name(), err)
-		}
-		return view
-	}
-
-	node := encode(namedProxy("node-a"))
-	if want := map[string]any{"name": "node-a", "type": "Direct"}; fmt.Sprint(node) != fmt.Sprint(want) {
-		t.Errorf("node view = %v, want %v", node, want)
-	}
-
-	members := []constant.Proxy{namedProxy("node-a"), namedProxy("node-b")}
-	pd, err := provider.NewCompatibleProvider(
-		"group-provider", members, provider.NewHealthCheck(members, "", 0, 0, true, nil),
-	)
-	if err != nil {
-		t.Fatalf("NewCompatibleProvider: %v", err)
-	}
-	selector, err := outboundgroup.NewSelector(
-		outboundgroup.GroupCommonOption{Name: "group"},
-		outboundgroup.SelectorOption{},
-		namedProxy("COMPATIBLE"),
-		[]cp.ProxyProvider{pd},
-	)
-	if err != nil {
-		t.Fatalf("NewSelector: %v", err)
-	}
-	group := encode(adapter.NewProxy(selector))
-	if group["name"] != "group" || group["type"] != "Selector" || group["now"] != "node-a" {
-		t.Errorf("group view = %v, want its name, type and selection", group)
-	}
-	if fmt.Sprint(group["all"]) != "[node-a node-b]" {
-		t.Errorf("group members = %v, want [node-a node-b]", group["all"])
-	}
-	if _, exist := group["hidden"]; !exist {
-		t.Error("the host filters groups on hidden, so it has to be present")
-	}
-	if _, exist := group["history"]; exist {
-		t.Error("the view still carries delay history")
-	}
-}
-
-func TestDumpRuleSetReadsEitherMrsBehavior(t *testing.T) {
-	cases := []struct {
-		behavior cp.RuleBehavior
-		source   string
-		want     string
-	}{
-		{cp.Domain, "example.com\n+.example.org\n", "+.example.org\nexample.com\n"},
-		{cp.IPCIDR, "10.0.0.0/8\n192.168.1.0/24\n", "10.0.0.0/8\n192.168.1.0/24\n"},
-	}
-	for _, c := range cases {
-		var mrs strings.Builder
-		if err := rp.ConvertToMrs([]byte(c.source), c.behavior, cp.TextRule, &mrs); err != nil {
-			t.Fatalf("encode %s: %v", c.behavior, err)
-		}
-		path := filepath.Join(t.TempDir(), "rules.mrs")
-		if err := os.WriteFile(path, []byte(mrs.String()), 0o644); err != nil {
-			t.Fatal(err)
-		}
-		got, err := handleDumpRuleSet(path)
-		if err != nil {
-			t.Fatalf("dump %s: %v", c.behavior, err)
-		}
-		if got != c.want {
-			t.Fatalf("dump %s = %q, want %q", c.behavior, got, c.want)
-		}
-	}
-}
-
-func TestDumpRuleSetRejectsText(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "rules.txt")
-	if err := os.WriteFile(path, []byte("example.com\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := handleDumpRuleSet(path); err == nil {
-		t.Fatal("dumping a text rule set succeeded")
 	}
 }

@@ -1,4 +1,5 @@
-import 'dart:convert';
+import 'package:fl_clash/l10n/l10n.dart';
+import 'package:fl_clash/common/in_app_update_dialog.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'dart:async';
 import 'dart:io';
@@ -119,24 +120,13 @@ class AppUpdateInfo {
 }
 
 class AppUpdateManager {
-  // Primary update manifest on GitHub
+  // Primary update manifest in GitHub main branch
   static const String _primaryGitHubVersionUrl =
       'https://raw.githubusercontent.com/lie2srvv/LieVPN/main/version.json';
 
-  // Fallbacks on personal server
-  static const String _fallbackServerVersionUrl =
-      'https://clck.lie2srvv.com/files/version.json';
-
-  static String get _platformServerVersionUrl {
-    if (Platform.isAndroid) {
-      return 'https://clck.lie2srvv.com/files/version_android.json';
-    } else if (Platform.isWindows) {
-      return 'https://clck.lie2srvv.com/files/version_windows.json';
-    } else if (Platform.isLinux) {
-      return 'https://clck.lie2srvv.com/files/version_linux.json';
-    }
-    return _fallbackServerVersionUrl;
-  }
+  // Fallback update check via GitHub Releases API
+  static const String _gitHubReleasesApiUrl =
+      'https://api.github.com/repos/lie2srvv/LieVPN/releases/latest';
 
   static bool isNewerVersion(String latest, String current) {
     final l = latest
@@ -172,63 +162,48 @@ class AppUpdateManager {
       ),
     );
 
-    Map<String, dynamic>? parseData(dynamic raw) {
-      if (raw == null) return null;
-      if (raw is Map<String, dynamic>) return raw;
-      if (raw is Map) return Map<String, dynamic>.from(raw);
-      if (raw is String) {
-        try {
-          final decoded = jsonDecode(raw);
-          if (decoded is Map) return Map<String, dynamic>.from(decoded);
-        } catch (_) {}
-      }
-      return null;
-    }
-
-    final currentVersion = globalState.packageInfo.version;
-
     // 1. Primary: check latest versions manifest from GitHub raw
     try {
-      final response = await dio.get<dynamic>(_primaryGitHubVersionUrl);
+      final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+      final response = await dio.get<Map<String, dynamic>>(
+        "$_primaryGitHubVersionUrl?t=$cacheBuster",
+        options: Options(responseType: ResponseType.json),
+      );
       if (response.statusCode == 200 && response.data != null) {
-        final data = parseData(response.data);
-        if (data != null) {
-          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
-          if (isNewerVersion(updateInfo.version, currentVersion)) {
-            return updateInfo;
-          }
-          return null;
+        final updateInfo = AppUpdateInfo.fromPlatformJson(response.data!);
+        final currentVersion = globalState.packageInfo.version;
+        if (isNewerVersion(updateInfo.version, currentVersion)) {
+          return updateInfo;
         }
+        return null;
       }
     } catch (_) {}
 
-    // 2. Secondary fallback: check platform-specific endpoint on personal server
+    // 2. Secondary fallback: check official GitHub Releases API
     try {
-      final response = await dio.get<dynamic>(_platformServerVersionUrl);
-      if (response.statusCode == 200 && response.data != null) {
-        final data = parseData(response.data);
-        if (data != null) {
-          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
-          if (isNewerVersion(updateInfo.version, currentVersion)) {
-            return updateInfo;
-          }
-          return null;
+      final releaseResponse = await dio.get<Map<String, dynamic>>(
+        _gitHubReleasesApiUrl,
+        options: Options(
+          responseType: ResponseType.json,
+          headers: {'Accept': 'application/vnd.github.v3+json'},
+        ),
+      );
+      if (releaseResponse.statusCode == 200 && releaseResponse.data != null) {
+        final rData = releaseResponse.data!;
+        final tagName = (rData['tag_name'] as String? ?? '').replaceFirst(
+          RegExp(r'^[vV]'),
+          '',
+        );
+        final body = rData['body'] as String?;
+        final currentVersion = globalState.packageInfo.version;
+        if (tagName.isNotEmpty && isNewerVersion(tagName, currentVersion)) {
+          return AppUpdateInfo(
+            version: tagName,
+            downloadUrl: AppUpdateInfo.defaultDownloadUrl,
+            releaseNotes: body,
+          );
         }
-      }
-    } catch (_) {}
-
-    // 3. Tertiary fallback: check combined version.json on personal server
-    try {
-      final response = await dio.get<dynamic>(_fallbackServerVersionUrl);
-      if (response.statusCode == 200 && response.data != null) {
-        final data = parseData(response.data);
-        if (data != null) {
-          final updateInfo = AppUpdateInfo.fromPlatformJson(data);
-          if (isNewerVersion(updateInfo.version, currentVersion)) {
-            return updateInfo;
-          }
-          return null;
-        }
+        return null;
       }
     } catch (_) {}
 

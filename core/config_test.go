@@ -122,55 +122,6 @@ func TestUpdateConfigAppliesAllowLan(t *testing.T) {
 	}
 }
 
-func TestUpdateConfigAppliesGeoResourceUrls(t *testing.T) {
-	withCurrentConfig(t, &config.Config{General: &config.General{}, Controller: &config.Controller{}})
-	requested := map[string]string{
-		"mmdb":    "https://example.test/geoip.metadb",
-		"asn":     "https://example.test/GeoLite2-ASN.mmdb",
-		"geoip":   "https://example.test/geoip.dat",
-		"geosite": "https://example.test/geosite.dat",
-	}
-	for _, resource := range geoResources {
-		resource, previous := resource, resource.url()
-		t.Cleanup(func() { resource.setUrl(previous) })
-	}
-
-	if err := updateConfig(&UpdateParams{GeoXUrl: requested}); err != nil {
-		t.Fatalf("updateConfig error: %v", err)
-	}
-
-	for key, want := range requested {
-		if got := geoResources[strings.ToUpper(key)].url(); got != want {
-			t.Errorf("%s url = %q, want %q; sync and the auto updater would keep the old link", key, got, want)
-		}
-	}
-}
-
-func TestSetGeoResourceUrlWritesOnlyAChangedLink(t *testing.T) {
-	const current = "https://example.test/geosite.dat"
-	var writes []string
-	previous := geoResources
-	geoResources = map[string]geoResource{
-		"GEOSITE": {
-			url:    func() string { return current },
-			setUrl: func(link string) { writes = append(writes, link) },
-		},
-	}
-	t.Cleanup(func() { geoResources = previous })
-
-	setGeoResourceUrl("geosite", current)
-	setGeoResourceUrl("geosite", "")
-	setGeoResourceUrl("nope", "https://example.test/nope.dat")
-	if len(writes) != 0 {
-		t.Fatalf("writes = %q, want none for an unchanged, empty or unknown link", writes)
-	}
-
-	setGeoResourceUrl("geosite", "https://example.test/next.dat")
-	if len(writes) != 1 || writes[0] != "https://example.test/next.dat" {
-		t.Errorf("writes = %q, want the changed link once", writes)
-	}
-}
-
 func TestUpdateConfigAppliesAuthenticationAndClearsLoopbackExemptions(t *testing.T) {
 	withCurrentConfig(t, &config.Config{General: &config.General{}, Controller: &config.Controller{}})
 	currentConfig.General.SkipAuthPrefixes = []netip.Prefix{
@@ -408,7 +359,7 @@ func TestHandleUpdateGeoDataRejectsAnUnknownResource(t *testing.T) {
 	if message := handleUpdateGeoData("NOPE"); message == "" {
 		t.Error("an unknown geo resource reported success and silently did nothing")
 	}
-	if _, exists := geoResources["MMDB"]; !exists {
+	if _, exists := geoResourceUpdaters["MMDB"]; !exists {
 		t.Error("MMDB is missing from the geo resource table")
 	}
 }
@@ -464,13 +415,10 @@ func settleMessageBatcher() {
 
 func withGeoResourceUpdaters(t *testing.T, updaters map[string]func() error) {
 	t.Helper()
-	previous := geoResources
-	geoResources = make(map[string]geoResource, len(updaters))
-	for name, update := range updaters {
-		geoResources[name] = geoResource{update: update}
-	}
+	previous := geoResourceUpdaters
+	geoResourceUpdaters = updaters
 	t.Cleanup(func() {
-		geoResources = previous
+		geoResourceUpdaters = previous
 		for name := range updaters {
 			releaseGeoUpdate(name)
 		}
@@ -647,33 +595,6 @@ func TestLoadConfigReportsMalformedYaml(t *testing.T) {
 
 	if _, err := loadConfig(path); err == nil {
 		t.Fatal("loadConfig accepted malformed yaml")
-	}
-}
-
-func TestLoadConfigKeepsTheSystemTimeWriteOnlyWhereItIsAllowed(t *testing.T) {
-	previous := systemTimeWritable
-	t.Cleanup(func() { systemTimeWritable = previous })
-
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	profile := "ntp:\n  enable: true\n  write-to-system: true\n"
-	if err := os.WriteFile(path, []byte(profile), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-
-	for _, writable := range []bool{true, false} {
-		systemTimeWritable = writable
-
-		cfg, err := loadConfig(path)
-
-		if err != nil {
-			t.Fatalf("loadConfig = %v", err)
-		}
-		if cfg.NTP.WriteToSystem != writable {
-			t.Errorf("writable %t: WriteToSystem = %t", writable, cfg.NTP.WriteToSystem)
-		}
-		if !cfg.NTP.Enable {
-			t.Errorf("writable %t: NTP was disabled, want only the system write dropped", writable)
-		}
 	}
 }
 

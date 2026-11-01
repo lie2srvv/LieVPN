@@ -87,7 +87,7 @@ ArgParser createSetupArgParser() {
   return ArgParser()
     ..addOption(
       'env',
-      defaultsTo: 'stable',
+      defaultsTo: 'pre',
       allowed: ['dev', 'pre', 'stable'],
       help: 'Application environment',
     )
@@ -157,18 +157,14 @@ void _showHelp(ArgParser parser) {
 /// Removes .note.gnu.property section from Linux ELF binaries so they run on older CPUs/LTS kernels
 Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
   if (!Platform.isLinux) return;
-  final bundleDir = Directory(
-    p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'),
-  );
+  final bundleDir = Directory(p.join(rootDir, 'build', 'linux', 'x64', 'release', 'bundle'));
   if (!bundleDir.existsSync()) return;
 
   final elfPaths = <String>[];
   for (final entity in bundleDir.listSync(recursive: true)) {
     if (entity is File) {
       final name = p.basename(entity.path);
-      if (name == 'LieVPN' ||
-          name.startsWith('FlClash') ||
-          name.endsWith('.so')) {
+      if (name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
         elfPaths.add(entity.path);
       }
     }
@@ -176,14 +172,9 @@ Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
 
   for (final elfPath in elfPaths) {
     try {
-      final res = await Process.run('objcopy', [
-        '--remove-section=.note.gnu.property',
-        elfPath,
-      ]);
+      final res = await Process.run('objcopy', ['--remove-section=.note.gnu.property', elfPath]);
       if (res.exitCode == 0) {
-        stdout.writeln(
-          'Sanitized CPU ISA constraints for ${p.basename(elfPath)}',
-        );
+        stdout.writeln('Sanitized CPU ISA constraints for ${p.basename(elfPath)}');
       }
     } catch (_) {}
   }
@@ -215,9 +206,7 @@ Future<int> _package(
 
   // On Linux: build bundle first if packaging AppImage/deb to sanitize binaries before packaging
   if (platform == 'linux') {
-    stdout.writeln(
-      'Pre-building Linux bundle to sanitize CPU architecture requirements...',
-    );
+    stdout.writeln('Pre-building Linux bundle to sanitize CPU architecture requirements...');
     final buildBundleArgs = [
       'build',
       'linux',
@@ -226,11 +215,7 @@ Future<int> _package(
         for (final arg in flutterBuildArgs)
           if (arg == 'verbose') '-v' else '--$arg',
     ];
-    final buildProcess = await Process.start(
-      'flutter',
-      buildBundleArgs,
-      runInShell: true,
-    );
+    final buildProcess = await Process.start('flutter', buildBundleArgs, runInShell: true);
     buildProcess.stdout.listen((data) => stdout.write(utf8.decode(data)));
     buildProcess.stderr.listen((data) => stderr.write(utf8.decode(data)));
     final buildExit = await buildProcess.exitCode;
@@ -240,33 +225,34 @@ Future<int> _package(
     await _sanitizeLinuxElfBinaries(rootDir);
   }
 
-  final activateResult = await Process.run('dart', [
-    'pub',
-    'global',
-    'activate',
-    '-s',
-    'git',
-    'https://github.com/chen08209/flutter_distributor.git',
-    '--git-ref',
-    'v0.6.11-flclash.2',
-    '--git-path',
-    'packages/flutter_distributor',
-  ]);
-  if (activateResult.exitCode != 0) {
-    stderr.write(activateResult.stderr);
-    return activateResult.exitCode;
+  String distributorCmd = 'flutter_distributor';
+  if (!await _hasCommand(distributorCmd)) {
+    final home = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '';
+    final pubDistributor = p.join(home, '.pub-cache', 'bin', Platform.isWindows ? 'flutter_distributor.bat' : 'flutter_distributor');
+    if (File(pubDistributor).existsSync()) {
+      distributorCmd = pubDistributor;
+    } else {
+      final activateResult = await Process.run('dart', [
+        'pub',
+        'global',
+        'activate',
+        '-s',
+        'git',
+        'https://github.com/chen08209/flutter_distributor.git',
+        '--git-ref',
+        'v0.6.11-flclash.2',
+        '--git-path',
+        'packages/flutter_distributor',
+      ]);
+      if (activateResult.exitCode != 0) {
+        stderr.write(activateResult.stderr);
+        return activateResult.exitCode;
+      }
+      if (File(pubDistributor).existsSync()) {
+        distributorCmd = pubDistributor;
+      }
+    }
   }
-
-  final homeDir = Platform.environment['HOME'] ?? '';
-  final localPubBin = p.join(
-    homeDir,
-    '.pub-cache',
-    'bin',
-    'flutter_distributor',
-  );
-  final distributorCmd = await _hasCommand('flutter_distributor')
-      ? 'flutter_distributor'
-      : (File(localPubBin).existsSync() ? localPubBin : 'flutter_distributor');
 
   final process = await Process.start(
     distributorCmd,
@@ -312,181 +298,25 @@ String _detectArch() {
 Future<bool> _hasCommand(String cmd) async {
   final which = Platform.isWindows ? 'where' : 'which';
   final args = [cmd];
-  final result = await Process.run(which, args);
-  return result.exitCode == 0;
+  try {
+    final result = await Process.run(which, args);
+    return result.exitCode == 0;
+  } catch (_) {
+    return false;
+  }
 }
 
 Future<int> _ensureDependencies(String platform) async {
-  switch (platform) {
-    case 'macos':
-      return _ensureMacosDependencies();
-    case 'linux':
-      return _ensureLinuxDependencies();
-    default:
-      return 0;
-  }
-}
-
-Future<int> _ensureMacosDependencies() async {
-  if (await _hasCommand('appdmg')) {
-    stdout.writeln('appdmg already installed, skipping.');
-    return 0;
-  }
-  stdout.writeln('Installing appdmg (DMG creator)...');
-  final result = await Process.run('npm', ['install', '-g', 'appdmg']);
-  if (result.exitCode != 0) {
-    stderr.write(result.stderr);
-  }
-  return result.exitCode;
-}
-
-Future<int> _ensureLinuxDependencies() async {
-  if (!await _hasCommand('dpkg')) {
-    stdout.writeln(
-      'Non-Debian system detected, skipping apt dependency checks.',
+  if (platform != 'linux') return 0;
+  final appimagetool = await _hasCommand('appimagetool');
+  if (!appimagetool) {
+    stderr.writeln(
+      'Warning: appimagetool not found in PATH. Make sure it is installed if building AppImage.',
     );
-    if (await _hasCommand('appimagetool') ||
-        File('/usr/local/bin/appimagetool').existsSync()) {
-      return 0;
-    }
-    return 0;
   }
-
-  const pkgGroups = <List<String>>[
-    ['ninja-build', 'libgtk-3-dev'],
-    ['libayatana-appindicator3-dev'],
-    ['libsecret-1-dev'],
-    ['locate'],
-    ['rpm', 'patchelf'],
-    ['libfuse2'],
-  ];
-
-  final missingGroups = <List<String>>[];
-  for (final group in pkgGroups) {
-    final missingPkgs = <String>[];
-    for (final pkg in group) {
-      if (!await _isDebianPackageInstalled(pkg)) {
-        missingPkgs.add(pkg);
-      }
-    }
-    if (missingPkgs.isNotEmpty) {
-      missingGroups.add(missingPkgs);
-    }
-  }
-
-  if (missingGroups.isEmpty) {
-    stdout.writeln('All Linux build dependencies already installed, skipping.');
-  } else {
-    stdout.writeln('Updating apt package lists...');
-    final updateExit = await _runLinuxDependencyCommand([
-      'apt-get',
-      'update',
-      '-y',
-    ]);
-    if (updateExit != 0) {
-      stderr.writeln(
-        'apt-get update exited with $updateExit; continuing and verifying '
-        'dependency installation directly.',
-      );
-    }
-
-    for (final missingPkgs in missingGroups) {
-      stdout.writeln(
-        'Installing Linux build dependencies: ${missingPkgs.join(', ')}...',
-      );
-      final installExit = await _installLinuxPackages(missingPkgs);
-      if (installExit != 0) return installExit;
-    }
-  }
-
-  const appimagetool = '/usr/local/bin/appimagetool';
-  if (File(appimagetool).existsSync()) {
-    stdout.writeln('appimagetool already installed, skipping.');
-    return 0;
-  }
-  stdout.writeln('Downloading appimagetool...');
-  final downloadName =
-      'appimagetool-${appImageToolArch(_detectArch())}.AppImage';
-  final dlResult = await Process.run('wget', [
-    '-O',
-    appimagetool,
-    'https://github.com/AppImage/AppImageKit/releases/download/continuous/$downloadName',
-  ]);
-  if (dlResult.exitCode != 0) {
-    stderr.write(dlResult.stderr);
-    return dlResult.exitCode;
-  }
-  await Process.run('chmod', ['+x', appimagetool]);
   return 0;
 }
 
 String appImageToolArch(String arch) {
   return arch == 'arm64' ? 'aarch64' : 'x86_64';
-}
-
-/// Ubuntu 24.04 ships libfuse2 under its time64 name, which `dpkg -s libfuse2` cannot see.
-const _debianPackageAliases = <String, List<String>>{
-  'libfuse2': ['libfuse2t64'],
-};
-
-Future<bool> _isDebianPackageInstalled(String pkg) async {
-  for (final name in [pkg, ...?_debianPackageAliases[pkg]]) {
-    final result = await Process.run('dpkg', ['-s', name]);
-    if (result.exitCode == 0 &&
-        (result.stdout as String).contains('Status: install ok installed')) {
-      return true;
-    }
-  }
-  return false;
-}
-
-Future<bool> _areDebianPackagesInstalled(List<String> pkgs) async {
-  for (final pkg in pkgs) {
-    if (!await _isDebianPackageInstalled(pkg)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-Future<int> _installLinuxPackages(List<String> pkgs) async {
-  final exitCode = await _runLinuxDependencyCommand([
-    'apt-get',
-    'install',
-    '-y',
-    ...pkgs,
-  ]);
-  if (exitCode == 0) return 0;
-
-  if (await _areDebianPackagesInstalled(pkgs)) {
-    stderr.writeln(
-      'apt-get install exited with $exitCode, but all requested packages are '
-      'installed; continuing.',
-    );
-    return 0;
-  }
-
-  return exitCode;
-}
-
-Future<int> _runLinuxDependencyCommand(List<String> command) async {
-  final sudoCommand = [
-    'env',
-    'DEBIAN_FRONTEND=noninteractive',
-    'NEEDRESTART_MODE=a',
-    ...command,
-  ];
-  stdout.writeln('exec: sudo ${sudoCommand.join(' ')}');
-  final result = await Process.start('sudo', sudoCommand);
-  result.stdout.listen((data) {
-    stdout.write(utf8.decode(data));
-  });
-  result.stderr.listen((data) {
-    stderr.write(utf8.decode(data));
-  });
-  final exitCode = await result.exitCode;
-  if (exitCode != 0) {
-    stderr.writeln('Linux dependency command failed with exit code $exitCode.');
-  }
-  return exitCode;
 }

@@ -1,35 +1,21 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/widgets/inherited.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:fl_clash/widgets/scroll.dart';
 import 'package:fl_clash/widgets/sheet.dart';
-import 'package:fl_clash/widgets/sheet_header.dart';
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
 
-Widget _list({ScrollController? controller}) {
+Widget _list() {
   return ListView.builder(
-    controller: controller,
     itemCount: 100,
     itemBuilder: (_, index) => SizedBox(height: 40, child: Text('$index')),
   );
 }
 
-Widget _sheet(Widget body) {
-  return TestApp(
-    wrapInProviderScope: true,
-    child: SheetProvider(
-      type: SheetType.bottomSheet,
-      child: CommonScaffold(title: 'title', body: body),
-    ),
-  );
-}
-
 final _desktop = TargetPlatformVariant.only(TargetPlatform.macOS);
-const _everyPlatform = TargetPlatformVariant({
+final _everyPlatform = TargetPlatformVariant(const {
   TargetPlatform.macOS,
   TargetPlatform.android,
 });
@@ -61,9 +47,7 @@ void main() {
         ),
       );
 
-      final scrollBarContext = tester.element(
-        find.byWidgetPredicate((widget) => widget is RawScrollbar).first,
-      );
+      final scrollBarContext = tester.element(find.byType(Scrollbar).first);
       expect(
         MediaQuery.paddingOf(scrollBarContext),
         viewPadding.copyWith(top: viewPadding.top + sheetAppBarHeight),
@@ -73,10 +57,21 @@ void main() {
   );
 
   testWidgets(
-    'a bottom sheet keeps the scroll bar below its floating header',
+    'a transparent tool bar keeps the scroll bar below the header',
     variant: _everyPlatform,
     (tester) async {
-      await tester.pumpWidget(_sheet(_list()));
+      await tester.pumpWidget(
+        TestApp(
+          child: SheetProvider(
+            type: SheetType.bottomSheet,
+            child: AdaptiveSheetScaffold(
+              title: 'title',
+              sheetTransparentToolBar: true,
+              body: _list(),
+            ),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final scrollBar = tester.widget<CommonScrollBar>(
@@ -87,208 +82,23 @@ void main() {
   );
 
   testWidgets(
-    'a floating scroll bar is the only bar its list gets',
+    'an opaque tool bar shows the scroll bar without an inset',
     variant: _everyPlatform,
     (tester) async {
-      final controller = ScrollController();
-      addTearDown(controller.dispose);
-
       await tester.pumpWidget(
-        _sheet(
-          FloatingScrollbar(
-            controller: controller,
-            hintBuilder: (_) => 'hint',
-            child: _list(controller: controller),
+        TestApp(
+          child: SheetProvider(
+            type: SheetType.bottomSheet,
+            child: AdaptiveSheetScaffold(title: 'title', body: _list()),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(CommonScrollBar), findsOneWidget);
       final scrollBar = tester.widget<CommonScrollBar>(
         find.byType(CommonScrollBar),
       );
-      expect(scrollBar.padding, const EdgeInsets.only(top: sheetAppBarHeight));
-    },
-  );
-
-  testWidgets(
-    'a scroll bar given a list leaves a list nested in it the ambient bar',
-    variant: _desktop,
-    (tester) async {
-      final controller = ScrollController();
-      addTearDown(controller.dispose);
-      const ambientPadding = EdgeInsets.only(top: 12);
-
-      await tester.pumpWidget(
-        TestApp(
-          child: ScrollConfiguration(
-            behavior: const BaseScrollBehavior(
-              scrollbarPadding: ambientPadding,
-            ),
-            child: CommonScrollBar(
-              controller: controller,
-              child: ListView(
-                controller: controller,
-                children: [
-                  SizedBox(height: 200, child: _list()),
-                  for (var index = 0; index < 30; index++)
-                    SizedBox(height: 40, child: Text('row $index')),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final bars = tester.widgetList<CommonScrollBar>(
-        find.byType(CommonScrollBar),
-      );
-      expect(bars.where((bar) => bar.controller == controller), hasLength(1));
-      final nested = bars.singleWhere((bar) => bar.controller != controller);
-      expect(nested.padding, ambientPadding);
-    },
-  );
-
-  testWidgets('a sheet header lets what scrolls under it read through', (
-    tester,
-  ) async {
-    await tester.pumpWidget(_sheet(_list()));
-    await tester.pumpAndSettle();
-
-    final cover = tester.widget<DecoratedBox>(
-      find
-          .descendant(
-            of: find.ancestor(
-              of: find.byType(SheetToolBar),
-              matching: find.byType(FloatingHeader),
-            ),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
-    final gradient = (cover.decoration as BoxDecoration).gradient;
-    expect(gradient, isA<LinearGradient>());
-    expect(gradient!.colors.map((color) => color.a), everyElement(lessThan(1)));
-  });
-
-  for (final type in [null, SheetType.page, SheetType.sideSheet]) {
-    testWidgets(
-      '${type?.name ?? 'a page'} floats its bar over the list under it',
-      variant: _everyPlatform,
-      (tester) async {
-        final scaffold = CommonScaffold(title: 'title', body: _list());
-        await tester.pumpWidget(
-          TestApp(
-            wrapInProviderScope: true,
-            child: type == null
-                ? scaffold
-                : SheetProvider(type: type, child: scaffold),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        final appBar = tester.widget<AppBar>(find.byType(AppBar));
-        expect(appBar.forceMaterialTransparency, isTrue);
-        expect(
-          find.ancestor(
-            of: find.byType(AppBar),
-            matching: find.byType(FloatingHeader),
-          ),
-          findsOneWidget,
-        );
-        final barBottom = tester.getRect(find.byType(AppBar)).bottom;
-        expect(tester.getRect(find.text('0')).top, barBottom);
-
-        await tester.drag(find.byType(Scrollable), const Offset(0, -100));
-        await tester.pumpAndSettle();
-
-        expect(tester.getRect(find.text('2')).top, lessThan(barBottom));
-      },
-    );
-  }
-
-  testWidgets('a page with a title widget floats its bar as a titled one', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      TestApp(
-        wrapInProviderScope: true,
-        child: CommonScaffold(titleWidget: const TextField(), body: _list()),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.byType(TextField),
-      ),
-      findsOneWidget,
-    );
-
-    expect(
-      find.ancestor(
-        of: find.byType(AppBar),
-        matching: find.byType(FloatingHeader),
-      ),
-      findsOneWidget,
-    );
-    final barBottom = tester.getRect(find.byType(AppBar)).bottom;
-    expect(tester.getRect(find.text('0')).top, barBottom);
-
-    await tester.drag(find.text('0'), const Offset(0, -100));
-    await tester.pumpAndSettle();
-
-    expect(tester.getRect(find.text('2')).top, lessThan(barBottom));
-  });
-
-  testWidgets(
-    'keyboard focus moving up clears the floating bar',
-    variant: _everyPlatform,
-    (tester) async {
-      FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.alwaysTraditional;
-      addTearDown(
-        () => FocusManager.instance.highlightStrategy =
-            FocusHighlightStrategy.automatic,
-      );
-      await tester.pumpWidget(
-        TestApp(
-          wrapInProviderScope: true,
-          child: CommonScaffold(
-            title: 'title',
-            body: ListView.builder(
-              itemCount: 100,
-              itemBuilder: (_, index) =>
-                  Focus(child: SizedBox(height: 40, child: Text('$index'))),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.drag(find.byType(Scrollable), const Offset(0, -410));
-      await tester.pumpAndSettle();
-
-      final barBottom = tester.getRect(find.byType(AppBar)).bottom;
-      var below = 0;
-      while (find.text('$below').evaluate().isEmpty ||
-          tester.getRect(find.text('$below')).top < barBottom) {
-        below++;
-      }
-      final above = find.text('${below - 1}');
-      expect(tester.getRect(above).top, lessThan(barBottom));
-
-      Focus.of(tester.element(find.text('$below'))).requestFocus();
-      await tester.pumpAndSettle();
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
-      await tester.pumpAndSettle();
-
-      expect(
-        FocusManager.instance.primaryFocus,
-        Focus.of(tester.element(above)),
-      );
-      expect(tester.getRect(above).top, moreOrLessEquals(barBottom));
+      expect(scrollBar.padding, EdgeInsets.zero);
     },
   );
 }

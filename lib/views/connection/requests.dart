@@ -8,25 +8,20 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RequestsView extends ConsumerStatefulWidget {
-  final ScrollController? scrollController;
-
-  const RequestsView({super.key, this.scrollController});
+  const RequestsView({super.key});
 
   @override
   ConsumerState<RequestsView> createState() => _RequestsViewState();
 }
 
-class _RequestsViewState extends ConsumerState<RequestsView>
-    with RouteMotionHoldMixin<RequestsView> {
+class _RequestsViewState extends ConsumerState<RequestsView> {
   final _listController = TrackerInfoListController();
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController =
-        widget.scrollController ??
-        ScrollController(initialScrollOffset: double.maxFinite);
+    _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _listController.setTrackerInfos(ref.read(requestsProvider).list);
     ref.listenManual(requestsProvider.select((state) => state.revision), (
       _,
@@ -39,9 +34,7 @@ class _RequestsViewState extends ConsumerState<RequestsView>
   @override
   void dispose() {
     _listController.dispose();
-    if (widget.scrollController == null) {
-      _scrollController.dispose();
-    }
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -50,26 +43,46 @@ class _RequestsViewState extends ConsumerState<RequestsView>
       if (!mounted) {
         return;
       }
-      updateWhenRouteSettled(
-        () => _listController.setTrackerInfos(ref.read(requestsProvider).list),
-      );
-    }, duration: renderThrottleDuration);
+      _listController.setTrackerInfos(ref.read(requestsProvider).list);
+    }, duration: commonDuration);
   }
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
-      title: PageLabel.requests.label,
+      title: appLocalizations.requests,
       searchState: AppBarSearchState(onSearch: _listController.search),
       onKeywordsUpdate: _listController.updateKeywords,
+      floatingActionButton: ValueListenableBuilder(
+        valueListenable: _listController,
+        builder: (_, state, _) {
+          final autoScrollToEnd = state.autoScrollToEnd;
+          return FadeRotationScaleBox(
+            child: FloatingActionButton(
+              key: ValueKey(autoScrollToEnd),
+              onPressed: () {
+                if (autoScrollToEnd) {
+                  _listController.setAutoScrollToEnd(false);
+                } else {
+                  _listController.resumeAutoScrollToEnd(
+                    ref.read(requestsProvider).list,
+                  );
+                }
+              },
+              child: autoScrollToEnd
+                  ? const Icon(Icons.block)
+                  : const Icon(Icons.vertical_align_top),
+            ),
+          );
+        },
+      ),
       body: ValueListenableBuilder<TrackerInfosState>(
         valueListenable: _listController,
         builder: (context, state, _) {
           final requests = state.list;
           return NullStatusSwitcher(
             isEmpty: requests.isEmpty,
-            isSearching: state.isSearching,
             nullStatus: NullStatus(
               label: appLocalizations.nullTip(appLocalizations.requests),
               illustration: NullStatusIllustration.requests,
@@ -89,18 +102,12 @@ class _RequestsViewState extends ConsumerState<RequestsView>
                   onCancelToEnd: () {
                     _listController.setAutoScrollToEnd(false);
                   },
-                  onResumeToEnd: () {
-                    _listController.resumeAutoScrollToEnd(
-                      ref.read(requestsProvider).list,
-                    );
-                  },
                   child: TrackerInfoList(
                     reverse: true,
                     shrinkWrap: true,
                     physics: const NextClampingScrollPhysics(),
                     controller: _scrollController,
                     padding: EdgeInsets.only(
-                      top: context.contentTopPadding,
                       bottom: 16 + BottomInsetScope.of(context),
                     ),
                     trackerInfos: requests,

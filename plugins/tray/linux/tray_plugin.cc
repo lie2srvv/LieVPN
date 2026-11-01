@@ -83,13 +83,10 @@ static GtkWidget* build_menu(FlValue* items) {
       continue;
     }
 
-    const char* raw_label = string_value(entry, "label");
-    const char* detail = string_value(entry, "detail");
-    g_autofree gchar* label =
-        detail != nullptr && detail[0] != '\0'
-            ? g_strdup_printf("%s  (%s)", raw_label == nullptr ? "" : raw_label,
-                              detail)
-            : g_strdup(raw_label == nullptr ? "" : raw_label);
+    const char* label = string_value(entry, "label");
+    if (label == nullptr) {
+      label = "";
+    }
 
     GtkWidget* item;
     bool dispatches = true;
@@ -132,7 +129,9 @@ static void attach_menu(TrayPlugin* self, FlValue* items) {
   g_object_ref_sink(menu);
   self->menu = menu;
 
-  app_indicator_set_menu(self->indicator, GTK_MENU(menu));
+  if (self->indicator != nullptr) {
+    app_indicator_set_menu(self->indicator, GTK_MENU(menu));
+  }
   gtk_widget_show_all(menu);
 
   if (previous != nullptr) {
@@ -142,6 +141,9 @@ static void attach_menu(TrayPlugin* self, FlValue* items) {
 }
 
 static void apply_title(TrayPlugin* self, const char* title) {
+  if (self->indicator == nullptr) {
+    return;
+  }
   if (title == nullptr || title[0] == '\0') {
     app_indicator_set_label(self->indicator, nullptr, nullptr);
   } else {
@@ -172,11 +174,24 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
     return respond(false);
   }
 
+  g_autofree gchar* icon_dir = g_path_get_dirname(icon_path);
+  g_autofree gchar* icon_base = g_path_get_basename(icon_path);
+  gchar* dot = strrchr(icon_base, '.');
+  if (dot != nullptr) {
+    *dot = 0;
+  }
+
   const bool is_new = self->indicator == nullptr;
   if (is_new) {
     self->indicator =
-        app_indicator_new(id, icon_path, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+        app_indicator_new_with_path(id, icon_base, APP_INDICATOR_CATEGORY_APPLICATION_STATUS, icon_dir);
   }
+
+  if (self->indicator == nullptr) {
+    return respond(false);
+  }
+
+  app_indicator_set_icon_theme_path(self->indicator, icon_dir);
 
   attach_menu(self, fl_value_lookup_string(args, "menu"));
 
@@ -184,7 +199,7 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
     app_indicator_set_status(self->indicator, APP_INDICATOR_STATUS_PASSIVE);
   }
 
-  app_indicator_set_icon_full(self->indicator, icon_path, "");
+  app_indicator_set_icon_full(self->indicator, icon_base, "");
 
   const char* tool_tip = string_value(args, "toolTip");
   if (tool_tip != nullptr) {

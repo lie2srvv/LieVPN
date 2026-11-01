@@ -46,10 +46,6 @@ class ProxyGroups extends Table {
 
   TextColumn get expectedStatus => text().nullable()();
 
-  IntColumn get tolerance => integer().nullable()();
-
-  TextColumn get strategy => text().nullable()();
-
   BoolColumn get includeAll => boolean().nullable()();
 
   BoolColumn get includeAllProxies => boolean().nullable()();
@@ -116,44 +112,6 @@ class ProxyGroupsDao extends DatabaseAccessor<Database>
     );
   }
 
-  Future<Set<int>> profileIdsUsing(String provider) async {
-    final query = selectOnly(proxyGroups)
-      ..addColumns([proxyGroups.profileId, proxyGroups.use])
-      ..where(proxyGroups.profileId.isNotNull() & proxyGroups.use.isNotNull());
-    return {
-      for (final row in await query.get())
-        if (row.readWithConverter(proxyGroups.use)!.contains(provider))
-          row.read(proxyGroups.profileId)!,
-    };
-  }
-
-  Future<void> renameUse(
-    Iterable<int> profileIds, {
-    required String oldName,
-    required String newName,
-  }) async {
-    if (profileIds.isEmpty) {
-      return;
-    }
-    final rows =
-        await (proxyGroups.select()
-              ..where((t) => t.profileId.isIn(profileIds) & t.use.isNotNull()))
-            .get();
-    for (final row in rows) {
-      final use = row.use!;
-      if (!use.contains(oldName)) {
-        continue;
-      }
-      await (proxyGroups.update()..where((t) => t.id.equals(row.id))).write(
-        ProxyGroupsCompanion(
-          use: Value([
-            for (final name in use) name == oldName ? newName : name,
-          ]),
-        ),
-      );
-    }
-  }
-
   void setAllWithBatch(
     int? profileId,
     Batch batch,
@@ -170,12 +128,6 @@ class ProxyGroupsDao extends DatabaseAccessor<Database>
           : row.profileId.equals(profileId),
       preDelete: true,
     );
-  }
-
-  Future<void> delAll(Iterable<int> ids) {
-    return batch((b) {
-      proxyGroups.deleteInChunks(b, ids, (t, chunk) => t.id.isIn(chunk));
-    });
   }
 
   void putAllWithBatch(Batch batch, Iterable<ProxyGroup> proxyGroups) {
@@ -208,8 +160,6 @@ extension RawProxyGroupExt on RawProxyGroup {
       excludeFilter: excludeFilter,
       excludeType: excludeType,
       expectedStatus: expectedStatus,
-      tolerance: tolerance,
-      strategy: LoadBalanceStrategy.parse(strategy),
       includeAll: includeAll,
       includeAllProxies: includeAllProxies,
       includeAllProviders: includeAllProviders,
@@ -239,8 +189,6 @@ extension ProxyGroupsCompanionExt on ProxyGroup {
       excludeFilter: Value(excludeFilter),
       excludeType: Value(excludeType),
       expectedStatus: Value(expectedStatus),
-      tolerance: Value(tolerance),
-      strategy: Value(strategy?.value),
       includeAll: Value(includeAll),
       includeAllProxies: Value(includeAllProxies),
       includeAllProviders: Value(includeAllProviders),

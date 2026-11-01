@@ -44,19 +44,16 @@ class Picker {
     if (xFile == null) {
       return null;
     }
-    // Not through a throwaway MobileScannerController: disposing one clears
-    // the platform scan window of a scanner page that is still open.
-    final capture = await MobileScannerPlatform.instance.analyzeImage(
+    final controller = MobileScannerController();
+    final capture = await controller.analyzeImage(
       xFile.path,
-      formats: const [BarcodeFormat.qrCode],
+      formats: [BarcodeFormat.qrCode],
     );
-    final url = profileUrlFromQrCodes(
-      capture?.barcodes.map((barcode) => barcode.rawValue) ?? const [],
-    );
-    if (url == null) {
+    final result = capture?.barcodes.first.rawValue;
+    if (result == null || !result.isUrl) {
       throw MessageException(currentAppLocalizations.pleaseUploadValidQrcode);
     }
-    return url;
+    return result;
   }
 }
 

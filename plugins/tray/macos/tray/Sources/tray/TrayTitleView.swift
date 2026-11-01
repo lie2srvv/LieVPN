@@ -3,19 +3,24 @@ import AppKit
 final class TrayTitleView: NSView {
     static let width: CGFloat = 42
 
-    private static let font = NSFont.systemFont(ofSize: 8.75)
-    private static let lineHeight: CGFloat = 9
-
-    private var lines: [NSAttributedString] = [] {
+    private var attributedTitle: NSAttributedString? {
         didSet { needsDisplay = true }
     }
 
     private var titleWidth: CGFloat = TrayTitleView.width
 
-    private let attributes: [NSAttributedString.Key: Any] = [
-        .font: TrayTitleView.font,
-        .foregroundColor: NSColor.labelColor,
-    ]
+    private let attributes: [NSAttributedString.Key: Any] = {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.maximumLineHeight = 9
+        paragraphStyle.minimumLineHeight = 9
+        paragraphStyle.alignment = .right
+        paragraphStyle.lineBreakMode = .byClipping
+        return [
+            .paragraphStyle: paragraphStyle,
+            .font: NSFont.systemFont(ofSize: 8.75),
+            .foregroundColor: NSColor.labelColor,
+        ]
+    }()
 
     override var isFlipped: Bool {
         true
@@ -29,13 +34,14 @@ final class TrayTitleView: NSView {
         let wasHidden = isHidden
         let previousWidth = titleWidth
 
-        lines = title.isEmpty
-            ? []
-            : title.components(separatedBy: "\n").map {
-                NSAttributedString(string: $0, attributes: attributes)
-            }
-        let textWidth = lines.map { ceil($0.size().width) }.max() ?? 0
-        titleWidth = max(TrayTitleView.width, textWidth)
+        if title.isEmpty {
+            attributedTitle = nil
+            titleWidth = TrayTitleView.width
+        } else {
+            let text = NSAttributedString(string: title, attributes: attributes)
+            attributedTitle = text
+            titleWidth = max(TrayTitleView.width, ceil(measure(text).width))
+        }
         isHidden = title.isEmpty
 
         let widthChanged = titleWidth != previousWidth
@@ -45,24 +51,27 @@ final class TrayTitleView: NSView {
         return wasHidden != isHidden || widthChanged
     }
 
-    // Line boxes carry descender space, so centring them leaves the digits high.
+    private func measure(_ text: NSAttributedString) -> NSSize {
+        text.boundingRect(
+            with: NSSize(
+                width: CGFloat.greatestFiniteMagnitude,
+                height: CGFloat.greatestFiniteMagnitude
+            ),
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
+        ).size
+    }
+
     override func draw(_ dirtyRect: NSRect) {
-        guard !lines.isEmpty else {
+        guard let attributedTitle = attributedTitle else {
             return
         }
-        let capHeight = TrayTitleView.font.capHeight
-        let lineHeight = TrayTitleView.lineHeight
-        let blockHeight = capHeight + lineHeight * CGFloat(lines.count - 1)
-        let scale = window?.backingScaleFactor ?? 2
-        var baseline = ((bounds.height - blockHeight) / 2 + capHeight) * scale
-        baseline = baseline.rounded() / scale
-        for line in lines {
-            let width = line.size().width
-            line.draw(
-                with: NSRect(x: bounds.width - width, y: baseline, width: width, height: 0),
-                options: []
-            )
-            baseline += lineHeight
-        }
+        let textBounds = attributedTitle.boundingRect(
+            with: NSSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading]
+        )
+        let y = max((bounds.height - textBounds.height) / 2, 0)
+        attributedTitle.draw(
+            in: NSRect(x: 0, y: y, width: bounds.width, height: ceil(textBounds.height))
+        )
     }
 }

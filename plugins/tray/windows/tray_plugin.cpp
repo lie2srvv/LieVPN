@@ -132,12 +132,7 @@ void TrayPlugin::RebuildMenu(HMENU menu, const flutter::EncodableList& items) {
     }
 
     const std::string* label = StringAt(*entry, "label");
-    std::wstring text = Utf16FromUtf8(label == nullptr ? "" : *label);
-    const std::string* detail = StringAt(*entry, "detail");
-    if (detail != nullptr && !detail->empty()) {
-      text += L'\t';
-      text += Utf16FromUtf8(*detail);
-    }
+    const std::wstring text = Utf16FromUtf8(label == nullptr ? "" : *label);
 
     UINT flags = MF_STRING;
     if (!BoolAt(*entry, "enabled", true)) {

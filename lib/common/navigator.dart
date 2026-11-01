@@ -1,10 +1,5 @@
-import 'dart:async';
-
 import 'package:animations/animations.dart';
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/widgets/drag_back.dart';
-import 'package:fl_clash/widgets/keyboard_inset_hold.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -22,37 +17,12 @@ class BaseNavigator {
   }
 }
 
-// Work a page starts on arrival drops frames while the route still animates.
-Future<void> whenRouteSettled(BuildContext context) async {
-  final route = ModalRoute.of(context);
-  // HeroController builds a pushed route offstage for its first frame, with
-  // the animation pinned to completed, so it only tells the truth after that.
-  while (route != null && route.offstage && route.isActive) {
-    await SchedulerBinding.instance.endOfFrame;
-  }
-  final animation = route?.animation;
-  if (animation == null || !animation.isAnimating) {
-    return;
-  }
-  final completer = Completer<void>();
-  void handleStatus(AnimationStatus status) {
-    if (status.isAnimating) {
-      return;
-    }
-    animation.removeStatusListener(handleStatus);
-    completer.complete();
-  }
-
-  animation.addStatusListener(handleStatus);
-  return completer.future;
-}
-
 const commonSharedXPageTransitions = SharedAxisPageTransitionsBuilder(
   transitionType: SharedAxisTransitionType.horizontal,
   fillColor: Colors.transparent,
 );
 
-class CommonDesktopRoute<T> extends PageRoute<T> with DragBackRouteMixin<T> {
+class CommonDesktopRoute<T> extends PageRoute<T> {
   final Widget Function(BuildContext context) builder;
 
   CommonDesktopRoute({required this.builder});
@@ -69,24 +39,11 @@ class CommonDesktopRoute<T> extends PageRoute<T> with DragBackRouteMixin<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
+    final Widget result = builder(context);
     return Semantics(
       scopesRoute: true,
       explicitChildNodes: true,
-      child: KeyboardInsetHold(child: builder(context)),
-    );
-  }
-
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return dragBackDetector(
-      isDragBackActive
-          ? dragBackSlide(context, animation, child)
-          : FadeTransition(opacity: animation, child: child),
+      child: FadeTransition(opacity: animation, child: result),
     );
   }
 
@@ -100,7 +57,7 @@ class CommonDesktopRoute<T> extends PageRoute<T> with DragBackRouteMixin<T> {
   Duration get reverseTransitionDuration => const Duration(milliseconds: 200);
 }
 
-class CommonRoute<T> extends PageRoute<T> with DragBackRouteMixin<T> {
+class CommonRoute<T> extends PageRoute<T> {
   final Widget Function(BuildContext context) builder;
 
   CommonRoute({required this.builder});
@@ -120,30 +77,17 @@ class CommonRoute<T> extends PageRoute<T> with DragBackRouteMixin<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
+    final Widget result = builder(context);
     return Semantics(
       scopesRoute: true,
       explicitChildNodes: true,
-      child: KeyboardInsetHold(child: builder(context)),
-    );
-  }
-
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return dragBackDetector(
-      isDragBackActive
-          ? dragBackSlide(context, animation, child)
-          : SharedAxisTransition(
-              animation: animation,
-              secondaryAnimation: secondaryAnimation,
-              transitionType: SharedAxisTransitionType.horizontal,
-              fillColor: context.colorScheme.surface,
-              child: child,
-            ),
+      child: SharedAxisTransition(
+        animation: animation,
+        secondaryAnimation: secondaryAnimation,
+        transitionType: SharedAxisTransitionType.horizontal,
+        fillColor: context.colorScheme.surface,
+        child: result,
+      ),
     );
   }
 

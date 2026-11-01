@@ -9,20 +9,17 @@ import 'package:flutter/foundation.dart';
 typedef DAVClientFactory = DAVClient Function(DAVProps props);
 
 class DAVClient {
-  DAVClient(DAVProps dav)
-    : _transport = DAVTransport(
-        uri: dav.uri,
-        user: dav.user,
-        password: dav.password,
-      ),
-      fileName = dav.fileName;
+  late DAVTransport client;
+  late String fileName;
 
-  final DAVTransport _transport;
-  final String fileName;
+  DAVClient(DAVProps dav) {
+    client = DAVTransport(uri: dav.uri, user: dav.user, password: dav.password);
+    fileName = dav.fileName;
+  }
 
   Future<bool> ping() async {
     try {
-      await _transport.options('/');
+      await client.options('/');
       return true;
     } catch (e) {
       commonPrint.log(
@@ -37,14 +34,17 @@ class DAVClient {
 
   String get backupFile => '$root/$fileName';
 
-  Future<void> upload(String localPath) async {
-    await _transport.mkcol(root);
-    await _transport.put(backupFile, await io.File(localPath).readAsBytes());
+  Future<bool> backup(String localFilePath) async {
+    await client.mkcol(root);
+    await client.put(backupFile, await io.File(localFilePath).readAsBytes());
+    return true;
   }
 
-  Future<void> download(String localPath) async {
-    final bytes = await _transport.get(backupFile);
-    await io.File(localPath).safeWriteAsBytes(bytes);
+  Future<bool> restore() async {
+    final backupFilePath = await appPath.backupFilePath;
+    final bytes = await client.get(backupFile);
+    await io.File(backupFilePath).safeWriteAsBytes(bytes);
+    return true;
   }
 }
 

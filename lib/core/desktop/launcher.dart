@@ -23,11 +23,13 @@ abstract interface class DesktopCoreLauncherResolver {
 
 final class DirectCoreLauncher implements CoreProcessLauncher {
   final CoreProcessStarter _startProcess;
-  final String corePath;
+  final String? _corePath;
 
   DirectCoreLauncher({CoreProcessStarter? startProcess, String? corePath})
     : _startProcess = startProcess ?? Process.start,
-      corePath = corePath ?? appPath.corePath;
+      _corePath = corePath;
+
+  String get corePath => _corePath ?? appPath.corePath;
 
   @override
   Future<CoreProcessLease> start({
@@ -79,6 +81,7 @@ final class DirectCoreLease implements CoreProcessLease {
   }
 
   Future<CoreProcessStopResult> _stop(Duration timeout) async {
+    // Send SIGTERM on Unix-like systems so Clash core cleans up TUN routing rules and tables before exit
     final bool signaled;
     if (Platform.isLinux || Platform.isMacOS) {
       signaled = _process.kill(ProcessSignal.sigterm);
@@ -90,6 +93,7 @@ final class DirectCoreLease implements CoreProcessLease {
       await _process.exitCode.timeout(timeout);
       return CoreProcessStopResult(stopped: signaled, exitConfirmed: true);
     } on TimeoutException {
+      // If graceful termination timed out, forcibly kill
       final killed = _process.kill(ProcessSignal.sigkill);
       try {
         await _process.exitCode.timeout(const Duration(milliseconds: 1500));

@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -12,6 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'common.dart';
+
+typedef ProxyGroupViewKeyMap =
+    Map<String, GlobalObjectKey<_ProxyGroupViewState>>;
 
 class ProxiesTabView extends ConsumerStatefulWidget {
   const ProxiesTabView({super.key});
@@ -26,8 +28,7 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
     with TickerProviderStateMixin {
   TabController? _tabController;
   final _hasMoreButtonNotifier = ValueNotifier<bool>(false);
-  final Map<String, ScrollController> _scrollControllers = {};
-  int _columns = 1;
+  ProxyGroupViewKeyMap _keyMap = {};
 
   @override
   void initState() {
@@ -49,49 +50,15 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
   void dispose() {
     _destroyTabController();
     _hasMoreButtonNotifier.dispose();
-    for (final controller in _scrollControllers.values) {
-      controller.dispose();
-    }
     super.dispose();
-  }
-
-  ScrollController _scrollControllerOf(String groupName) {
-    return _scrollControllers.putIfAbsent(groupName, ScrollController.new);
-  }
-
-  // The page of a dropped group still holds its controller until this frame
-  // unmounts it.
-  void _pruneScrollControllers(List<Group> groups) {
-    final names = {for (final group in groups) group.name};
-    final dropped = [
-      for (final entry in _scrollControllers.entries)
-        if (!names.contains(entry.key)) entry,
-    ];
-    for (final entry in dropped) {
-      _scrollControllers.remove(entry.key);
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => entry.value.dispose(),
-      );
-    }
   }
 
   void scrollToGroupSelected() {
     final group = currentGroup;
-    final controller = _scrollControllers[group?.name];
-    if (group == null || controller == null) {
+    if (group == null) {
       return;
     }
-    final cardType = ref.read(proxiesTabStateProvider).proxyCardType;
-    final rowOffset = selectedRowOffset(
-      proxies: group.all,
-      selectedProxyName: ref.read(selectedProxyNameProvider(group.name)),
-      columns: _columns,
-      rowExtent: getRowExtent(cardType),
-    );
-    if (rowOffset == null) {
-      return;
-    }
-    animateScrollTo(controller, rowOffset);
+    _keyMap[group.name]?.currentState?.scrollToSelected();
   }
 
   Future<void> delayTestCurrentGroup() async {
@@ -101,7 +68,7 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
     }
     await ref
         .read(proxiesActionProvider.notifier)
-        .delayTestPageGroup(group.name);
+        .delayTest(group.all, group.testUrl);
   }
 
   Group? get currentGroup {
@@ -123,31 +90,12 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
         return IconButton(
           tooltip: context.appLocalizations.more,
           onPressed: _showMoreMenu,
-          iconSize: 20,
           icon: isMobileView
-              ? const GlyphIcon(AppGlyphs.chevronDown)
-              : const GlyphIcon(AppGlyphs.chevronForward),
+              ? const Icon(Icons.expand_more)
+              : const Icon(Icons.chevron_right),
         );
       },
     );
-  }
-
-  // A mask rather than a surface-colored cover holds on any page background;
-  // at full scroll the fade lands in the last tab's trailing label padding.
-  Shader _buildTabsMask(Rect bounds, bool hasMore) {
-    final coverStart = bounds.width - kMinInteractiveDimension;
-    final fadeStart = coverStart - kTabLabelPadding.right;
-    if (!hasMore || fadeStart <= 0) {
-      return const LinearGradient(
-        colors: [Colors.black, Colors.black],
-      ).createShader(bounds);
-    }
-    return LinearGradient(
-      begin: AlignmentDirectional.centerStart,
-      end: AlignmentDirectional.centerEnd,
-      colors: [Colors.black, Colors.transparent],
-      stops: [fadeStart / bounds.width, coverStart / bounds.width],
-    ).createShader(bounds, textDirection: Directionality.of(context));
   }
 
   void _showMoreMenu() {
@@ -155,45 +103,41 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
       context: context,
       props: const SheetProps(isScrollControlled: false),
       builder: (_) {
-        return CommonScaffold(
-          body: Builder(
-            builder: (context) => SingleChildScrollView(
-              padding: const EdgeInsets.all(
-                16,
-              ).copyWith(top: context.contentTopPadding),
-              child: Consumer(
-                builder: (_, ref, _) {
-                  final state = ref.watch(proxiesTabControllerStateProvider);
-                  final groupNames = state.groupNames;
-                  final currentGroupName = state.currentGroupName;
-                  return SizedBox(
-                    width: double.infinity,
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      runSpacing: 8,
-                      spacing: 8,
-                      children: [
-                        for (final groupName in groupNames)
-                          SettingTextCard(
-                            groupName,
-                            onPressed: () {
-                              final index = groupNames.indexWhere(
-                                (item) => item == groupName,
-                              );
-                              if (index == -1) return;
-                              _tabController?.animateTo(index);
-                              ref
-                                  .read(proxiesActionProvider.notifier)
-                                  .updateCurrentGroupName(groupName);
-                              Navigator.of(context).pop();
-                            },
-                            isSelected: groupName == currentGroupName,
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+        return AdaptiveSheetScaffold(
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Consumer(
+              builder: (_, ref, _) {
+                final state = ref.watch(proxiesTabControllerStateProvider);
+                final groupNames = state.groupNames;
+                final currentGroupName = state.currentGroupName;
+                return SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    runSpacing: 8,
+                    spacing: 8,
+                    children: [
+                      for (final groupName in groupNames)
+                        SettingTextCard(
+                          groupName,
+                          onPressed: () {
+                            final index = groupNames.indexWhere(
+                              (item) => item == groupName,
+                            );
+                            if (index == -1) return;
+                            _tabController?.animateTo(index);
+                            ref
+                                .read(proxiesActionProvider.notifier)
+                                .updateCurrentGroupName(groupName);
+                            Navigator.of(context).pop();
+                          },
+                          isSelected: groupName == currentGroupName,
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
           title: context.appLocalizations.proxyGroup,
@@ -249,121 +193,134 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
     final proxiesLayout = ref.watch(
       proxiesStyleSettingProvider.select((state) => state.layout),
     );
-    final isSearching = ref.watch(
-      queryProvider(
-        QueryTag.proxies,
-      ).select((query) => SearchQuery(query).isNotEmpty),
-    );
     final groups = state.groups;
-    _pruneScrollControllers(groups);
+    _keyMap = {};
     return NullStatusSwitcher(
       isEmpty: groups.isEmpty || _tabController == null,
-      isSearching: isSearching,
       nullStatus: NullStatus(
         illustration: NullStatusIllustration.proxies,
         label: appLocalizations.nullTip(appLocalizations.proxies),
       ),
-      child: AppBarClearance(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            NotificationListener<ScrollMetricsNotification>(
-              onNotification: (scrollNotification) {
-                _hasMoreButtonNotifier.value =
-                    scrollNotification.metrics.maxScrollExtent > 0;
-                return false;
-              },
-              child: ValueListenableBuilder(
-                valueListenable: _hasMoreButtonNotifier,
-                builder: (_, hasMore, moreButton) {
-                  return Stack(
-                    alignment: AlignmentDirectional.centerEnd,
-                    children: [
-                      ShaderMask(
-                        blendMode: BlendMode.dstIn,
-                        shaderCallback: (bounds) =>
-                            _buildTabsMask(bounds, hasMore),
-                        child: TabBar(
-                          controller: _tabController,
-                          padding: EdgeInsetsDirectional.only(
-                            start: 16,
-                            end: hasMore ? kMinInteractiveDimension : 16,
-                          ),
-                          dividerColor: Colors.transparent,
-                          isScrollable: true,
-                          tabAlignment: TabAlignment.start,
-                          tabs: [
-                            for (final group in groups)
-                              Tab(
-                                child: Builder(
-                                  builder: (context) {
-                                    return EmojiText(
-                                      group.name,
-                                      style: DefaultTextStyle.of(context).style,
-                                    );
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          NotificationListener<ScrollMetricsNotification>(
+            onNotification: (scrollNotification) {
+              _hasMoreButtonNotifier.value =
+                  scrollNotification.metrics.maxScrollExtent > 0;
+              return false;
+            },
+            child: ValueListenableBuilder(
+              valueListenable: _hasMoreButtonNotifier,
+              builder: (_, value, child) {
+                return Stack(
+                  alignment: AlignmentDirectional.centerStart,
+                  children: [
+                    TabBar(
+                      controller: _tabController,
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16 + (value ? 16 : 0),
                       ),
-                      if (hasMore) moreButton!,
+                      dividerColor: Colors.transparent,
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      tabs: [
+                        for (final group in groups)
+                          Tab(
+                            child: Builder(
+                              builder: (context) {
+                                return EmojiText(
+                                  group.name,
+                                  style: DefaultTextStyle.of(context).style,
+                                );
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (value) Positioned(right: 0, child: child!),
+                  ],
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      context.colorScheme.surface.opacity10,
+                      context.colorScheme.surface,
                     ],
-                  );
-                },
+                    stops: const [0.0, 0.1],
+                  ),
+                ),
                 child: _buildMoreButton(),
               ),
             ),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (_, constraints) {
-                  final columns = getProxiesColumns(
-                    max(constraints.maxWidth - 32, 0),
-                    proxiesLayout,
-                  );
-                  _columns = columns;
-                  return TabBarView(
-                    controller: _tabController,
-                    children: [
-                      for (final group in groups)
-                        ProxyGroupView(
-                          key: ValueKey(group.name),
-                          controller: _scrollControllerOf(group.name),
-                          group: group,
-                          columns: columns,
-                          cardType: state.proxyCardType,
+          ),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (_, constraints) {
+                final columns = getProxiesColumns(
+                  max(constraints.maxWidth - 32, 0),
+                  proxiesLayout,
+                );
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    for (final group in groups)
+                      ProxyGroupView(
+                        key: _keyMap.updateCacheValue(
+                          group.name,
+                          () =>
+                              GlobalObjectKey<_ProxyGroupViewState>(group.name),
                         ),
-                    ],
-                  );
-                },
-              ),
+                        group: group,
+                        columns: columns,
+                        cardType: state.proxyCardType,
+                      ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class ProxyGroupView extends ConsumerWidget {
+class ProxyGroupView extends ConsumerStatefulWidget {
   final Group group;
-  final ScrollController controller;
   final int columns;
   final ProxyCardType cardType;
 
   const ProxyGroupView({
     super.key,
     required this.group,
-    required this.controller,
     required this.columns,
     required this.cardType,
   });
 
-  PageStorageKey _getPageStorageKey(WidgetRef ref) {
+  @override
+  ConsumerState<ProxyGroupView> createState() => _ProxyGroupViewState();
+}
+
+class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
+  late final ScrollController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+  }
+
+  PageStorageKey _getPageStorageKey() {
     final profile = ref.read(currentProfileProvider);
     final key =
-        '${profile?.id}_${ScrollPositionCacheKey.proxiesTabList.name}_${group.name}';
+        '${profile?.id}_${ScrollPositionCacheKey.proxiesTabList.name}_${widget.group.name}';
     return ProxiesTabView.pageListStoreMap.updateCacheValue(
       key,
       () => PageStorageKey(key),
@@ -371,14 +328,40 @@ class ProxyGroupView extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void scrollToSelected() {
+    if (_controller.position.maxScrollExtent == 0) {
+      return;
+    }
+    _controller.animateTo(
+      min(
+        16 +
+            getScrollToSelectedOffset(
+              ref: ref,
+              groupName: widget.group.name,
+              proxies: widget.group.all,
+              columns: widget.columns,
+            ),
+        _controller.position.maxScrollExtent,
+      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final group = widget.group;
     final proxies = group.all;
     return CommonScrollBar(
-      controller: controller,
-      thumbVisibility: true,
+      controller: _controller,
       child: GridView.builder(
-        key: _getPageStorageKey(ref),
-        controller: controller,
+        key: _getPageStorageKey(),
+        controller: _controller,
         padding: EdgeInsets.only(
           top: 16,
           left: 16,
@@ -386,10 +369,10 @@ class ProxyGroupView extends ConsumerWidget {
           bottom: 16 + BottomInsetScope.of(context),
         ),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columns,
-          mainAxisSpacing: proxyGridSpacing,
+          crossAxisCount: widget.columns,
+          mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          mainAxisExtent: getItemHeight(cardType),
+          mainAxisExtent: getItemHeight(widget.cardType),
         ),
         itemCount: proxies.length,
         itemBuilder: (_, index) {
@@ -397,11 +380,81 @@ class ProxyGroupView extends ConsumerWidget {
           return ProxyCard(
             testUrl: group.testUrl,
             groupType: group.type,
-            type: cardType,
+            type: widget.cardType,
             proxy: proxy,
             groupName: group.name,
           );
         },
+      ),
+    );
+  }
+}
+
+class DelayTestButton extends StatefulWidget {
+  final Future Function() onClick;
+
+  const DelayTestButton({super.key, required this.onClick});
+
+  @override
+  State<DelayTestButton> createState() => _DelayTestButtonState();
+}
+
+class _DelayTestButtonState extends State<DelayTestButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  bool _running = false;
+
+  Future<void> _healthcheck() async {
+    if (_running) {
+      return;
+    }
+    _running = true;
+    unawaited(_controller.forward());
+    try {
+      await widget.onClick();
+    } finally {
+      _running = false;
+      if (mounted) {
+        unawaited(_controller.reverse());
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _animation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutBack),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return AnimatedBuilder(
+      animation: _controller.view,
+      builder: (_, child) {
+        return FadeTransition(
+          opacity: _animation,
+          child: ScaleTransition(scale: _animation, child: child),
+        );
+      },
+      child: CommonFloatingActionButton(
+        onPressed: _healthcheck,
+        label: appLocalizations.delayTest,
+        icon: const Icon(Icons.network_ping),
       ),
     );
   }

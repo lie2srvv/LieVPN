@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/profiles/preview.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -50,20 +49,17 @@ class _OverwriteViewState extends ConsumerState<OverwriteView> {
       child: CommonScaffold(
         title: appLocalizations.override,
         actions: [
-          FilledButton(
-            onPressed: _handlePreview,
-            child: Text(appLocalizations.preview),
+          CommonMinFilledButtonTheme(
+            child: FilledButton(
+              onPressed: _handlePreview,
+              child: Text(appLocalizations.preview),
+            ),
           ),
+          const SizedBox(width: 8),
         ],
-        body: ScrollConfiguration(
-          behavior: const ShowBarScrollBehavior(),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(child: SizedBox(height: context.appBarInset)),
-              const _Title(),
-              const _Content(),
-            ],
-          ),
+        body: const ScrollConfiguration(
+          behavior: ShowBarScrollBehavior(),
+          child: CustomScrollView(slivers: [_Title(), _Content()]),
         ),
       ),
     );
@@ -87,11 +83,11 @@ class _Title extends ConsumerWidget {
     };
   }
 
-  Glyph _getIcon(OverwriteType type) {
+  IconData _getIcon(OverwriteType type) {
     return switch (type) {
-      OverwriteType.standard => AppGlyphs.star,
-      OverwriteType.script => AppGlyphs.code,
-      OverwriteType.custom => AppGlyphs.customize,
+      OverwriteType.standard => Icons.stars,
+      OverwriteType.script => Icons.rocket,
+      OverwriteType.custom => Icons.dashboard_customize,
     };
   }
 
@@ -137,7 +133,7 @@ class _Title extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          GlyphIcon(_getIcon(type)),
+                          Icon(_getIcon(type)),
                           const SizedBox(width: 8),
                           Flexible(child: Text(_getTitle(context, type))),
                         ],

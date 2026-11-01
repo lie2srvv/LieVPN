@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -241,6 +242,11 @@ final class IPCCoreTransport implements DesktopCoreTransport {
       final event = await readiness.timeout(readyTimeout);
       if (event case TransportFailed(:final error, :final stackTrace)) {
         Error.throwWithStackTrace(error, stackTrace);
+      }
+      if (system.isLinux && File(address).existsSync()) {
+        try {
+          Process.runSync('chmod', ['666', address]);
+        } catch (_) {}
       }
     } catch (error, stackTrace) {
       if (_state != DesktopTransportState.failed &&

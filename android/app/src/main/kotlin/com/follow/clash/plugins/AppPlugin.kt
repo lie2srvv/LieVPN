@@ -1,13 +1,11 @@
 package com.follow.clash.plugins
+
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.FileProvider
-import java.io.File
-
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
@@ -25,6 +23,8 @@ import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.FileProvider
+import java.io.File
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -75,13 +75,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     private val requestInstalledAppsCallback = PendingCallback<Boolean>()
 
-    private val requestLocalNetworkCallback = PendingCallback<Boolean>()
-
     private var isRequestingNotificationPermission = false
-
-    private var isRequestingLocalNetworkPermission = false
-
-    private var skipLocalNetworkPermissionRequest = false
 
     private val gson = Gson()
 
@@ -100,7 +94,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 return
             }
             val addedByUpdate = intent.action == Intent.ACTION_PACKAGE_ADDED &&
-                intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                    intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
             if (addedByUpdate) {
                 return
             }
@@ -189,16 +183,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 result.success(true)
             }
 
-            "installApk" -> {
-                val filePath = call.argument<String>("filePath")
-                if (filePath == null) {
-                    result.error("INVALID_ARGUMENT", "filePath is required", null)
-                } else {
-                    val success = installApk(filePath)
-                    result.success(success)
-                }
-            }
-
             "isBatteryOptimizationDisabled" -> {
                 result.success(isBatteryOptimizationDisabled())
             }
@@ -219,9 +203,134 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 GlobalState.lastExitInfo()
             }
 
+            "requestNotificationsPermission", "requestNotificationPermission" -> {
+                requestNotificationPermission { granted ->
+                    result.success(granted)
+                }
+            }
+
+            "hasNotificationPermission", "hasNotificationsPermission" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val permission = ContextCompat.checkSelfPermission(
+                        GlobalState.application,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    )
+                    result.success(permission == PackageManager.PERMISSION_GRANTED)
+                } else {
+                    result.success(true)
+                }
+            }
+
+            "canRequestPackageInstalls" -> {
+                val canInstall = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val context = activity ?: GlobalState.application
+                    context.packageManager.canRequestPackageInstalls()
+                } else {
+                    true
+                }
+                result.success(canInstall)
+            }
+
+            "installApk" -> {
+                val filePath = call.argument<String>("filePath")
+                if (filePath == null) {
+                    result.error("INVALID_ARGUMENT", "filePath is required", null)
+                } else {
+                    val success = installApk(filePath)
+                    result.success(success)
+                }
+            }
+
             else -> {
                 result.notImplemented()
             }
+        }
+    }
+
+    private fun installApk(filePath: String): Boolean {
+        return try {
+            val context = activity ?: GlobalState.application
+            val file = File(filePath)
+            if (!file.exists()) {
+                return false
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (!context.packageManager.canRequestPackageInstalls()) {
+                    val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = android.net.Uri.parse("package:${context.packageName}")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(settingsIntent)
+                    return false
+                }
+            }
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            } else {
+                android.net.Uri.fromFile(file)
+            }
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
+            try {
+                val resInfoList =
+                    context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            } catch (_: Exception) {
+            }
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun showNotification(title: String, message: String, id: Int) {
+        val context = GlobalState.application
+        val manager = NotificationManagerCompat.from(context)
+        val channelId = "lievpn_reminders"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            val channel = NotificationChannel(
+                channelId,
+                "LieVPN Notifications",
+                NotificationManager.IMPORTANCE_HIGH,
+            )
+            notificationManager?.createNotificationChannel(channel)
+        }
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+        }
+        val pendingIntent = if (intent != null) {
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+        } else null
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(com.follow.clash.service.R.drawable.ic_service)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+        ) {
+            manager.notify(id, notification)
         }
     }
 
@@ -297,13 +406,12 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     @Suppress("DEPRECATION")
     private fun updateExcludeFromRecents(value: Boolean?) {
-        val taskId = activity?.taskId ?: return
         val am = getSystemService(GlobalState.application, ActivityManager::class.java)
         val task = am?.appTasks?.firstOrNull {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                it.taskInfo?.taskId == taskId
+                it.taskInfo.taskId == activity?.taskId
             } else {
-                it.taskInfo?.id == taskId
+                it.taskInfo.id == activity?.taskId
             }
         }
         task?.setExcludeFromRecents(value ?: false)
@@ -339,42 +447,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     private fun invokeRequestNotificationCallback(shouldStart: Boolean) {
         isRequestingNotificationPermission = false
         requestNotificationCallback.resolve(shouldStart)
-    }
-
-    fun requestLocalNetworkPermission(callback: (Boolean) -> Unit) = onMainThread {
-        requestLocalNetworkCallback.replace(callback, supersededValue = false)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN || hasLocalNetworkPermission()) {
-            invokeRequestLocalNetworkCallback(true)
-            return@onMainThread
-        }
-        if (skipLocalNetworkPermissionRequest) {
-            invokeRequestLocalNetworkCallback(false)
-            return@onMainThread
-        }
-        if (isRequestingLocalNetworkPermission) {
-            return@onMainThread
-        }
-        val activity = activity
-        if (activity == null) {
-            invokeRequestLocalNetworkCallback(false)
-            return@onMainThread
-        }
-        isRequestingLocalNetworkPermission = true
-        ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK),
-            LOCAL_NETWORK_PERMISSION_REQUEST_CODE,
-        )
-    }
-
-    private fun hasLocalNetworkPermission(): Boolean = ContextCompat.checkSelfPermission(
-        GlobalState.application,
-        Manifest.permission.ACCESS_LOCAL_NETWORK,
-    ) == PackageManager.PERMISSION_GRANTED
-
-    private fun invokeRequestLocalNetworkCallback(granted: Boolean) {
-        isRequestingLocalNetworkPermission = false
-        requestLocalNetworkCallback.resolve(granted)
     }
 
     private fun requestInstalledAppsPermission(callback: (Boolean) -> Unit) = onMainThread {
@@ -458,7 +530,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         scope.cancel()
         invokeVpnPrepareCallback(false)
         invokeRequestNotificationCallback(false)
-        invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
     }
 
@@ -495,7 +566,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         detachFromActivity()
         invokeVpnPrepareCallback(false)
         invokeRequestNotificationCallback(false)
-        invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
     }
 
@@ -503,138 +573,34 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         if (requestCode != VPN_PERMISSION_REQUEST_CODE) {
             return false
         }
-        invokeVpnPrepareCallback(resultCode == Activity.RESULT_OK)
+        val isGranted = resultCode == Activity.RESULT_OK
+        invokeVpnPrepareCallback(isGranted)
         return true
     }
 
     private fun onRequestPermissionsResultListener(
         requestCode: Int,
-        permissions: Array<String>,
+        permissions: Array<out String>,
         grantResults: IntArray,
-    ): Boolean = when (requestCode) {
-        NOTIFICATION_PERMISSION_REQUEST_CODE -> {
-            skipNotificationPermissionRequest = true
-            invokeRequestNotificationCallback(true)
-            true
+    ): Boolean {
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            val granted =
+                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            invokeRequestNotificationCallback(granted)
+            return true
         }
-
-        INSTALLED_APPS_PERMISSION_REQUEST_CODE -> {
-            invokeRequestInstalledAppsCallback(
-                grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED,
-            )
-            true
+        if (requestCode == INSTALLED_APPS_PERMISSION_REQUEST_CODE) {
+            val granted =
+                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            invokeRequestInstalledAppsCallback(granted)
+            return true
         }
-
-        LOCAL_NETWORK_PERMISSION_REQUEST_CODE -> {
-            skipLocalNetworkPermissionRequest = true
-            invokeRequestLocalNetworkCallback(
-                grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED,
-            )
-            true
-        }
-
-        else -> false
+        return false
     }
 
-
-    private fun installApk(filePath: String): Boolean {
-        return try {
-            val context = GlobalState.application
-            val file = File(filePath)
-            if (!file.exists()) {
-                return false
-            }
-
-            // Android 8.0+ (API 26+) up to Android 17: check unknown sources permission
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (!context.packageManager.canRequestPackageInstalls()) {
-                    val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                        data = android.net.Uri.parse("package:${context.packageName}")
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    val targetContext = activity ?: context
-                    targetContext.startActivity(settingsIntent)
-                    return false
-                }
-            }
-
-            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-            } else {
-                android.net.Uri.fromFile(file)
-            }
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "application/vnd.android.package-archive")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
-            }
-
-            // Explicitly grant URI permission to any resolving installer package
-            val resolveInfos = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            for (resolveInfo in resolveInfos) {
-                val pkg = resolveInfo.activityInfo.packageName
-                context.grantUriPermission(pkg, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            val targetContext = activity ?: context
-            targetContext.startActivity(intent)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    private fun showNotification(title: String, message: String, id: Int) {
-        val context = GlobalState.application
-        val manager = NotificationManagerCompat.from(context)
-        val channelId = "lievpn_reminders"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = context.getSystemService(NotificationManager::class.java)
-            val channel = NotificationChannel(
-                channelId,
-                "LieVPN Notifications",
-                NotificationManager.IMPORTANCE_HIGH,
-            )
-            notificationManager?.createNotificationChannel(channel)
-        }
-        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-        }
-        val pendingIntent = if (intent != null) {
-            PendingIntent.getActivity(
-                context,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-        } else null
-
-        val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(com.follow.clash.service.R.drawable.ic_service)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-        ) {
-            manager.notify(id, notification)
-        }
-    }
-
-    private companion object {
+    companion object {
         const val VPN_PERMISSION_REQUEST_CODE = 1001
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003
-        const val LOCAL_NETWORK_PERMISSION_REQUEST_CODE = 1004
     }
 }

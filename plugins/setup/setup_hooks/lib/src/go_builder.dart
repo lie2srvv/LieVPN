@@ -127,18 +127,9 @@ class GoBuilder {
     return env;
   }
 
-  // AGP strips the copy it packages into the APK, and Crashlytics reads the
-  // unstripped one from the merged native libs, so Android keeps its symbols.
-  String _ldflags(Target target) => target.isLib
-      ? config.goLdflags
-            .split(' ')
-            .where((flag) => flag != '-s' && flag != '-w')
-            .join(' ')
-      : config.goLdflags;
-
   List<String> _buildArguments(Target target, {String? outFile}) => [
     'build',
-    '-ldflags=${_ldflags(target)}',
+    '-ldflags=${config.goLdflags}',
     '-tags=${config.tags}',
     if (target.isLib) '-buildmode=c-shared',
     if (outFile != null) ...['-o', outFile],
@@ -289,13 +280,8 @@ class GoBuilder {
   void _clearDirectory(String dirPath) {
     final dir = Directory(dirPath);
     if (!dir.existsSync()) return;
-
     for (final entity in dir.listSync()) {
-      if (entity is File || entity is Link) {
-        entity.deleteSync();
-      } else if (entity is Directory) {
-        entity.deleteSync(recursive: true);
-      }
+      entity.deleteSync(recursive: true);
     }
   }
 }

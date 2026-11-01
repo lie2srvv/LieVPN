@@ -1,17 +1,24 @@
-import 'package:fl_clash/views/views.dart';
+import 'lievpn_settings.dart';
+import 'dart:io';
+
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/views/config/general.dart';
+import 'package:fl_clash/views/about.dart';
+import 'package:fl_clash/views/access.dart';
+import 'package:fl_clash/views/application_setting.dart';
+import 'package:fl_clash/views/backup_and_restore.dart';
+import 'package:fl_clash/views/config/config.dart';
 import 'package:fl_clash/views/hotkey.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' show dirname, join;
 
 import 'config/advanced.dart';
+import 'developer.dart';
 import 'theme.dart';
+import 'donators.dart';
 
 class ToolsView extends ConsumerStatefulWidget {
   const ToolsView({super.key});
@@ -22,11 +29,14 @@ class ToolsView extends ConsumerStatefulWidget {
 
 class _ToolViewState extends ConsumerState<ToolsView> {
   Widget _buildNavigationMenuItem(NavigationItem navigationItem) {
+    final description = navigationItem.label.description;
     return ListItem.open(
-      leading: GlyphIcon(navigationItem.glyph),
+      leading: navigationItem.icon,
       title: Text(navigationItem.label.label),
+      subtitle: description != null ? Text(description) : null,
       widget: navigationItem.builder(context),
-      forceFull: navigationItem.modes.contains(NavigationItemMode.moreFull),
+      maxWidth: 400,
+      forceFull: false,
     );
   }
 
@@ -47,11 +57,11 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.other,
       items: [
-        const _CheckUpdateItem(),
+        if (system.isAndroid) const _LieVpnSettingsItem(),
         const _SupportItem(),
         const _DonatorsItem(),
-        if (system.isAndroid) const _LieVpnSettingsItem(),
         if (enableDeveloperMode) const _DeveloperItem(),
+        const _CheckUpdateItem(),
         const _InfoItem(),
       ],
     );
@@ -61,13 +71,16 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.settings,
       items: [
-        const _LocaleItem(),
-        const _ThemeItem(),
-        const _BackupItem(),
-        if (system.isDesktop) const _HotkeyItem(),
-        if (system.isAndroid) const _AccessItem(),
-        const _AdvancedConfigItem(),
-        const _GeneralItem(),
+        ListItem.open(
+          leading: const Icon(Icons.settings_outlined),
+          title: Text(context.appLocalizations.settings),
+          subtitle: Text(
+            '${context.appLocalizations.theme}, ${context.appLocalizations.language}...',
+          ),
+          widget: const SettingsView(),
+          maxWidth: 400,
+          forceFull: false,
+        ),
       ],
     );
   }
@@ -103,10 +116,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         key: toolsStoreKey,
         itemCount: items.length,
         itemBuilder: (_, index) => items[index],
-        padding: EdgeInsets.only(
-          top: context.appBarInset,
-          bottom: 20 + BottomInsetScope.of(context),
-        ),
+        padding: const EdgeInsets.only(bottom: 20),
       ),
     );
   }
@@ -116,7 +126,7 @@ class _LocaleItem extends ConsumerWidget {
   const _LocaleItem();
 
   String _getLocaleString(BuildContext context, Locale? locale) {
-    if (locale == null) return context.appLocalizations.defaultText;
+    if (locale == null) return const Locale('en').label;
     return locale.label;
   }
 
@@ -125,27 +135,19 @@ class _LocaleItem extends ConsumerWidget {
     final locale = ref.watch(
       appSettingProvider.select((state) => state.locale),
     );
-    final currentLocale = getLocaleForString(locale);
-    return ListItem<Locale?>.options(
-      leading: const GlyphIcon(AppGlyphs.language),
+    final currentLocale = getLocaleForString(locale) ?? const Locale('en');
+    return ListItem<Locale>.options(
+      leading: const Icon(Icons.language_outlined),
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
-      options: const [
-        Locale('ru'),
-        Locale('en'),
-        Locale('uk'),
-        Locale('be'),
-        Locale('kk'),
-        Locale('ko'),
-        Locale('ja'),
-        Locale('zh_CN'),
-        Locale('tt'),
-      ],
+      options: const [Locale('ru'), Locale('en'), Locale('uk'), Locale('be'), Locale('kk'), Locale('ko'), Locale('ja'), Locale('zh_CN'), Locale('tt')],
       onChanged: (Locale? locale) {
-        ref
-            .read(appSettingProvider.notifier)
-            .update((state) => state.copyWith(locale: locale?.toString()));
+        if (locale != null) {
+          ref
+              .read(appSettingProvider.notifier)
+              .update((state) => state.copyWith(locale: locale.toString()));
+        }
       },
       textBuilder: (locale) => _getLocaleString(context, locale),
       value: currentLocale,
@@ -159,7 +161,7 @@ class _ThemeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.paintbrush),
+      leading: const Icon(Icons.style),
       title: Text(context.appLocalizations.theme),
       subtitle: Text(context.appLocalizations.themeDesc),
       widget: const ThemeView(),
@@ -173,7 +175,7 @@ class _BackupItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.cloudSync),
+      leading: const Icon(Icons.cloud_sync),
       title: Text(context.appLocalizations.backupAndRestore),
       subtitle: Text(context.appLocalizations.backupAndRestoreDesc),
       widget: const BackupAndRestore(),
@@ -187,9 +189,29 @@ class _HotkeyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.keyboard),
+      leading: const Icon(Icons.keyboard),
       title: Text(context.appLocalizations.hotkeyManagement),
+      subtitle: Text(context.appLocalizations.hotkeyManagementDesc),
       widget: const HotKeyView(),
+    );
+  }
+}
+
+class _LoopbackItem extends StatelessWidget {
+  const _LoopbackItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem(
+      leading: const Icon(Icons.lock),
+      title: Text(context.appLocalizations.loopback),
+      subtitle: Text(context.appLocalizations.loopbackDesc),
+      onTap: () {
+        windows?.runas(
+          '"${join(dirname(Platform.resolvedExecutable), "EnableLoopback.exe")}"',
+          '',
+        );
+      },
     );
   }
 }
@@ -200,7 +222,7 @@ class _AccessItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.appsList),
+      leading: const Icon(Icons.view_list),
       title: Text(context.appLocalizations.accessControl),
       subtitle: Text(context.appLocalizations.accessControlDesc),
       widget: const AccessView(),
@@ -208,15 +230,16 @@ class _AccessItem extends StatelessWidget {
   }
 }
 
-class _GeneralItem extends StatelessWidget {
-  const _GeneralItem();
+class _ConfigItem extends StatelessWidget {
+  const _ConfigItem();
 
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.settings),
-      title: Text(context.appLocalizations.general),
-      widget: const GeneralView(),
+      leading: const Icon(Icons.edit),
+      title: Text(context.appLocalizations.basicConfig),
+      subtitle: Text(context.appLocalizations.basicConfigDesc),
+      widget: const ConfigView(),
     );
   }
 }
@@ -227,10 +250,41 @@ class _AdvancedConfigItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.wrench),
+      leading: const Icon(Icons.build),
       title: Text(context.appLocalizations.advancedConfig),
       subtitle: Text(context.appLocalizations.advancedConfigDesc),
       widget: const AdvancedConfigView(),
+    );
+  }
+}
+
+class _SettingItem extends StatelessWidget {
+  const _SettingItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem.open(
+      leading: const Icon(Icons.settings),
+      title: Text(context.appLocalizations.application),
+      subtitle: Text(context.appLocalizations.applicationDesc),
+      widget: const ApplicationSettingView(),
+    );
+  }
+}
+
+class _CheckUpdateItem extends StatelessWidget {
+  const _CheckUpdateItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListItem(
+      leading: const Icon(Icons.system_update_alt_rounded),
+      title: Text(context.appLocalizations.checkUpdates),
+      subtitle: Text(context.appLocalizations.checkUpdatesDesc),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        AppUpdateManager.manualCheckUpdate(context);
+      },
     );
   }
 }
@@ -241,7 +295,7 @@ class _InfoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.info),
+      leading: const Icon(Icons.info),
       title: Text(context.appLocalizations.about),
       widget: const AboutView(),
     );
@@ -254,26 +308,9 @@ class _DeveloperItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.cpu),
+      leading: const Icon(Icons.developer_board),
       title: Text(context.appLocalizations.developerMode),
       widget: const DeveloperView(),
-    );
-  }
-}
-
-class _CheckUpdateItem extends StatelessWidget {
-  const _CheckUpdateItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem(
-      leading: const GlyphIcon(AppGlyphs.cloudDownload),
-      title: Text(context.appLocalizations.checkUpdates),
-      subtitle: Text(context.appLocalizations.checkUpdatesDesc),
-      trailing: const GlyphIcon(AppGlyphs.chevronForward),
-      onTap: () {
-        AppUpdateManager.manualCheckUpdate(context);
-      },
     );
   }
 }
@@ -288,7 +325,7 @@ class _SupportItem extends StatelessWidget {
       leading: const Icon(Icons.support_agent_rounded),
       title: Text(loc.supportLieVpn),
       subtitle: const Text('Telegram, MAX, Email'),
-      trailing: const GlyphIcon(AppGlyphs.chevronForward),
+      trailing: const Icon(Icons.chevron_right),
       onTap: () {
         showModalBottomSheet(
           context: context,
@@ -301,10 +338,7 @@ class _SupportItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
                       loc.supportLieVpnTitle,
                       style: Theme.of(sheetContext).textTheme.titleLarge,
@@ -312,26 +346,20 @@ class _SupportItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   ListItem(
-                    leading: const Icon(
-                      Icons.send_rounded,
-                      color: Color(0xFF2AABEE),
-                    ),
+                    leading: const Icon(Icons.send_rounded, color: Color(0xFF2AABEE)),
                     title: const Text('Telegram'),
                     subtitle: const Text('@lie2srvv'),
-                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    trailing: const Icon(Icons.launch),
                     onTap: () {
                       Navigator.pop(sheetContext);
                       dialogs.openUrl('https://lie2srvv.t.me');
                     },
                   ),
                   ListItem(
-                    leading: const Icon(
-                      Icons.chat_bubble_rounded,
-                      color: Color(0xFF007AFF),
-                    ),
+                    leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF007AFF)),
                     title: Text(loc.supportMessengerMax),
                     subtitle: Text(loc.supportMessengerMaxSubtitle),
-                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    trailing: const Icon(Icons.launch),
                     onTap: () {
                       Navigator.pop(sheetContext);
                       dialogs.openUrl(
@@ -340,13 +368,10 @@ class _SupportItem extends StatelessWidget {
                     },
                   ),
                   ListItem(
-                    leading: const Icon(
-                      Icons.email_outlined,
-                      color: Color(0xFFEA4335),
-                    ),
+                    leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
                     title: Text(loc.supportEmail),
                     subtitle: const Text('vpn@lie2srvv.com'),
-                    trailing: const GlyphIcon(AppGlyphs.openExternal),
+                    trailing: const Icon(Icons.launch),
                     onTap: () {
                       Navigator.pop(sheetContext);
                       dialogs.openUrl('mailto:vpn@lie2srvv.com');
@@ -363,19 +388,51 @@ class _SupportItem extends StatelessWidget {
   }
 }
 
+class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonScaffold(
+      title: context.appLocalizations.settings,
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 20),
+        children: [
+          generateSectionV3(
+            items: [
+              const _LocaleItem(),
+              const _ThemeItem(),
+              const _BackupItem(),
+              if (system.isDesktop) const _HotkeyItem(),
+              if (system.isWindows) const _LoopbackItem(),
+              if (system.isAndroid) const _AccessItem(),
+              const _ConfigItem(),
+              const _AdvancedConfigItem(),
+              const _SettingItem(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _DonatorsItem extends StatelessWidget {
   const _DonatorsItem();
 
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.star),
+      leading: const Icon(Icons.workspace_premium_outlined),
       title: Text(context.appLocalizations.donators),
       widget: const DonatorsView(),
+      maxWidth: 400,
       forceFull: false,
     );
   }
 }
+
+
 
 class _LieVpnSettingsItem extends StatelessWidget {
   const _LieVpnSettingsItem();
@@ -383,7 +440,7 @@ class _LieVpnSettingsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const GlyphIcon(AppGlyphs.sliders),
+      leading: const Icon(Icons.tune_rounded),
       title: Text(context.appLocalizations.lieVpnSettings),
       subtitle: Text(context.appLocalizations.lieVpnSettingsDesc),
       widget: const LieVpnSettingsView(),

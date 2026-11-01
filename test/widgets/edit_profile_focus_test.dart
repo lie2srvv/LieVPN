@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class _FakePathProvider extends PathProviderPlatform {
   final String root;
@@ -36,21 +35,6 @@ class _NoopSetupAction extends SetupAction {
   void autoApplyProfile() {}
 }
 
-class _RenameConflictProfilesAction extends ProfilesAction {
-  final put = <Profile>[];
-
-  @override
-  Future<({List<Profile> renameIn, List<Profile> conflicts})> providerRename(
-    Profile previous,
-    Profile next,
-  ) async =>
-      (renameIn: const <Profile>[], conflicts: [Profile.normal(label: 'Work')]);
-
-  @override
-  void putProfile(Profile profile, {Iterable<int> renameIn = const []}) =>
-      put.add(profile);
-}
-
 Profile _urlProfile() =>
     Profile.normal(label: 'test', url: 'https://example.com/sub');
 
@@ -59,7 +43,6 @@ Profile _urlProfile() =>
 Future<FocusNode> pumpEditProfile(
   WidgetTester tester, {
   Profile? profile,
-  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = const Size(900, 800);
   tester.view.devicePixelRatio = 1;
@@ -67,10 +50,7 @@ Future<FocusNode> pumpEditProfile(
   addTearDown(tester.view.resetDevicePixelRatio);
 
   final container = ProviderContainer(
-    overrides: [
-      setupActionProvider.overrideWith(() => _NoopSetupAction()),
-      ...overrides,
-    ],
+    overrides: [setupActionProvider.overrideWith(() => _NoopSetupAction())],
   );
   addTearDown(container.dispose);
   // Unmount the widget tree before the container is disposed so State.dispose
@@ -80,7 +60,6 @@ Future<FocusNode> pumpEditProfile(
     await tester.pumpWidget(const SizedBox());
   });
   globalState.container = container;
-  container.read(viewSizeProvider.notifier).value = const Size(900, 800);
 
   final outsideFocus = FocusNode();
   addTearDown(outsideFocus.dispose);
@@ -89,7 +68,6 @@ Future<FocusNode> pumpEditProfile(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
-        navigatorKey: globalState.navigatorKey,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           ...GlobalMaterialLocalizations.delegates,
@@ -135,9 +113,9 @@ Future<FocusNode> pumpEditProfile(
   return outsideFocus;
 }
 
-bool _isInAppBar() {
+bool _isFabFocused() {
   final context = FocusManager.instance.primaryFocus?.context;
-  return context?.findAncestorWidgetOfExactType<AppBar>() != null;
+  return context?.findAncestorWidgetOfExactType<FloatingActionButton>() != null;
 }
 
 bool _isTextFieldFocused() {
@@ -159,44 +137,16 @@ void main() {
     } catch (_) {}
   });
 
-  testWidgets('tabbing into the edit page reaches the form past its bar', (
+  testWidgets('tabbing into the edit page starts with the form', (
     tester,
   ) async {
     final outsideFocus = await pumpEditProfile(tester);
     expect(FocusManager.instance.primaryFocus, outsideFocus);
 
-    for (var i = 0; i < 4 && !_isTextFieldFocused(); i++) {
-      if (i > 0) {
-        expect(_isInAppBar(), isTrue);
-      }
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pump();
-    }
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
     expect(_isTextFieldFocused(), isTrue);
-    expect(find.byType(FloatingActionButton), findsNothing);
-    expect(find.byTooltip('Save'), findsOneWidget);
-  });
-
-  testWidgets('a name a user subscription already has is not saved', (
-    tester,
-  ) async {
-    final action = _RenameConflictProfilesAction();
-    await pumpEditProfile(
-      tester,
-      overrides: [profilesActionProvider.overrideWith(() => action)],
-    );
-
-    await tester.enterText(
-      find.widgetWithText(TextFormField, currentAppLocalizations.name),
-      'Taken',
-    );
-    await tester.tap(find.byTooltip(currentAppLocalizations.save));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.textContaining('subscriptions of Work already have Taken'),
-      findsOneWidget,
-    );
-    expect(action.put, isEmpty);
+    expect(_isFabFocused(), isFalse);
   });
 }

@@ -2,7 +2,6 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/features/overwrite/overwrite.dart';
 import 'package:fl_clash/models/models.dart' hide FileInfo;
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -156,12 +155,13 @@ class _NameListEditorState extends ConsumerState<NameListEditor>
 
     return SizedBox(
       height: height,
-      child: CommonScaffold(
+      child: AdaptiveSheetScaffold(
         title: widget.labels.title,
+        sheetTransparentToolBar: true,
         body: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: SizedBox(height: context.contentTopPadding),
+              child: SizedBox(height: context.sheetTopPadding + 8),
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -182,11 +182,9 @@ class _NameListEditorState extends ConsumerState<NameListEditor>
                   info: Info(label: widget.labels.section),
                   actions: [
                     CommonMinFilledButtonTheme(
-                      child: ElasticButton(
-                        child: FilledButton.tonal(
-                          onPressed: _handleToAddView,
-                          child: Text(appLocalizations.add),
-                        ),
+                      child: FilledButton.tonal(
+                        onPressed: _handleToAddView,
+                        child: Text(appLocalizations.add),
                       ),
                     ),
                   ],
@@ -194,7 +192,7 @@ class _NameListEditorState extends ConsumerState<NameListEditor>
               ),
             ),
             if (names.isNotEmpty)
-              SuperSliverReorderableList(
+              SliverReorderableList(
                 itemBuilder: (_, index) => itemAt(index),
                 itemCount: names.length,
                 proxyDecorator: (child, index, animation) =>
@@ -249,9 +247,9 @@ class _IncludeAllCard extends StatelessWidget {
                     cancelable: false,
                   );
                 },
-                icon: GlyphIcon(
+                icon: Icon(
                   size: 16.ap,
-                  AppGlyphs.info,
+                  Icons.info_outline,
                   color: context.colorScheme.onSurfaceVariant,
                 ),
               ),

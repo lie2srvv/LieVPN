@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -29,7 +31,7 @@ class _AndroidContainerState extends ConsumerState<AndroidManager>
       app?.updateExcludeFromRecents(next);
     }, fireImmediately: true);
     ref.listenManual(loadedLocaleProvider, (prev, next) {
-      if (prev != null && prev != next && !safeModeBuild) {
+      if (prev != null && prev != next) {
         app?.initShortcuts();
       }
     });
@@ -47,22 +49,15 @@ class _AndroidContainerState extends ConsumerState<AndroidManager>
     app?.onPackagesChanged = _reloadPackages;
   }
 
-  /// A reload reads every installed app's label, and a round of store updates
-  /// reports each app on its own.
   void _reloadPackages() {
     if (ref.read(packagesProvider).isEmpty) {
       return;
     }
-    debouncer.call(FunctionTag.reloadPackages, () async {
-      if (mounted) {
-        await ref.read(systemActionProvider.notifier).getPackages();
-      }
-    }, duration: const Duration(seconds: 2));
+    unawaited(ref.read(systemActionProvider.notifier).getPackages());
   }
 
   @override
   void dispose() {
-    debouncer.cancel(FunctionTag.reloadPackages);
     if (app?.onPackagesChanged == _reloadPackages) {
       app?.onPackagesChanged = null;
     }

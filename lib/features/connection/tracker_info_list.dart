@@ -49,7 +49,7 @@ class TrackerInfoList extends StatelessWidget {
   final bool shrinkWrap;
   final ScrollPhysics? physics;
   final EdgeInsetsGeometry? padding;
-  final Widget? Function(TrackerInfo trackerInfo)? actionBuilder;
+  final Widget? Function(TrackerInfo trackerInfo)? trailingBuilder;
 
   const TrackerInfoList({
     super.key,
@@ -60,7 +60,7 @@ class TrackerInfoList extends StatelessWidget {
     this.shrinkWrap = false,
     this.physics,
     this.padding,
-    this.actionBuilder,
+    this.trailingBuilder,
   });
 
   @override
@@ -76,9 +76,8 @@ class TrackerInfoList extends StatelessWidget {
       itemBuilder: (_, index) => _buildTrackerInfoItem(
         context,
         trackerInfos[index],
-        isLive: false,
         detailTitle: detailTitle,
-        actionBuilder: actionBuilder,
+        trailingBuilder: trailingBuilder,
       ),
     );
   }
@@ -91,7 +90,7 @@ class TrackerInfoAnimatedList extends StatelessWidget {
   final String detailTitle;
   final ScrollController? controller;
   final EdgeInsetsGeometry? padding;
-  final Widget? Function(TrackerInfo trackerInfo)? actionBuilder;
+  final Widget? Function(TrackerInfo trackerInfo)? trailingBuilder;
 
   const TrackerInfoAnimatedList({
     super.key,
@@ -99,7 +98,7 @@ class TrackerInfoAnimatedList extends StatelessWidget {
     required this.detailTitle,
     this.controller,
     this.padding,
-    this.actionBuilder,
+    this.trailingBuilder,
   });
 
   @override
@@ -113,9 +112,8 @@ class TrackerInfoAnimatedList extends StatelessWidget {
       itemBuilder: (context, trackerInfo) => _buildTrackerInfoItem(
         context,
         trackerInfo,
-        isLive: true,
         detailTitle: detailTitle,
-        actionBuilder: actionBuilder,
+        trailingBuilder: trailingBuilder,
       ),
     );
   }
@@ -124,18 +122,16 @@ class TrackerInfoAnimatedList extends StatelessWidget {
 Widget _buildTrackerInfoItem(
   BuildContext context,
   TrackerInfo trackerInfo, {
-  required bool isLive,
   required String detailTitle,
-  required Widget? Function(TrackerInfo trackerInfo)? actionBuilder,
+  required Widget? Function(TrackerInfo trackerInfo)? trailingBuilder,
 }) {
   return TrackerInfoItem(
     key: Key(trackerInfo.id),
     trackerInfo: trackerInfo,
-    isLive: isLive,
     onClickKeyword: (value) {
       context.commonScaffoldState?.addKeyword(value);
     },
-    action: actionBuilder?.call(trackerInfo),
+    trailing: trailingBuilder?.call(trackerInfo),
     detailTitle: detailTitle,
   );
 }

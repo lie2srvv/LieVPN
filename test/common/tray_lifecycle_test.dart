@@ -22,7 +22,6 @@ TrayState _trayState({bool isStart = false}) {
     groups: const [],
     selectedMap: const {},
     showTrayTitle: false,
-    safeMode: false,
   );
 }
 

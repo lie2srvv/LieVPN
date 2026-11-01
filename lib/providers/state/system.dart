@@ -10,9 +10,20 @@ UpdateParams updateParams(Ref ref) {
   );
   return ref.watch(
     patchClashConfigProvider.select(
-      (state) => state.toUpdateParams(
-        routeMode: routeMode,
+      (state) => UpdateParams(
+        tun: state.tun.getRealTun(routeMode),
         authentication: authentication.credentials,
+        allowLan: state.allowLan,
+        findProcessMode: state.findProcessMode,
+        mode: state.mode,
+        logLevel: state.logLevel,
+        ipv6: state.ipv6,
+        tcpConcurrent: state.tcpConcurrent,
+        externalController: state.externalController,
+        unifiedDelay: state.unifiedDelay,
+        mixedPort: state.mixedPort,
+        geoAutoUpdate: state.geoAutoUpdate,
+        geoUpdateInterval: state.geoUpdateInterval,
       ),
     ),
   );
@@ -41,8 +52,6 @@ TrayState trayState(Ref ref) {
   );
   final groups = ref.watch(currentGroupsStateProvider).value;
   final selectedMap = ref.watch(selectedMapProvider);
-  final safeMode = ref.watch(safeModeProvider);
-  final hotKeys = _trayHotKeys(ref);
 
   return TrayState(
     mode: clashConfig.mode,
@@ -54,56 +63,7 @@ TrayState trayState(Ref ref) {
     groups: groups,
     selectedMap: selectedMap,
     showTrayTitle: appSetting.showTrayTitle,
-    safeMode: safeMode,
-    hotKeys: hotKeys,
   );
-}
-
-Map<HotAction, HotKeyAction> _trayHotKeys(Ref ref) {
-  final failures = ref.watch(hotKeyFailuresProvider);
-  return {
-    for (final hotKeyAction in ref.watch(hotKeyActionsProvider))
-      if (isValidHotKey(hotKeyAction.modifiers, hotKeyAction.key) &&
-          !failures.containsKey(hotKeyAction.action))
-        hotKeyAction.action: hotKeyAction,
-  };
-}
-
-/// Measured delays of the proxies the tray lists, by group and then proxy
-/// name. Resolved like a proxy card, so a nested group shows its selection.
-@riverpod
-Map<String, Map<String, int>> trayDelays(Ref ref) {
-  final delayMap = ref.watch(delayDataSourceProvider);
-  if (delayMap.isEmpty) {
-    return const {};
-  }
-  final groups = ref.watch(currentGroupsStateProvider).value;
-  final allGroups = ref.watch(groupsProvider);
-  final selectedMap = ref.watch(selectedMapProvider);
-  final defaultTestUrl = ref.watch(
-    appSettingProvider.select((state) => state.testUrl),
-  );
-  final delays = <String, Map<String, int>>{};
-  for (final group in groups) {
-    final testUrl = group.testUrl.takeFirstValid([defaultTestUrl]);
-    final groupDelays = <String, int>{};
-    for (final proxy in group.all) {
-      final delay = computeProxyDelayState(
-        proxyName: proxy.name,
-        testUrl: testUrl,
-        groups: allGroups,
-        selectedMap: selectedMap,
-        delayMap: delayMap,
-      ).delay;
-      if (delay != 0) {
-        groupDelays[proxy.name] = delay;
-      }
-    }
-    if (groupDelays.isNotEmpty) {
-      delays[group.name] = groupDelays;
-    }
-  }
-  return delays;
 }
 
 @riverpod
@@ -149,11 +109,28 @@ HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) {
 }
 
 @riverpod
+({bool isInit, int checkIpNum, bool containsDetection}) checkIp(Ref ref) {
+  final isInit = ref.watch(initProvider);
+  final checkIpNum = ref.watch(checkIpNumProvider);
+  final containsDetection = ref.watch(
+    dashboardStateProvider.select(
+      (state) =>
+          state.dashboardWidgets.contains(DashboardWidget.networkDetection),
+    ),
+  );
+  return (
+    isInit: isInit,
+    checkIpNum: checkIpNum,
+    containsDetection: containsDetection,
+  );
+}
+
+@riverpod
 bool shouldPatchSystemDns(Ref ref) {
   final autoSetSystemDns = ref.watch(
     networkSettingProvider.select((state) => state.autoSetSystemDns),
   );
-  if (!autoSetSystemDns || ref.watch(safeModeProvider)) {
+  if (!autoSetSystemDns) {
     return false;
   }
   final isStart = ref.watch(runTimeProvider.select((state) => state != null));
@@ -209,7 +186,6 @@ SharedState sharedState(Ref ref) {
     ),
   );
   final vpnSetting = ref.watch(vpnSettingProvider);
-  final safeMode = ref.watch(safeModeProvider);
   final currentProfileName = currentProfile.label;
   final selectedMap = currentProfile.selectedMap;
   final onlyStatisticsProxy = appSetting.onlyStatisticsProxy;
@@ -234,16 +210,14 @@ SharedState sharedState(Ref ref) {
     streakCount: StreakManager.instance.streakNotifier.value.count,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
-    localNetworkTip: currentAppLocalizations.localNetworkDeniedTip,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),
     vpnOptions: VpnOptions(
-      enable: vpnSetting.enable && !safeMode,
+      enable: vpnSetting.enable,
       stack: stack,
       // VpnService.setHttpProxy cannot carry credentials, so an authenticated
       // mixed port must not be declared as the system HTTP proxy; traffic
       // still flows through TUN.
-      systemProxy:
-          vpnSetting.systemProxy && !networkSetting.authenticated && !safeMode,
+      systemProxy: vpnSetting.systemProxy && !networkSetting.authenticated,
       port: port,
       ipv6: vpnSetting.ipv6,
       dnsHijacking: vpnSetting.dnsHijacking,

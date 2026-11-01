@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 object GlobalState : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Default) {
-    const val NOTIFICATION_CHANNEL = "FlClash"
+    const val NOTIFICATION_CHANNEL = "LieVPN"
     const val NOTIFICATION_ID = 1
     private const val ANY_PID = 0
     private const val EVERY_EXIT_RECORD = 0
@@ -33,15 +33,12 @@ object GlobalState : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatch
     }
 
     fun log(text: String) {
-        Log.d("FlClash", text)
+        Log.d("LieVPN", text)
     }
 
     fun setCrashlytics(enable: Boolean) {
         FirebaseApp.initializeApp(application)
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enable
-        if (enable) {
-            log("Crashlytics enabled")
-        }
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = false
     }
 
     fun didCrashOnPreviousExecution(): Boolean {

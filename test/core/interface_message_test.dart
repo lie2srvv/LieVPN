@@ -60,6 +60,9 @@ void main() {
     'setupConfig': () => core.setupConfig(_setupParams),
     'updateConfig': () => core.updateConfig(_updateParams),
     'validateConfig': () => core.validateConfig('/tmp/config.yaml'),
+    'changeProxy': () => core.changeProxy(
+      const ChangeProxyParams(groupName: 'G', proxyName: 'P'),
+    ),
     'updateGeoData': () => core.updateGeoData('geoip'),
     'updateExternalProvider': () => core.updateExternalProvider('provider'),
     'sideLoadExternalProvider': () =>
@@ -84,19 +87,6 @@ void main() {
     });
   });
 
-  test('an unanswered changeProxy is not reported as applied', () {
-    expect(
-      core.changeProxy(const ChangeProxyParams(groupName: 'G', proxyName: 'P')),
-      throwsA(
-        isA<CoreMethodException>().having(
-          (error) => error.code,
-          'code',
-          'no_response',
-        ),
-      ),
-    );
-  });
-
   test('an answered call still returns the core message verbatim', () async {
     final core = _AnsweringCore('nameserver is empty');
     expect(await core.setupConfig(_setupParams), 'nameserver is empty');
@@ -114,10 +104,9 @@ void main() {
   test('calls that legitimately degrade are left alone', () async {
     expect(await core.isInit, isFalse);
     expect(await core.forceGc(), isFalse);
-    expect(await core.getMemoryStats(), isNull);
+    expect(await core.getMemory(), 0);
     expect(await core.getExternalProviders(), isEmpty);
     expect(await core.getExternalProvider('p'), isNull);
-    expect(await core.watchRoute(true), isNull);
   });
 }
 

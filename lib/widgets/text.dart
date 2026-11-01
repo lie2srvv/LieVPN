@@ -1,10 +1,9 @@
+import 'package:fl_clash/common/proxy_country_resolver.dart';
 import 'package:emoji_regex/emoji_regex.dart';
-import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../state.dart';
-import 'builder.dart';
 
 class TooltipText extends StatelessWidget {
   final Text text;
@@ -113,16 +112,18 @@ class EmojiText extends StatelessWidget {
     this.style,
   });
 
-  List<TextSpan> _buildTextSpans(String emojis) {
+  List<TextSpan> _buildTextSpans(BuildContext context) {
+    final locale = Localizations.maybeLocaleOf(context);
+    final resolvedText = ProxyCountryResolver.resolve(text, locale);
     final List<TextSpan> spans = [];
-    final matches = emojiRegex().allMatches(text);
+    final matches = emojiRegex().allMatches(resolvedText);
 
     int lastMatchEnd = 0;
     for (final match in matches) {
       if (match.start > lastMatchEnd) {
         spans.add(
           TextSpan(
-            text: text.substring(lastMatchEnd, match.start),
+            text: resolvedText.substring(lastMatchEnd, match.start),
             style: style,
           ),
         );
@@ -130,15 +131,13 @@ class EmojiText extends StatelessWidget {
       spans.add(
         TextSpan(
           text: match.group(0),
-          style: (style ?? const TextStyle()).copyWith(
-            fontFamily: FontFamily.twEmoji.value,
-          ),
+          style: style?.copyWith(fontFamily: FontFamily.twEmoji.value),
         ),
       );
       lastMatchEnd = match.end;
     }
-    if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastMatchEnd), style: style));
+    if (lastMatchEnd < resolvedText.length) {
+      spans.add(TextSpan(text: resolvedText.substring(lastMatchEnd), style: style));
     }
 
     return spans;
@@ -146,37 +145,11 @@ class EmojiText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(children: _buildTextSpans(text)),
+    return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       maxLines: maxLines,
       overflow: overflow ?? TextOverflow.clip,
-    );
-  }
-}
-
-class LastUpdateTimeText extends StatelessWidget {
-  final DateTime? lastUpdateDate;
-  final TextStyle? style;
-
-  const LastUpdateTimeText({
-    super.key,
-    required this.lastUpdateDate,
-    this.style,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (lastUpdateDate == null) {
-      return Text('', style: style);
-    }
-    return TickBuilder(
-      duration: const Duration(minutes: 1),
-      builder: (context, _) {
-        return Text(
-          lastUpdateDate!.getLastUpdateTimeDesc(context),
-          style: style,
-        );
-      },
+      text: TextSpan(children: _buildTextSpans(context)),
     );
   }
 }

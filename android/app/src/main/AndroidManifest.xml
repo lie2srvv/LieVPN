@@ -15,6 +15,7 @@
         android:name="android.hardware.wifi"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -26,15 +27,30 @@
     <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="content" />
+            <data android:mimeType="application/vnd.android.package-archive" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE" />
+            <data android:scheme="content" />
+            <data android:mimeType="application/vnd.android.package-archive" />
+        </intent>
+    </queries>
 
     <application
         android:name=".FlClashApplication"
+        android:usesCleartextTraffic="true"
         android:banner="@mipmap/ic_banner"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:appCategory="productivity"
         android:label="@string/app_name">
         <activity
             android:name=".MainActivity"
@@ -65,9 +81,33 @@
 
                 <data android:scheme="clash" />
                 <data android:scheme="clashmeta" />
-                <data android:scheme="flclash" />
+                <data android:scheme="lievpn" />
 
                 <data android:host="install-config" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="*.lie2srvv.com" />
+                <data android:host="vpn.lie2srvv.com" />
+                <data android:host="lie2srvv.com" />
+                <data android:pathPrefix="/sub" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:host="*.lie2srvv.com" />
+                <data android:host="vpn.lie2srvv.com" />
+                <data android:host="lie2srvv.com" />
+                <data android:pathPrefix="/sub" />
             </intent-filter>
         </activity>
 
@@ -104,6 +144,19 @@
                 android:value="true" />
         </service>
 
+        <!-- LieVPN 1x1 Minimalist Toggle Widget -->
+        <receiver
+            android:name=".LieVpnToggleWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_toggle_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_toggle_icon_info" />
+        </receiver>
+
         <receiver
             android:name=".ServiceBroadcastReceiver"
             android:enabled="true"
@@ -118,18 +171,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <receiver
-            android:name=".LieVpnToggleWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_toggle_name">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_toggle_icon_info" />
-        </receiver>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

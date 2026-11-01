@@ -19,7 +19,7 @@ void main(List<String> args) async {
       return;
     }
   }
-  await runZonedGuarded(
+  runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       if (Platform.isLinux) {

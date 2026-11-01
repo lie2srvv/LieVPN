@@ -14,24 +14,27 @@ extension PageLabelL10n on PageLabel {
       PageLabel.profiles => appLocalizations.profiles,
       PageLabel.tools => appLocalizations.tools,
       PageLabel.logs => appLocalizations.logs,
-      PageLabel.requests => appLocalizations.recentRequests,
+      PageLabel.requests => appLocalizations.requests,
       PageLabel.resources => appLocalizations.resources,
-      PageLabel.connections => appLocalizations.liveConnections,
-      PageLabel.dns => appLocalizations.dnsQueries,
+      PageLabel.connections => appLocalizations.connections,
       PageLabel.addRules => appLocalizations.addRules,
     };
   }
-}
 
-extension DnsQueryInitiatorL10n on DnsQueryInitiator {
-  String get label {
+  String? get description {
     final appLocalizations = currentAppLocalizations;
     return switch (this) {
-      DnsQueryInitiator.app => appLocalizations.app,
-      DnsQueryInitiator.rule => appLocalizations.rule,
-      DnsQueryInitiator.direct => appLocalizations.direct,
-      DnsQueryInitiator.proxy => appLocalizations.proxyNode,
-      DnsQueryInitiator.other => appLocalizations.other,
+      PageLabel.logs => appLocalizations.logsDesc,
+      PageLabel.requests => appLocalizations.requestsDesc,
+      PageLabel.resources => appLocalizations.resourcesDesc,
+      PageLabel.connections => appLocalizations.connectionsDesc,
+      PageLabel.speedtest => appLocalizations.speedtestDesc,
+      PageLabel.serverStatus => appLocalizations.serverStatusDesc,
+      PageLabel.addRules => appLocalizations.addRulesDesc,
+      PageLabel.dashboard ||
+      PageLabel.proxies ||
+      PageLabel.profiles ||
+      PageLabel.tools => null,
     };
   }
 }
@@ -77,13 +80,6 @@ extension HotActionL10n on HotAction {
       HotAction.mode => appLocalizations.actionMode,
       HotAction.proxy => appLocalizations.actionProxy,
       HotAction.tun => appLocalizations.actionTun,
-      HotAction.ruleMode => appLocalizations.actionRuleMode,
-      HotAction.globalMode => appLocalizations.actionGlobalMode,
-      HotAction.directMode => appLocalizations.actionDirectMode,
-      HotAction.delayTest => appLocalizations.actionDelayTest,
-      HotAction.updateProfiles => appLocalizations.actionUpdateProfiles,
-      HotAction.copyEnv => appLocalizations.copyEnvVar,
-      HotAction.exit => appLocalizations.exit,
     };
   }
 }
@@ -133,6 +129,11 @@ extension LocaleL10n on Locale {
       'ja' => appLocalizations.ja,
       'ru' => appLocalizations.ru,
       'zh_CN' => appLocalizations.zhCN,
+      'uk' => appLocalizations.uk,
+      'be' => appLocalizations.be,
+      'kk' => appLocalizations.kk,
+      'ko' => appLocalizations.ko,
+      'tt' => appLocalizations.tt,
       final code => code,
     };
   }

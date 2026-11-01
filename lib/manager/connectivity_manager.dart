@@ -64,9 +64,7 @@ class _ConnectivityManagerState extends ConsumerState<ConnectivityManager> {
     final requestId = ++_ssidRequestId;
     // The SSID costs a blocking platform call and a location permission on
     // Android and macOS, and nothing reads it until a network is excluded.
-    if (!_onWifi ||
-        ref.read(safeModeProvider) ||
-        ref.read(excludeSSIDsProvider).isEmpty) {
+    if (!_onWifi || ref.read(excludeSSIDsProvider).isEmpty) {
       _publishSsid(requestId, null);
       return;
     }

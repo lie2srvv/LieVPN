@@ -19,7 +19,8 @@ class InAppUpdateDialog extends StatefulWidget {
   State<InAppUpdateDialog> createState() => _InAppUpdateDialogState();
 }
 
-class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
+class _InAppUpdateDialogState extends State<InAppUpdateDialog>
+    with WidgetsBindingObserver {
   UpdateStatus _status = UpdateStatus.idle;
   double _progress = 0.0;
   String _downloadedSizeStr = '';
@@ -29,9 +30,29 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
   CancelToken? _cancelToken;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _cancelToken?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && Platform.isAndroid) {
+      if (_downloadedFilePath != null &&
+          File(_downloadedFilePath!).existsSync()) {
+        if (_status == UpdateStatus.readyToRestart ||
+            _status == UpdateStatus.error) {
+          _installAndroidApk(_downloadedFilePath!);
+        }
+      }
+    }
   }
 
   String _formatBytes(int bytes) {
@@ -57,27 +78,39 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
 
     try {
       final downloadUrl = widget.updateInfo.downloadUrl;
-      final tempDir = await getTemporaryDirectory();
-      String savePath;
+      final String downloadDirPath;
+      if (Platform.isAndroid) {
+        final extDirs = await getExternalStorageDirectories();
+        if (extDirs != null && extDirs.isNotEmpty) {
+          downloadDirPath = extDirs.first.path;
+        } else {
+          final tempDir = await getTemporaryDirectory();
+          downloadDirPath = tempDir.path;
+        }
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        downloadDirPath = tempDir.path;
+      }
 
+      String savePath;
       if (Platform.isAndroid) {
         savePath = p.join(
-          tempDir.path,
+          downloadDirPath,
           'LieVPN-update-${widget.updateInfo.version}.apk',
         );
       } else if (Platform.isWindows) {
         savePath = p.join(
-          tempDir.path,
+          downloadDirPath,
           'LieVPN-update-${widget.updateInfo.version}.exe',
         );
       } else if (Platform.isLinux) {
         savePath = p.join(
-          tempDir.path,
+          downloadDirPath,
           'LieVPN-update-${widget.updateInfo.version}.AppImage',
         );
       } else {
         savePath = p.join(
-          tempDir.path,
+          downloadDirPath,
           'LieVPN-update-${widget.updateInfo.version}.bin',
         );
       }
@@ -138,9 +171,13 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       final success = await App().installApk(filePath);
       if (!success && mounted) {
         setState(() {
-          _status = UpdateStatus.error;
+          _status = UpdateStatus.readyToRestart;
           _errorMessage =
-              'Разрешите установку приложений для LieVPN в открывшихся настройках и нажмите «Повторить»';
+              'Разрешите установку из неизвестных источников в настройках устройства, затем нажмите «Установить».';
+        });
+      } else if (success && mounted) {
+        setState(() {
+          _errorMessage = null;
         });
       }
     } catch (e) {
@@ -169,35 +206,29 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
 
     if (Platform.isLinux) {
       try {
-        // 1. Give executable permissions to downloaded file
         await Process.run('chmod', ['+x', filePath]);
 
-        // 2. If running from AppImage, replace the current AppImage file
         final envAppImage = Platform.environment['APPIMAGE'];
         if (envAppImage != null && envAppImage.isNotEmpty) {
           final target = File(envAppImage);
           final backup = File('${target.path}.old');
-          if (await backup.exists()) {
-            await backup.delete();
+          if (backup.existsSync()) {
+            backup.deleteSync();
           }
-          // Move currently running AppImage (atomic rename avoids ETXTBSY / errno 26)
-          if (await target.exists()) {
-            await target.rename(backup.path);
-          }
+          await target.rename(backup.path);
           await File(filePath).copy(target.path);
           await Process.run('chmod', ['+x', target.path]);
-          try {
-            await backup.delete();
-          } catch (_) {}
+          if (backup.existsSync()) {
+            try {
+              backup.deleteSync();
+            } catch (_) {}
+          }
 
-          // Detach and launch updated AppImage
           await Process.start(target.path, [], mode: ProcessStartMode.detached);
         } else {
-          // If running raw binary, launch the new AppImage detached
           await Process.start(filePath, [], mode: ProcessStartMode.detached);
         }
 
-        // Exit immediately so only the new instance remains
         exit(0);
       } catch (e) {
         if (mounted) {
@@ -209,37 +240,21 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog> {
       }
     } else if (Platform.isWindows) {
       try {
-        final currentExePath = Platform.resolvedExecutable;
-
-        // Batch script to wait 1 second, copy new exe over old exe, and restart
-        final updaterScriptPath = p.join(
-          p.dirname(filePath),
-          'lievpn_update.bat',
-        );
-        final scriptContent =
-            '''
-@echo off
-timeout /t 1 /nobreak > NUL
-copy /y "$filePath" "$currentExePath" > NUL
-start "" "$currentExePath"
-del "%~f0"
-''';
-        await File(updaterScriptPath).writeAsString(scriptContent);
-
-        // Run batch script detached via cmd.exe
-        await Process.start('cmd.exe', [
-          '/c',
-          updaterScriptPath,
+        await Process.start(filePath, [
+          '/SILENT',
         ], mode: ProcessStartMode.detached);
-
-        // Exit immediately to release file lock on LieVPN.exe
         exit(0);
       } catch (e) {
-        if (mounted) {
-          setState(() {
-            _status = UpdateStatus.error;
-            _errorMessage = 'Ошибка установки обновления: $e';
-          });
+        try {
+          await Process.start(filePath, [], mode: ProcessStartMode.detached);
+          exit(0);
+        } catch (err) {
+          if (mounted) {
+            setState(() {
+              _status = UpdateStatus.error;
+              _errorMessage = 'Ошибка установки обновления: $err';
+            });
+          }
         }
       }
     }
@@ -395,9 +410,10 @@ del "%~f0"
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        Platform.isAndroid
-                            ? 'Обновление загружено. Нажмите для завершения установки.'
-                            : 'Обновление загружено и готово к установке.',
+                        _errorMessage ??
+                            (Platform.isAndroid
+                                ? 'Обновление загружено. Нажмите для завершения установки.'
+                                : 'Обновление загружено и готово к установке.'),
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -511,6 +527,14 @@ del "%~f0"
                             if (_status == UpdateStatus.readyToRestart) {
                               if (Platform.isAndroid &&
                                   _downloadedFilePath != null) {
+                                _installAndroidApk(_downloadedFilePath!);
+                              } else {
+                                _applyDesktopUpdateAndRestart();
+                              }
+                            } else if (_status == UpdateStatus.error &&
+                                _downloadedFilePath != null &&
+                                File(_downloadedFilePath!).existsSync()) {
+                              if (Platform.isAndroid) {
                                 _installAndroidApk(_downloadedFilePath!);
                               } else {
                                 _applyDesktopUpdateAndRestart();

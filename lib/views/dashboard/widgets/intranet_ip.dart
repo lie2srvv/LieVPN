@@ -1,8 +1,6 @@
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/dashboard/widget_metrics.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,28 +12,19 @@ class IntranetIP extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return SizedBox(
-      height: DashboardWidgetMetrics.heightOf(context, 1),
+      height: getWidgetHeight(1),
       child: CommonCard(
-        radius: DashboardWidgetMetrics.radiusOf(context),
-        infoPadding: DashboardWidgetMetrics.paddingOf(
-          context,
-        ).copyWith(bottom: 0),
-        info: Info(
-          label: appLocalizations.intranetIP,
-          glyph: AppGlyphs.devices,
-        ),
+        radius: AppCorner.lg,
+        info: Info(label: appLocalizations.intranetIP, iconData: Icons.devices),
         onPressed: () {},
         child: Container(
-          padding: DashboardWidgetMetrics.paddingOf(context).copyWith(top: 0),
+          padding: baseInfoEdgeInsets.copyWith(top: 0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               SizedBox(
-                height:
-                    globalState.measure.bodyMediumHeight *
-                        DashboardWidgetMetrics.textScaleOf(context) +
-                    2,
+                height: globalState.measure.bodyMediumHeight + 2,
                 child: Consumer(
                   builder: (_, ref, _) {
                     final localIp = ref.watch(localIpProvider);

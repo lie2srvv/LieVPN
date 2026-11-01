@@ -64,9 +64,7 @@ class LieVpnSettingsView extends ConsumerWidget {
               if (val != null) {
                 ref
                     .read(appSettingProvider.notifier)
-                    .update(
-                      (state) => state.copyWith(liveNotificationType: val),
-                    );
+                    .update((state) => state.copyWith(liveNotificationType: val));
               }
             },
           ),
@@ -83,12 +81,9 @@ class LieVpnSettingsView extends ConsumerWidget {
               value: liveNotificationCustomText,
               onChanged: (value) {
                 if (value != null) {
-                  ref
-                      .read(appSettingProvider.notifier)
-                      .update(
+                  ref.read(appSettingProvider.notifier).update(
                         (state) => state.copyWith(
-                          liveNotificationCustomText: value.trim(),
-                        ),
+                            liveNotificationCustomText: value.trim()),
                       );
                 }
               },

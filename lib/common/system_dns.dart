@@ -230,7 +230,7 @@ final class SystemDnsCoordinator {
   }
 }
 
-final systemDnsCoordinator = system.isMacOS && !safeModeBuild
+final systemDnsCoordinator = system.isMacOS
     ? SystemDnsCoordinator(
         port: macOS!,
         store: const PreferencesSystemDnsStore(),

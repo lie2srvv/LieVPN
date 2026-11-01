@@ -5,9 +5,12 @@ final class TrayStatusItem {
 
     private let contentView: TrayContentView
 
-    init?(onMenuRequested: @escaping () -> Void) {
+    init?(onActivate: @escaping () -> Void, onMenuRequested: @escaping () -> Void) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        contentView = TrayContentView(onMenuRequested: onMenuRequested)
+        contentView = TrayContentView(
+            onActivate: onActivate,
+            onMenuRequested: onMenuRequested
+        )
 
         guard let button = statusItem.button else {
             NSStatusBar.system.removeStatusItem(statusItem)
@@ -56,6 +59,7 @@ final class TrayStatusItem {
 }
 
 private final class TrayContentView: NSView {
+    private let onActivate: () -> Void
     private let onMenuRequested: () -> Void
 
     private let imageView: NSImageView = {
@@ -76,7 +80,8 @@ private final class TrayContentView: NSView {
         return stack
     }()
 
-    init(onMenuRequested: @escaping () -> Void) {
+    init(onActivate: @escaping () -> Void, onMenuRequested: @escaping () -> Void) {
+        self.onActivate = onActivate
         self.onMenuRequested = onMenuRequested
         super.init(frame: .zero)
 
@@ -137,7 +142,12 @@ private final class TrayContentView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        onMenuRequested()
+        (superview as? NSButton)?.highlight(true)
+        onActivate()
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        (superview as? NSButton)?.highlight(false)
     }
 
     override func rightMouseDown(with event: NSEvent) {

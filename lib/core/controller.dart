@@ -17,8 +17,10 @@ class CoreController {
   CoreController._internal() {
     if (system.isAndroid) {
       _interface = coreLib!;
-    } else {
+    } else if (coreService != null) {
       _interface = coreService!;
+    } else {
+      _interface = StubCoreHandler();
     }
   }
 
@@ -95,13 +97,6 @@ class CoreController {
     return res;
   }
 
-  Future<List<String>> validateProxies(List<Map<String, dynamic>> proxies) {
-    if (proxies.isEmpty) {
-      return Future.value(const []);
-    }
-    return _interface.validateProxies(proxies);
-  }
-
   Future<String> validateConfigWithData(String data) async {
     final path = await appPath.tempFilePath;
     final file = File(path);
@@ -147,20 +142,12 @@ class CoreController {
     );
   }
 
-  Future<ChangeProxyResult> changeProxy(ChangeProxyParams changeProxyParams) {
-    return _interface.changeProxy(changeProxyParams);
-  }
-
-  Future<RouteSnapshot?> watchRoute(bool watch) {
-    return _interface.watchRoute(watch);
+  FutureOr<String> changeProxy(ChangeProxyParams changeProxyParams) async {
+    return await _interface.changeProxy(changeProxyParams);
   }
 
   Future<List<TrackerInfo>> getConnections() async {
     return _interface.getConnections();
-  }
-
-  Future<int> getConnectionCount() async {
-    return _interface.getConnectionCount();
   }
 
   Future<void> closeConnection(String id) async {
@@ -199,10 +186,6 @@ class CoreController {
     );
   }
 
-  Future<String> dumpRuleSet(String path) {
-    return _interface.dumpRuleSet(path);
-  }
-
   Future<String> updateExternalProvider({required String providerName}) async {
     return _interface.updateExternalProvider(providerName);
   }
@@ -219,24 +202,11 @@ class CoreController {
     return _interface.asyncTestDelay(url, proxyName);
   }
 
-  Future<ProbeResult?> probe(ProbeParams params) => _interface.probe(params);
-
-  Future<OutboundIpResult?> outboundIp(OutboundIpParams params) =>
-      _interface.outboundIp(params);
-
-  Future<List<ServiceCheckItem>> serviceCheck(ServiceCheckParams params) =>
-      _interface.serviceCheck(params);
-
   Future<Map<String, dynamic>> getConfig(int id) async {
-    return _readConfig(await appPath.getProfilePath(id.toString()));
-  }
-
-  Future<Map<String, dynamic>> getAppliedConfig() async {
-    return _readConfig(await appPath.configFilePath);
-  }
-
-  Future<Map<String, dynamic>> _readConfig(String path) async {
-    final data = Map<String, dynamic>.from(await _interface.getConfig(path));
+    final profilePath = await appPath.getProfilePath(id.toString());
+    final data = Map<String, dynamic>.from(
+      await _interface.getConfig(profilePath),
+    );
     data['rules'] = data['rule'];
     data.remove('rule');
     return data;
@@ -250,8 +220,8 @@ class CoreController {
     return _interface.getTotalTraffic(onlyStatisticsProxy);
   }
 
-  Future<CoreMemoryStats?> getMemoryStats() async {
-    return _interface.getMemoryStats();
+  Future<int> getMemory() async {
+    return _interface.getMemory();
   }
 
   void resetTraffic() {

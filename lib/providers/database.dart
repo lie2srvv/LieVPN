@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -90,28 +91,12 @@ Stream<int> proxyGroupsCount(Ref ref, int profileId) {
   return database.proxyGroupsDao.count(profileId).watchSingle();
 }
 
-@riverpod
-Stream<int> customProxiesCount(Ref ref, int profileId) {
-  return database.customProxiesDao.count(profileId).watchSingle();
-}
-
 @Riverpod(keepAlive: true)
 class Profiles extends _$Profiles {
   @override
   List<Profile> build() {
-    if (feature.customProviders) {
-      ref.listen(clashProvidersProvider(ProviderKind.proxy), (_, _) {});
-    }
     return ref.watch(profilesStreamProvider).value ?? [];
   }
-
-  Set<String> get _reservedLabels => {
-    if (feature.customProviders)
-      for (final provider
-          in ref.read(clashProvidersProvider(ProviderKind.proxy)).value ??
-              const <ClashProvider>[])
-        provider.label,
-  };
 
   void _optimistic(List<Profile> next, FutureOr<void> Function() action) {
     unawaited(
@@ -132,35 +117,18 @@ class Profiles extends _$Profiles {
     );
   }
 
-  Profile labeled(Profile profile) =>
-      state.optimizeLabel(profile, reserved: _reservedLabels);
-
-  void put(Profile profile, {Iterable<int> renameIn = const []}) {
-    final newProfile = labeled(profile);
-    final previousLabel = state.getProfile(profile.id)?.realLabel;
-    final renamedFrom =
-        renameIn.isNotEmpty && previousLabel != newProfile.realLabel
-        ? previousLabel
-        : null;
+  void put(Profile profile) {
+    final newProfile = state.optimizeLabel(profile);
     _optimistic(
       state.copyAndPut(newProfile, (item) => item.id == newProfile.id),
-      renamedFrom == null
-          ? () => database.profiles.put(newProfile.toCompanion())
-          : () => database.transaction(() async {
-              await database.proxyGroupsDao.renameUse(
-                renameIn,
-                oldName: renamedFrom,
-                newName: newProfile.realLabel,
-              );
-              await database.profiles.put(newProfile.toCompanion());
-            }),
+      () => database.profiles.put(newProfile.toCompanion()),
     );
   }
 
   Future<void> del(int id) {
     return _optimisticAsync(
       state.where((e) => e.id != id).toList(),
-      () => database.deleteProfile(id),
+      () => database.profiles.remove((t) => t.id.equals(id)),
     );
   }
 
@@ -226,16 +194,16 @@ class Scripts extends _$Scripts with AsyncNotifierMixin, OptimisticMixin {
     optimistic(next, () => database.scripts.remove((t) => t.id.equals(id)));
   }
 
-  void order(int oldIndex, int newIndex) {
-    final next = value.copyAndReorder(oldIndex, newIndex);
-    final changed = <ScriptsCompanion>[];
-    next.forEachIndexed((index, item) {
-      if (item.order != index) {
-        next[index] = item.copyWith(order: index);
-        changed.add(item.toCompanion(index));
-      }
-    });
-    optimistic(next, () => database.scriptsDao.putAll(changed));
+  void delAll(Iterable<int> ids) {
+    final scriptIds = ids.toSet();
+    optimistic(
+      value.where((item) => !scriptIds.contains(item.id)).toList(),
+      () => database.scripts.remove((t) => t.id.isIn(scriptIds)),
+    );
+  }
+
+  bool isExits(String label) {
+    return value.indexWhere((item) => item.label == label) != -1;
   }
 
   @override
@@ -244,84 +212,6 @@ class Scripts extends _$Scripts with AsyncNotifierMixin, OptimisticMixin {
     AsyncValue<List<Script>> next,
   ) {
     return !scriptListEquality.equals(previous.value, next.value);
-  }
-}
-
-@riverpod
-class ClashProviders extends _$ClashProviders
-    with AsyncNotifierMixin, OptimisticMixin {
-  @override
-  Stream<List<ClashProvider>> build(ProviderKind kind) {
-    return database.clashProvidersDao.query(kind).watch();
-  }
-
-  @override
-  List<ClashProvider> get value => state.value ?? [];
-
-  void put(ClashProvider provider, {Iterable<int> renameIn = const []}) {
-    final next = List<ClashProvider>.from(value);
-    final index = next.indexWhere((item) => item.id == provider.id);
-    final renamedFrom = index != -1 && next[index].label != provider.label
-        ? next[index].label
-        : null;
-    if (index != -1) {
-      next[index] = provider;
-    } else {
-      next.add(provider);
-    }
-    optimistic(
-      next,
-      () => database.transaction(() async {
-        if (renamedFrom != null) {
-          switch (provider.kind) {
-            case ProviderKind.proxy:
-              await database.proxyGroupsDao.renameUse(
-                renameIn,
-                oldName: renamedFrom,
-                newName: provider.label,
-              );
-            case ProviderKind.rule:
-              await database.rulesDao.renameCustomRuleProvider(
-                renameIn,
-                oldName: renamedFrom,
-                newName: provider.label,
-              );
-          }
-        }
-        await database.clashProviders.put(provider.toCompanion());
-      }),
-    );
-  }
-
-  void del(int id) {
-    final next = List<ClashProvider>.from(value);
-    final index = next.indexWhere((item) => item.id == id);
-    if (index == -1) return;
-    next.removeAt(index);
-    optimistic(
-      next,
-      () => database.clashProviders.remove((t) => t.id.equals(id)),
-    );
-  }
-
-  void order(int oldIndex, int newIndex) {
-    final next = value.copyAndReorder(oldIndex, newIndex);
-    final changed = <ClashProvidersCompanion>[];
-    next.forEachIndexed((index, item) {
-      if (item.order != index) {
-        next[index] = item.copyWith(order: index);
-        changed.add(item.toCompanion(index));
-      }
-    });
-    optimistic(next, () => database.clashProvidersDao.putAll(changed));
-  }
-
-  @override
-  bool updateShouldNotify(
-    AsyncValue<List<ClashProvider>> previous,
-    AsyncValue<List<ClashProvider>> next,
-  ) {
-    return !clashProviderListEquality.equals(previous.value, next.value);
   }
 }
 
@@ -360,34 +250,10 @@ mixin RuleListMixin on OptimisticMixin<List<Rule>> {
     );
   }
 
-  void putAll(List<Rule> rules) {
-    if (rules.isEmpty) {
-      return;
-    }
-    final orders = indexing.generateNKeysBetween(
-      null,
-      value.firstOrNull?.order,
-      rules.length,
-    );
-    final newRules = [
-      for (final (index, rule) in rules.indexed)
-        rule.copyWith(order: orders[index]),
-    ];
-    optimistic(
-      [...newRules, ...value],
-      () => database.transaction(() async {
-        for (final rule in newRules) {
-          await persistRule(rule);
-        }
-      }),
-    );
-  }
-
   void delAll(Iterable<int> ruleIds) {
-    final ids = ruleIds.toSet();
     optimistic(
-      value.where((item) => !ids.contains(item.id)).toList(),
-      () => database.rulesDao.delRules(ids),
+      value.where((item) => !ruleIds.contains(item.id)).toList(),
+      () => database.rulesDao.delRules(ruleIds),
     );
   }
 
@@ -476,20 +342,20 @@ class ProxyGroups extends _$ProxyGroups
     return !proxyGroupsEquality.equals(previous.value, next.value);
   }
 
-  void delAll(Iterable<int> proxyGroupIds) {
-    final ids = proxyGroupIds.toSet();
+  void del(String name) {
     optimistic(
-      value.where((item) => !ids.contains(item.id)).toList(),
-      () => database.proxyGroupsDao.delAll(ids),
+      value.where((item) => item.name != name).toList(),
+      () => database.proxyGroups.remove(
+        (t) => t.profileId.equals(profileId) & t.name.equals(name),
+      ),
     );
   }
 
   bool put(ProxyGroup proxyGroup) {
     final previous = value;
     final index = previous.indexWhere((item) => item.id == proxyGroup.id);
-    if (previous.any(
-      (item) => item.name == proxyGroup.name && item.id != proxyGroup.id,
-    )) {
+    if (index == -1 &&
+        previous.indexWhere((item) => item.name == proxyGroup.name) != -1) {
       return false;
     }
     final renamedFrom = index != -1 && previous[index].name != proxyGroup.name
@@ -551,91 +417,6 @@ class ProxyGroups extends _$ProxyGroups
 
   @override
   List<ProxyGroup> get value => state.value ?? [];
-}
-
-@riverpod
-class CustomProxies extends _$CustomProxies
-    with AsyncNotifierMixin, OptimisticMixin {
-  @override
-  Stream<List<CustomProxy>> build(int profileId) {
-    return database.customProxiesDao.query(profileId).watch();
-  }
-
-  @override
-  bool updateShouldNotify(
-    AsyncValue<List<CustomProxy>> previous,
-    AsyncValue<List<CustomProxy>> next,
-  ) {
-    return !customProxiesEquality.equals(previous.value, next.value);
-  }
-
-  @override
-  List<CustomProxy> get value => state.value ?? [];
-
-  void delAll(Iterable<int> ids) {
-    final idSet = ids.toSet();
-    optimistic(
-      value.where((item) => !idSet.contains(item.id)).toList(),
-      () => database.customProxiesDao.delAll(idSet),
-    );
-  }
-
-  /// A rename carries over to the groups and rules that name the proxy, the
-  /// same way a group rename does.
-  void put(CustomProxy proxy) {
-    final previous = value;
-    final index = previous.indexWhere((item) => item.id == proxy.id);
-    final renamedFrom = index != -1 && previous[index].name != proxy.name
-        ? previous[index].name
-        : null;
-    final next = List<CustomProxy>.from(previous);
-    final CustomProxy nextProxy;
-    if (index != -1) {
-      nextProxy = proxy;
-      next[index] = nextProxy;
-    } else {
-      final lastOrder = previous.map((item) => item.order).nonNulls.lastOrNull;
-      nextProxy = proxy.copyWith(
-        order: indexing.generateKeyBetween(lastOrder, null),
-      );
-      next.add(nextProxy);
-    }
-    optimistic(
-      next,
-      () => database.transaction(() async {
-        if (renamedFrom != null) {
-          await database.rulesDao.renameCustomRuleTarget(
-            profileId,
-            oldName: renamedFrom,
-            newName: nextProxy.name,
-          );
-          await database.proxyGroupsDao.renameProxies(
-            profileId,
-            oldName: renamedFrom,
-            newName: nextProxy.name,
-          );
-        }
-        await database.customProxies.put(nextProxy.toCompanion(profileId));
-      }),
-    );
-  }
-
-  void order(int oldIndex, int newIndex) {
-    final item = value[oldIndex];
-    final nextItems = value.copyAndReorder(oldIndex, newIndex);
-    final newOrder = indexing.generateKeyBetween(
-      nextItems.safeGet(newIndex - 1)?.order,
-      nextItems.safeGet(newIndex + 1)?.order,
-    )!;
-    optimistic(
-      nextItems,
-      () => database.customProxiesDao.order(
-        profileId,
-        proxy: item,
-        order: newOrder,
-      ),
-    );
-  }
 }
 
 @riverpod

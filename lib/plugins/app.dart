@@ -82,6 +82,20 @@ class App {
         false;
   }
 
+  Future<bool> installApk(String filePath) async {
+    return await methodChannel.invokeMethod<bool>('installApk', {
+          'filePath': filePath,
+        }) ??
+        false;
+  }
+
+  Future<bool> canRequestPackageInstalls() async {
+    return await methodChannel.invokeMethod<bool>(
+          'canRequestPackageInstalls',
+        ) ??
+        true;
+  }
+
   final Map<String, ImageProvider?> _packageIcons = {};
   final Map<String, Future<ImageProvider?>> _packageIconTasks = {};
 
@@ -129,13 +143,6 @@ class App {
   void clearPackageIconCache() {
     _packageIcons.clear();
     _packageIconTasks.clear();
-  }
-
-  Future<bool> installApk(String filePath) async {
-    return await methodChannel.invokeMethod<bool>('installApk', {
-          'filePath': filePath,
-        }) ??
-        false;
   }
 
   Future<bool?> showNotification({

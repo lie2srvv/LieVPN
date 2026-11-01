@@ -48,8 +48,7 @@ extension ListExt<T> on List<T> {
   }
 
   List<T> intersection(List<T> list) {
-    final lookup = list.toSet();
-    return where(lookup.contains).toList();
+    return where((item) => list.contains(item)).toList();
   }
 
   List<List<T>> batch(int maxConcurrent) {

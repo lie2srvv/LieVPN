@@ -70,9 +70,7 @@ MoreToolsSelectorState moreToolsSelectorState(Ref ref) {
         navigationItemsStateProvider.select((state) {
           return SelectValue(
             state.value.where((element) {
-              final isMore =
-                  element.modes.contains(NavigationItemMode.more) ||
-                  element.modes.contains(NavigationItemMode.moreFull);
+              final isMore = element.modes.contains(NavigationItemMode.more);
               final isDesktop = element.modes.contains(
                 NavigationItemMode.desktop,
               );
@@ -118,5 +116,5 @@ double overlayTopOffset(Ref ref) {
     version: version,
     isMobileView: isMobileView,
   );
-  return pageToolbarHeight + (showsHeader ? kHeaderHeight : 0);
+  return kToolbarHeight + (showsHeader ? kHeaderHeight : 0);
 }

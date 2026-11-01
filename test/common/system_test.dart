@@ -191,7 +191,7 @@ void main() {
       final userName = Platform.environment['USER'];
       expect(
         processes.ran('chmod'),
-        system.isMacOS && userName != null && userName.isNotEmpty,
+        (system.isMacOS && userName != null && userName.isNotEmpty) || system.isLinux,
       );
     });
 

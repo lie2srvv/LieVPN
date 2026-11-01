@@ -4,7 +4,6 @@ import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/dashboard/widgets/quick_options.dart';
-import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,16 +37,6 @@ final _cardCases = <_CardCase>[
     const VpnButton(),
     (container) => container.read(vpnSettingProvider).enable,
     initial: true,
-  ),
-  _CardCase(
-    'DNS override',
-    const OverrideDnsButton(),
-    (container) => container.read(overrideDnsProvider),
-  ),
-  _CardCase(
-    'NTP override',
-    const OverrideNtpButton(),
-    (container) => container.read(overrideNtpProvider),
   ),
 ];
 
@@ -118,7 +107,7 @@ void main() {
     }
   });
 
-  testWidgets('the cards stay visually interchangeable', (tester) async {
+  testWidgets('the three cards stay visually interchangeable', (tester) async {
     final switches = <Switch>[];
     for (final testCase in _cardCases) {
       await pumpCard(tester, testCase.widget);
@@ -135,34 +124,17 @@ void main() {
     );
   });
 
-  testWidgets('every card labels its state and opens its options', (
+  testWidgets('every card labels itself and offers its options', (
     tester,
   ) async {
     for (final testCase in _cardCases) {
       await pumpCard(tester, testCase.widget);
 
       expect(
-        find.text(
-          testCase.initial
-              ? currentAppLocalizations.enabled
-              : currentAppLocalizations.disabled,
-        ),
+        find.text(currentAppLocalizations.options),
         findsOneWidget,
-        reason: '${testCase.name} must label the state it reads',
+        reason: '${testCase.name} must show the options affordance',
       );
-
-      await tester.tap(find.byType(CommonCard));
-      await tester.pumpAndSettle();
-
-      final sheet = find.byType(CommonScaffold);
-      expect(
-        sheet,
-        findsOneWidget,
-        reason: '${testCase.name} must open its options from the card',
-      );
-
-      Navigator.of(tester.element(sheet)).pop();
-      await tester.pumpAndSettle();
     }
   });
 }

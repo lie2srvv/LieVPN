@@ -19,7 +19,7 @@ import sqflite_darwin
 import tray
 import url_launcher_macos
 import wifi_ssid
-import window
+import window_manager
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
@@ -36,5 +36,5 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   TrayPlugin.register(with: registry.registrar(forPlugin: "TrayPlugin"))
   UrlLauncherPlugin.register(with: registry.registrar(forPlugin: "UrlLauncherPlugin"))
   WifiSsidPlugin.register(with: registry.registrar(forPlugin: "WifiSsidPlugin"))
-  WindowPlugin.register(with: registry.registrar(forPlugin: "WindowPlugin"))
+  WindowManagerPlugin.register(with: registry.registrar(forPlugin: "WindowManagerPlugin"))
 }

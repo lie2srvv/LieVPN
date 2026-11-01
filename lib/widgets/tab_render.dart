@@ -7,7 +7,6 @@ class _CommonTabBarRenderWidget<T extends Object>
     super.children,
     required this.highlightedIndex,
     required this.thumbColor,
-    required this.thumbRadius,
     required this.thumbScale,
     required this.state,
     required this.proportionalWidth,
@@ -15,7 +14,6 @@ class _CommonTabBarRenderWidget<T extends Object>
 
   final int? highlightedIndex;
   final Color thumbColor;
-  final double thumbRadius;
   final double thumbScale;
   final bool proportionalWidth;
   final _CommonTabBarState<T> state;
@@ -25,7 +23,6 @@ class _CommonTabBarRenderWidget<T extends Object>
     return _RenderSegmentedControl<T>(
       highlightedIndex: highlightedIndex,
       thumbColor: thumbColor,
-      thumbRadius: thumbRadius,
       thumbScale: thumbScale,
       proportionalWidth: proportionalWidth,
       state: state,
@@ -40,7 +37,6 @@ class _CommonTabBarRenderWidget<T extends Object>
     assert(renderObject.state == state);
     renderObject
       ..thumbColor = thumbColor
-      ..thumbRadius = thumbRadius
       ..thumbScale = thumbScale
       ..highlightedIndex = highlightedIndex
       ..proportionalWidth = proportionalWidth;
@@ -65,13 +61,11 @@ class _RenderSegmentedControl<T extends Object> extends RenderBox
   _RenderSegmentedControl({
     required int? highlightedIndex,
     required Color thumbColor,
-    required double thumbRadius,
     required double thumbScale,
     required bool proportionalWidth,
     required this.state,
   }) : _highlightedIndex = highlightedIndex,
        _thumbColor = thumbColor,
-       _thumbRadius = thumbRadius,
        _thumbScale = thumbScale,
        _proportionalWidth = proportionalWidth;
 
@@ -114,17 +108,6 @@ class _RenderSegmentedControl<T extends Object> extends RenderBox
     }
 
     _highlightedIndex = value;
-    markNeedsPaint();
-  }
-
-  double get thumbRadius => _thumbRadius;
-  double _thumbRadius;
-
-  set thumbRadius(double value) {
-    if (_thumbRadius == value) {
-      return;
-    }
-    _thumbRadius = value;
     markNeedsPaint();
   }
 
@@ -519,7 +502,7 @@ class _RenderSegmentedControl<T extends Object> extends RenderBox
   void _paintThumb(PaintingContext context, Offset offset, Rect thumbRect) {
     final RSuperellipse thumbRSuperellipse = RSuperellipse.fromRectAndRadius(
       thumbRect.shift(offset),
-      Radius.circular(thumbRadius),
+      _kThumbRadius,
     );
 
     context.canvas.drawRSuperellipse(

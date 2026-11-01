@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show Brightness, Color;
 
 import 'package:fl_clash/common/app_ports.dart';
 import 'package:fl_clash/common/preferences.dart';
@@ -66,13 +65,6 @@ class _GeometryWindowPort implements WindowPort {
     }
     return geometry;
   }
-
-  @override
-  Future<bool> setBlur({
-    required bool enabled,
-    required Brightness brightness,
-    required Color tint,
-  }) async => false;
 
   @override
   Future<void> close() async {}

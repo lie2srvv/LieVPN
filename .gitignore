@@ -79,4 +79,10 @@ devtools_options.yaml
 /coverage/lcov.info
 
 gh_logs/
-design_tokens.json
+squashfs-root/
+*.AppImage
+
+# Local untracked dirs
+lievpn_ops/
+skills/
+

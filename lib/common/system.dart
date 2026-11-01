@@ -39,6 +39,10 @@ class System {
 
   bool get isLinux => Platform.isLinux;
 
+  bool get isIOS => Platform.isIOS;
+
+  bool get isMobile => isAndroid || isIOS;
+
   bool get isTV => _isTV;
 
   Future<int> init() async {
@@ -56,6 +60,11 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ios' =>
+        int.tryParse(
+          (deviceInfo as IosDeviceInfo).systemVersion.split('.').first,
+        ) ??
+        0,
       String() => 0,
     };
   }
@@ -113,14 +122,51 @@ class System {
       );
     }
     if (system.isLinux) {
+      if (isLinuxRoot()) {
+        return true;
+      }
+      final targetPath = File(AppPath.linuxExternalCorePath).existsSync()
+          ? AppPath.linuxExternalCorePath
+          : appPath.corePath;
       final result = await runProcess(
         'stat',
-        statArguments(appPath.corePath, isMacOS: false),
+        statArguments(targetPath, isMacOS: false),
       );
-      return isPrivilegedStatOutput(
+      final isPrivileged = isPrivilegedStatOutput(
         result.stdout.toString(),
         ownerPrefix: 'root:',
       );
+      if (!isPrivileged) {
+        return false;
+      }
+
+      // External core check: ensure process inspection capabilities and up-to-date binary
+      if (targetPath == AppPath.linuxExternalCorePath) {
+        try {
+          final capResult = await runProcess('getcap', [targetPath]);
+          final capOutput = capResult.stdout.toString();
+          if (capOutput.isNotEmpty) {
+            final hasProcessCaps = capOutput.contains('cap_sys_ptrace') &&
+                capOutput.contains('cap_net_admin');
+            if (!hasProcessCaps) {
+              return false;
+            }
+          }
+        } catch (_) {}
+
+        if (File(appPath.bundledCorePath).existsSync()) {
+          try {
+            final bundledSize = File(appPath.bundledCorePath).lengthSync();
+            final externalSize = File(targetPath).lengthSync();
+            if (bundledSize > 0 &&
+                externalSize > 0 &&
+                bundledSize != externalSize) {
+              return false;
+            }
+          } catch (_) {}
+        }
+      }
+      return true;
     }
     return true;
   }
@@ -140,6 +186,15 @@ class System {
   }
 
   Future<void> grantHomeDirAccess(String homeDirPath) async {
+    if (isLinux) {
+      try {
+        await runProcess('setfacl', ['-m', 'g::rx', homeDirPath]);
+      } catch (_) {}
+      try {
+        await runProcess('chmod', ['g+rx', homeDirPath]);
+      } catch (_) {}
+      return;
+    }
     if (!isMacOS) {
       return;
     }
@@ -198,74 +253,11 @@ class System {
       }
       return AuthorizeCode.success;
     } else if (system.isLinux) {
-      if (isAppImage) {
-        const targetPath = AppPath.linuxExternalCorePath;
-        final sourcePath = appPath.bundledCorePath;
-        final stagePath = '/tmp/.lievpn_core_stage_$pid';
-        try {
-          await File(sourcePath).copy(stagePath);
-        } catch (e) {
-          commonPrint.log(
-            'Failed to copy core to staging: $e',
-            logLevel: LogLevel.error,
-          );
-          return AuthorizeCode.error;
-        }
-
-        final escapedTarget = _shellEscape(targetPath);
-        final escapedStage = _shellEscape(stagePath);
-        final shellCommand =
-            'mkdir -p /opt/flclash && mv -f $escapedStage $escapedTarget && chown root:root $escapedTarget && chmod 4755 $escapedTarget && (setcap cap_net_admin,cap_net_bind_service+ep $escapedTarget 2>/dev/null || true)';
-        final ProcessResult result;
-        try {
-          result = await runProcess('pkexec', ['/bin/sh', '-c', shellCommand]);
-        } on ProcessException catch (error) {
-          commonPrint.log(
-            'pkexec is unavailable: ${compactError(error)}',
-            logLevel: LogLevel.error,
-          );
-          return AuthorizeCode.error;
-        } finally {
-          final stageFile = File(stagePath);
-          if (stageFile.existsSync()) {
-            try {
-              stageFile.deleteSync();
-            } catch (_) {}
-          }
-        }
-        if (result.exitCode != 0) {
-          commonPrint.log(
-            'pkexec failed for AppImage core: ${result.exitCode}',
-            logLevel: LogLevel.error,
-          );
-          return AuthorizeCode.error;
-        }
-        return AuthorizeCode.success;
+      if (isLinuxRoot()) {
+        return AuthorizeCode.none;
       }
-
-      final escapedCorePath = _shellEscape(appPath.corePath);
-      final ProcessResult result;
-      try {
-        result = await runProcess('pkexec', [
-          '/bin/sh',
-          '-c',
-          'chown root:root $escapedCorePath && chmod 4755 $escapedCorePath && (setcap cap_net_admin,cap_net_bind_service+ep $escapedCorePath 2>/dev/null || true)',
-        ]);
-      } on ProcessException catch (error) {
-        commonPrint.log(
-          'pkexec is unavailable: ${compactError(error)}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      }
-      if (result.exitCode != 0) {
-        commonPrint.log(
-          'pkexec refused to elevate the Core: ${result.exitCode}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      }
-      return AuthorizeCode.success;
+      final ok = await setupPasswordlessRootOnce();
+      return ok ? AuthorizeCode.success : AuthorizeCode.error;
     }
     return AuthorizeCode.error;
   }
@@ -275,7 +267,7 @@ class System {
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isIOS) {
       await SystemNavigator.pop();
     }
   }

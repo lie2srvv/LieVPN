@@ -16,7 +16,6 @@ import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/disclaimer.dart';
 import 'package:fl_clash/views/navigation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +38,7 @@ class Bootstrap {
   Future<ProviderContainer> init(int version) async {
     globalState.appEnv = const String.fromEnvironment(
       'APP_ENV',
-      defaultValue: 'stable',
+      defaultValue: 'pre',
     );
     windowPort = window;
     trayPort = appTray;
@@ -123,11 +122,38 @@ class Bootstrap {
           darkSeed: dynamicColor.darkSeed,
           accentColor: dynamicColor.accentColor,
         );
-    final profiles = await database.profilesDao.query().get();
+    final rawProfiles = await database.profilesDao.query().get();
+    List<Profile> profiles = [];
+    if (rawProfiles.length > 1) {
+      final sorted = List<Profile>.from(rawProfiles)
+        ..sort((a, b) => (b.lastUpdateDate ?? DateTime.fromMillisecondsSinceEpoch(0))
+            .compareTo(a.lastUpdateDate ?? DateTime.fromMillisecondsSinceEpoch(0)));
+      final keep = sorted.first;
+      final cleanLabel =
+          keep.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final clean =
+          keep.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+      profiles = [clean];
+      for (final p in rawProfiles) {
+        if (p.id != keep.id) {
+          unawaited(database.profiles.remove((t) => t.id.equals(p.id)));
+        }
+      }
+      unawaited(database.profiles.put(clean.toCompanion()));
+    } else if (rawProfiles.isNotEmpty) {
+      final p = rawProfiles.first;
+      final cleanLabel =
+          p.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+      final clean =
+          p.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+      profiles = [clean];
+      if (clean.label != p.label) {
+        unawaited(database.profiles.put(clean.toCompanion()));
+      }
+    }
     container.read(profilesProvider.notifier).setAndReorder(profiles);
     await AppLocalizations.load(
-      getLocaleForString(config.appSettingProps.locale) ??
-          WidgetsBinding.instance.platformDispatcher.locale,
+      getLocaleForString(config.appSettingProps.locale) ?? const Locale('en'),
     );
     await window?.init(version, config.windowProps);
     if (system.isAndroid) {
@@ -151,7 +177,6 @@ class Bootstrap {
     unawaited(
       _container.read(profilesActionProvider.notifier).autoUpdateProfiles(),
     );
-    unawaited(_container.read(commonActionProvider.notifier).autoCheckUpdate());
     unawaited(
       autoLaunch?.updateStatus(_container.read(appSettingProvider).autoLaunch),
     );
@@ -161,9 +186,7 @@ class Bootstrap {
       unawaited(window?.hide());
     }
     await _handleFailedPreference();
-    await _handlerDisclaimer();
     await _showCrashRecoveryTip();
-    await _showCrashlyticsTip();
     await _container.read(coreActionProvider.notifier).startCore();
     if (!_bootDecision.isDegraded) {
       await _container.read(setupActionProvider.notifier).initStatus();
@@ -217,38 +240,6 @@ class Bootstrap {
     }
     // Saving here would rewrite the preferences file the user just chose to delete.
     await _container.read(systemActionProvider.notifier).handleExit(false);
-  }
-
-  Future<void> _showCrashlyticsTip() async {
-    if (!system.isAndroid) return;
-    if (_container.read(
-      appSettingProvider.select((state) => state.crashlyticsTip),
-    )) {
-      return;
-    }
-    await dialogs.showMessage(
-      title: currentAppLocalizations.dataCollectionTip,
-      cancelable: false,
-      message: TextSpan(text: currentAppLocalizations.dataCollectionContent),
-    );
-    _container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(crashlyticsTip: true));
-  }
-
-  Future<void> _handlerDisclaimer() async {
-    if (_container.read(
-      appSettingProvider.select((state) => state.disclaimerAccepted),
-    )) {
-      return;
-    }
-    final isDisclaimerAccepted = await requestDisclaimerConsent();
-    if (!isDisclaimerAccepted) {
-      await _container.read(systemActionProvider.notifier).handleExit();
-    }
-    _container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(disclaimerAccepted: true));
   }
 }
 

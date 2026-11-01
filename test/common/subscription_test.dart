@@ -6,20 +6,41 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LieVPN Subscription URL validation', () {
-    test('accepts valid LieVPN URLs', () {
-      expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/sub/abcdef123'),
-        isTrue,
-      );
-      expect(
-        isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/token123'),
-        isTrue,
-      );
-      expect(
-        isValidLieVpnSubscriptionUrl('http://vpn.lie2srvv.com/user/config'),
-        isTrue,
-      );
-    });
+    test(
+      'accepts valid LieVPN URLs with various *.lie2srvv.com subdomains',
+      () {
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://vpn.lie2srvv.com/sub/abcdef123',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('https://sub.lie2srvv.com/abcdef123'),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://panel.lie2srvv.com/api/v1/client/subscribe?token=xyz',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl(
+            'https://node1.vpn.lie2srvv.com/user/config',
+          ),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('http://custom.lie2srvv.com/sub'),
+          isTrue,
+        );
+        expect(
+          isValidLieVpnSubscriptionUrl('https://lie2srvv.com/sub/profile'),
+          isTrue,
+        );
+      },
+    );
 
     test('rejects invalid, external, or root URLs', () {
       expect(isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com'), isFalse);
@@ -27,22 +48,47 @@ void main() {
         isValidLieVpnSubscriptionUrl('https://vpn.lie2srvv.com/'),
         isFalse,
       );
+      expect(isValidLieVpnSubscriptionUrl('https://sub.lie2srvv.com'), isFalse);
       expect(isValidLieVpnSubscriptionUrl('https://google.com/test'), isFalse);
+      expect(
+        isValidLieVpnSubscriptionUrl('https://fake-lie2srvv.com/sub/123'),
+        isFalse,
+      );
+      expect(
+        isValidLieVpnSubscriptionUrl('https://notlie2srvv.com/sub/123'),
+        isFalse,
+      );
+      expect(
+        isValidLieVpnSubscriptionUrl(
+          'https://lie2srvv.com.attacker.com/sub/123',
+        ),
+        isFalse,
+      );
       expect(isValidLieVpnSubscriptionUrl('not a url'), isFalse);
       expect(isValidLieVpnSubscriptionUrl(''), isFalse);
     });
   });
 
   group('Extract LieVPN URL from text/clipboard', () {
-    test('finds url in mixed text', () {
-      const text =
+    test('finds url in mixed text with various subdomains', () {
+      const text1 =
           'Here is your subscription: https://vpn.lie2srvv.com/mytoken please enjoy';
-      expect(extractLieVpnUrl(text), 'https://vpn.lie2srvv.com/mytoken');
+      expect(extractLieVpnUrl(text1), 'https://vpn.lie2srvv.com/mytoken');
+
+      const text2 = 'Your sub link: https://sub.lie2srvv.com/token123_abc';
+      expect(extractLieVpnUrl(text2), 'https://sub.lie2srvv.com/token123_abc');
+
+      const textNoProto = 'Import profile: any-node.lie2srvv.com/sub/key';
+      expect(
+        extractLieVpnUrl(textNoProto),
+        'https://any-node.lie2srvv.com/sub/key',
+      );
     });
 
     test('returns null for text without LieVPN url', () {
       expect(extractLieVpnUrl('hello world 123'), isNull);
       expect(extractLieVpnUrl('https://other-vpn.com/sub'), isNull);
+      expect(extractLieVpnUrl('https://notlie2srvv.com/sub/token'), isNull);
     });
   });
 
@@ -102,7 +148,7 @@ void main() {
 
   group('Proxy presence check in YAML', () {
     test('returns true when proxies exist', () {
-      const yamlStr = '''
+      final yamlStr = '''
 port: 7890
 mode: rule
 proxies:
@@ -115,7 +161,7 @@ proxies:
     });
 
     test('returns true when proxy-providers exist', () {
-      const yamlStr = '''
+      final yamlStr = '''
 port: 7890
 proxy-providers:
   provider1:
@@ -126,7 +172,7 @@ proxy-providers:
     });
 
     test('returns false when proxies is empty or gibberish', () {
-      const emptyProxies = '''
+      final emptyProxies = '''
 port: 7890
 mode: rule
 proxies: []
@@ -136,7 +182,7 @@ proxies: []
         isFalse,
       );
 
-      const gibberish = '<html><head><title>404</title></head></html>';
+      final gibberish = '<html><head><title>404</title></head></html>';
       expect(
         checkHasProxies(Uint8List.fromList(utf8.encode(gibberish))),
         isFalse,

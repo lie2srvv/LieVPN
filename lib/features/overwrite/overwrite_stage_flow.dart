@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -57,13 +56,11 @@ class OverwriteDismissItem extends ConsumerWidget {
             subtitle: subtitle != null ? TooltipLabel(subtitle!) : null,
             contentPadding: const EdgeInsets.only(left: 16, right: 0),
             leading: CommonMinIconButtonTheme(
-              child: ElasticButton(
-                child: IconButton.filledTonal(
-                  tooltip: context.appLocalizations.remove,
-                  onPressed: onRemove,
-                  icon: const GlyphIcon(AppGlyphs.remove, size: 18, fill: 1),
-                  padding: EdgeInsets.zero,
-                ),
+              child: IconButton.filledTonal(
+                tooltip: context.appLocalizations.remove,
+                onPressed: onRemove,
+                icon: const Icon(Icons.remove, size: 18),
+                padding: EdgeInsets.zero,
               ),
             ),
             trailing: Row(
@@ -76,7 +73,7 @@ class OverwriteDismissItem extends ConsumerWidget {
                   child: Container(
                     color: Colors.transparent,
                     padding: EdgeInsets.all(dragIconPadding),
-                    child: const GlyphIcon(AppGlyphs.dragHandle),
+                    child: const Icon(Icons.drag_handle),
                   ),
                 ),
               ],

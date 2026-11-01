@@ -80,7 +80,7 @@ class IconEditView extends ConsumerStatefulWidget {
 class _IconEditViewState extends ConsumerState<IconEditView>
     with TickerProviderStateMixin {
   late final TextEditingController _srcController;
-  late final ValueNotifier<List<IconRecord>?> _recordsNotifier;
+  late final ValueNotifier<List<IconRecord>> _recordsNotifier;
   StreamSubscription? _streamSubscription;
   late final _IconEditStateNotifier<File?> _state;
 
@@ -88,7 +88,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
   void initState() {
     super.initState();
     _srcController = TextEditingController(text: widget.value);
-    _recordsNotifier = ValueNotifier(null);
+    _recordsNotifier = ValueNotifier([]);
     _state = _IconEditStateNotifier<File?>(
       vsync: this,
       duration: commonDuration * 2,
@@ -108,6 +108,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
   }
 
   Future<void> _handleUpdateIconRecords() async {
+    _recordsNotifier.value = [];
     final text = _srcController.text;
     final res = await database.iconRecordsDao.query(text);
     if (mounted) {
@@ -143,7 +144,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
     final appLocalizations = context.appLocalizations;
     final dimension = globalState.measure.bodyLargeHeight + 28;
     final height = ref.sheetHeight(context, 0.5);
-    return CommonScaffold(
+    return AdaptiveSheetScaffold(
       backAction: () {
         Navigator.of(context).pop(_srcController.text);
       },
@@ -156,7 +157,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: context.contentTopPadding),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _IconSrcRow(
@@ -168,8 +169,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
                 ),
                 Expanded(
                   child: NullStatusSwitcher(
-                    isLoading: records == null,
-                    isEmpty: records?.isEmpty ?? true,
+                    isEmpty: records.isEmpty,
                     nullStatus: NullStatus(
                       label: appLocalizations.noRecords,
                       illustration: NullStatusIllustration.history,
@@ -184,7 +184,7 @@ class _IconEditViewState extends ConsumerState<IconEditView>
                         ),
                         Expanded(
                           child: _IconRecordList(
-                            records: records ?? const [],
+                            records: records,
                             onSelected: _handleSelectRecord,
                           ),
                         ),

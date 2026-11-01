@@ -3,12 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
-	"crypto/tls"
-	"crypto/x509"
-	"encoding/json"
 	"errors"
-	"io"
-	"maps"
 	"net"
 	"net/url"
 	"os"
@@ -17,27 +12,22 @@ import (
 	"runtime/debug"
 	"slices"
 	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"github.com/metacubex/mihomo/adapter"
+	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
-	"github.com/metacubex/mihomo/component/geodata"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/constant/features"
-	cp "github.com/metacubex/mihomo/constant/provider"
-	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/listener"
 	"github.com/metacubex/mihomo/log"
-	rp "github.com/metacubex/mihomo/rules/provider"
 	"github.com/metacubex/mihomo/tunnel"
 	"github.com/metacubex/mihomo/tunnel/statistic"
 )
@@ -64,7 +54,6 @@ func handleStartListener() bool {
 	isRunning.Store(true)
 	updateListeners(currentConfig)
 	resolver.ResetConnection()
-	refreshRoute()
 	return true
 }
 
@@ -92,7 +81,6 @@ func handleForceGC() {
 
 func handleShutdown() bool {
 	handleStopLog()
-	stopRouteWatch()
 
 	configMu.Lock()
 	isRunning.Store(false)
@@ -116,33 +104,6 @@ func handleValidateConfig(path string) string {
 		return err.Error()
 	}
 	return ""
-}
-
-// Tailscale and EasyTier register a DNS client under the proxy name when built
-// and drop that name's entry on Close, so a probe under the real name would
-// take the resolver from a running proxy of the same name.
-const validationNameSuffix = "\x00validate"
-
-// The per-proxy parser the config load runs; checks across proxies, such as
-// duplicate names, are left to the load itself.
-func handleValidateProxies(mappings []map[string]any) []string {
-	results := make([]string, len(mappings))
-	for i, mapping := range mappings {
-		name, _ := mapping["name"].(string)
-		probe := mapping
-		switch mapping["type"] {
-		case "tailscale", "easytier":
-			probe = maps.Clone(mapping)
-			probe["name"] = name + validationNameSuffix
-		}
-		proxy, err := adapter.ParseProxy(probe)
-		if err != nil {
-			results[i] = strings.ReplaceAll(err.Error(), validationNameSuffix, "")
-			continue
-		}
-		_ = proxy.Close()
-	}
-	return results
 }
 
 const globalProxyName = "GLOBAL"
@@ -194,33 +155,10 @@ func handleGetProxies() ProxiesData {
 		return p.Type(), true
 	})
 
-	views := make(map[string]any, len(proxies))
-	for name, proxy := range proxies {
-		views[name] = proxyView(proxy)
-	}
 	return ProxiesData{
 		All:     allNames,
-		Proxies: views,
+		Proxies: proxies,
 	}
-}
-
-// Proxy.MarshalJSON encodes each node twice, with history the host never reads.
-func proxyView(proxy constant.Proxy) any {
-	node := nodeView{Name: proxy.Name(), Type: proxy.Type().String()}
-	if !isProxyGroupType(proxy.Type()) {
-		return node
-	}
-	data, err := proxy.Adapter().MarshalJSON()
-	view := map[string]any{}
-	if err == nil {
-		err = json.Unmarshal(data, &view)
-	}
-	if err != nil {
-		log.Warnln("[APP] encode group %s: %v", node.Name, err)
-		return node
-	}
-	view["name"] = node.Name
-	return view
 }
 
 var (
@@ -233,7 +171,7 @@ func lookupProxy(name string) constant.Proxy {
 	return tunnel.AllProxies()[name]
 }
 
-func selectableGroup(groupName string) (pickableGroup, error) {
+func selectableGroup(groupName string) (outboundgroup.SelectAble, error) {
 	group := lookupProxy(groupName)
 	if group == nil {
 		return nil, errGroupNotFound
@@ -242,30 +180,29 @@ func selectableGroup(groupName string) (pickableGroup, error) {
 	if !ok {
 		return nil, errGroupInvalidType
 	}
-	selector, ok := adapterProxy.ProxyAdapter.(pickableGroup)
+	selector, ok := adapterProxy.ProxyAdapter.(outboundgroup.SelectAble)
 	if !ok {
 		return nil, errGroupNotSelect
 	}
 	return selector, nil
 }
 
-func handleChangeProxy(params *ChangeProxyParams) *ChangeProxyResult {
+func handleChangeProxy(params *ChangeProxyParams) string {
 	selectMu.Lock()
 	defer selectMu.Unlock()
 
 	selector, err := selectableGroup(params.GroupName)
 	if err != nil {
-		return &ChangeProxyResult{Message: err.Error()}
+		return err.Error()
 	}
-	before := selector.Now()
 	if params.ProxyName == "" {
 		selector.ForceSet(params.ProxyName)
-	} else if err := selector.Set(params.ProxyName); err != nil {
-		return &ChangeProxyResult{Message: err.Error()}
+		return ""
 	}
-	changed := selector.Now() != before
-	refreshRouteLocked(false)
-	return &ChangeProxyResult{Changed: changed}
+	if err := selector.Set(params.ProxyName); err != nil {
+		return err.Error()
+	}
+	return ""
 }
 
 func handleGetTraffic(onlyStatisticsProxy bool) Traffic {
@@ -370,15 +307,6 @@ func handleGetConnections() *statistic.Snapshot {
 	return statistic.DefaultManager.Snapshot()
 }
 
-func handleGetConnectionCount() int {
-	count := 0
-	statistic.DefaultManager.Range(func(statistic.Tracker) bool {
-		count++
-		return true
-	})
-	return count
-}
-
 func handleCloseConnections() bool {
 	statistic.DefaultManager.Range(func(c statistic.Tracker) bool {
 		_ = c.Close()
@@ -429,29 +357,11 @@ func handleGetExternalProvider(externalProviderName string) *ExternalProvider {
 	return externalProvider
 }
 
-type geoResource struct {
-	update func() error
-	url    func() string
-	setUrl func(string)
-}
-
-var geoResources = map[string]geoResource{
-	"MMDB":    {update: updater.UpdateMMDB, url: geodata.MmdbUrl, setUrl: geodata.SetMmdbUrl},
-	"ASN":     {update: updater.UpdateASN, url: geodata.ASNUrl, setUrl: geodata.SetASNUrl},
-	"GEOIP":   {update: updater.UpdateGeoIp, url: geodata.GeoIpUrl, setUrl: geodata.SetGeoIpUrl},
-	"GEOSITE": {update: updater.UpdateGeoSite, url: geodata.GeoSiteUrl, setUrl: geodata.SetGeoSiteUrl},
-}
-
-// mihomo's updaters read these links without a lock, so an unchanged one is never rewritten.
-func setGeoResourceUrl(geoType string, link string) {
-	resource, exist := geoResources[strings.ToUpper(geoType)]
-	if !exist {
-		log.Warnln("geox-url: unknown geo resource %q", geoType)
-		return
-	}
-	if link != "" && link != resource.url() {
-		resource.setUrl(link)
-	}
+var geoResourceUpdaters = map[string]func() error{
+	"MMDB":    updater.UpdateMMDB,
+	"ASN":     updater.UpdateASN,
+	"GEOIP":   updater.UpdateGeoIp,
+	"GEOSITE": updater.UpdateGeoSite,
 }
 
 const (
@@ -513,7 +423,7 @@ func releaseGeoUpdateFromHook(geoType string) {
 }
 
 func handleUpdateGeoData(geoType string) string {
-	resource, exist := geoResources[geoType]
+	update, exist := geoResourceUpdaters[geoType]
 	if !exist {
 		logError("updateGeoData: unknown geo resource %q", geoType)
 		return "unknown geo resource: " + geoType
@@ -523,72 +433,27 @@ func handleUpdateGeoData(geoType string) string {
 	}
 	safeGoDetached("updateGeoData("+geoType+")", func() {
 		defer releaseGeoUpdate(geoType)
-		if err := resource.update(); err != nil {
+		if err := update(); err != nil {
 			logError("updateGeoData(%s) error: %v", geoType, err)
 		}
 	})
 	return ""
 }
 
-type providerRequestFailure struct {
-	code       string
-	reason     string
-	statusCode int
-}
-
-// The reason values are matched by lib/common/network_error.dart.
-func classifyProviderRequestError(err error) (providerRequestFailure, bool) {
-	// mihomo reports a non-2xx fetch as errors.New(resp.Status).
+func providerRequestErrorCode(err error) string {
 	message := err.Error()
 	if len(message) >= 4 && message[3] == ' ' {
 		status, parseErr := strconv.Atoi(message[:3])
 		if parseErr == nil && status >= 100 && status <= 599 {
-			return providerRequestFailure{
-				code:       "request_bad_response",
-				statusCode: status,
-			}, true
+			return "request_bad_response"
 		}
 	}
 	var urlError *url.Error
 	var networkError net.Error
-	if reason := providerRequestFailureReason(err); reason != "" ||
+	if errors.Is(err, context.DeadlineExceeded) ||
 		errors.As(err, &urlError) ||
 		errors.As(err, &networkError) {
-		return providerRequestFailure{code: "request_error", reason: reason}, true
-	}
-	return providerRequestFailure{}, false
-}
-
-func providerRequestFailureReason(err error) string {
-	var unknownAuthority x509.UnknownAuthorityError
-	var hostname x509.HostnameError
-	var invalidCertificate x509.CertificateInvalidError
-	var certificateVerification *tls.CertificateVerificationError
-	var recordHeader tls.RecordHeaderError
-	var alert tls.AlertError
-	var dnsError *net.DNSError
-	var networkError net.Error
-	var opError *net.OpError
-	switch {
-	case errors.As(err, &unknownAuthority),
-		errors.As(err, &hostname),
-		errors.As(err, &invalidCertificate),
-		errors.As(err, &certificateVerification),
-		errors.As(err, &recordHeader),
-		errors.As(err, &alert):
-		return "tls"
-	case errors.As(err, &dnsError), errors.Is(err, resolver.ErrIPNotFound):
-		return "dns"
-	case errors.Is(err, context.DeadlineExceeded),
-		errors.Is(err, os.ErrDeadlineExceeded),
-		errors.As(err, &networkError) && networkError.Timeout():
-		return "timeout"
-	case errors.As(err, &opError),
-		errors.Is(err, syscall.ECONNREFUSED),
-		errors.Is(err, syscall.ECONNRESET),
-		errors.Is(err, io.EOF),
-		errors.Is(err, io.ErrUnexpectedEOF):
-		return "connection"
+		return "request_error"
 	}
 	return ""
 }
@@ -598,25 +463,6 @@ func providerMethodError(code, providerName string, err error) *MethodError {
 		Code:    code,
 		Message: err.Error(),
 		Details: map[string]any{"providerName": providerName},
-	}
-}
-
-func providerRequestMethodError(
-	failure providerRequestFailure,
-	providerName string,
-	err error,
-) *MethodError {
-	details := map[string]any{"providerName": providerName}
-	if failure.reason != "" {
-		details["reason"] = failure.reason
-	}
-	if failure.statusCode != 0 {
-		details["statusCode"] = failure.statusCode
-	}
-	return &MethodError{
-		Code:    failure.code,
-		Message: err.Error(),
-		Details: details,
 	}
 }
 
@@ -639,12 +485,12 @@ func handleUpdateExternalProvider(providerName string) *MethodError {
 	}
 	defer releaseUpdate(key)
 	if err := p.Update(); err != nil {
-		if failure, ok := classifyProviderRequestError(err); ok {
-			return providerRequestMethodError(failure, providerName, err)
+		code := providerRequestErrorCode(err)
+		if code == "" {
+			code = "provider_update_error"
 		}
-		return providerMethodError("provider_update_error", providerName, err)
+		return providerMethodError(code, providerName, err)
 	}
-	refreshRoute()
 	return nil
 }
 
@@ -669,8 +515,50 @@ func handleSideLoadExternalProvider(providerName string, data []byte) *MethodErr
 	if err := sideUpdateExternalProvider(p, data); err != nil {
 		return providerMethodError("provider_update_error", providerName, err)
 	}
-	refreshRoute()
 	return nil
+}
+
+// defaultRefreshHealthChecks re-probes every proxy provider off the calling
+// thread. Providers coalesce concurrent checks internally, so an extra call
+// costs nothing when one is already running.
+func defaultRefreshHealthChecks() {
+	safeGoDetached("refreshHealthChecks", func() {
+		for name, p := range tunnel.ProvidersSnapshot() {
+			log.Debugln("[APP] re-checking provider %s after resume", name)
+			p.HealthCheck()
+		}
+	})
+}
+
+var refreshHealthChecks = defaultRefreshHealthChecks
+
+func handleSuspend(suspended bool) bool {
+	wasSuspended := isSuspended.Swap(suspended)
+	if suspended {
+		tunnel.OnSuspend()
+		return true
+	}
+
+	tunnel.OnRunning()
+	// Provider health checks keep ticking through Doze, where the app has no
+	// network at all, so coming back means every proxy is marked dead and every
+	// delay reads Timeout. A lazy provider then skips its next tick because
+	// nothing touched it in the meantime, and the whole list stays wrong until
+	// the user tests by hand. Re-check now instead - but not while the
+	// listeners are stopped, since the service also resumes the core on its way
+	// down.
+	if wasSuspended && isRunning.Load() {
+		refreshHealthChecks()
+	}
+	return true
+}
+
+// A failure measured while the device is dozing says nothing about the node -
+// the app had no network at all - and publishing it repaints the entire list as
+// Timeout for a user who is not even looking. Successes still are worth having,
+// whenever they happen.
+func shouldPublishDelay(delay uint16) bool {
+	return delay != 0 || !isSuspended.Load()
 }
 
 func handleStartLog() {
@@ -732,18 +620,8 @@ func handleStopLog() {
 	}
 }
 
-// HeapIdle still counts spans the runtime has already handed back to the OS,
-// so the retained-but-unused figure subtracts HeapReleased.
-func handleGetMemoryStats() MemoryStats {
-	var stats runtime.MemStats
-	runtime.ReadMemStats(&stats)
-	return MemoryStats{
-		Rss:          statistic.DefaultManager.Memory(),
-		HeapInuse:    stats.HeapInuse,
-		HeapIdle:     stats.HeapIdle - stats.HeapReleased,
-		StackInuse:   stats.StackInuse,
-		RuntimeOther: stats.MSpanInuse + stats.MCacheInuse + stats.BuckHashSys + stats.GCSys + stats.OtherSys,
-	}
+func handleGetMemory() uint64 {
+	return statistic.DefaultManager.Memory()
 }
 
 func handleGetConfig(path string) (*config.RawConfig, error) {
@@ -752,24 +630,6 @@ func handleGetConfig(path string) (*config.RawConfig, error) {
 		return nil, err
 	}
 	return config.UnmarshalRawConfig(buf)
-}
-
-func handleDumpRuleSet(path string) (string, error) {
-	buf, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	mrsBehaviors := []cp.RuleBehavior{cp.Domain, cp.IPCIDR}
-	var errs []error
-	for _, behavior := range mrsBehaviors {
-		var text strings.Builder
-		err := rp.ConvertToMrs(buf, behavior, cp.MrsRule, &text)
-		if err == nil {
-			return text.String(), nil
-		}
-		errs = append(errs, err)
-	}
-	return "", errors.Join(errs...)
 }
 
 func handleCrash() {
@@ -822,6 +682,9 @@ func handleSetupConfig(params *SetupParams) string {
 
 func init() {
 	adapter.UrlTestHook = func(url string, name string, delay uint16) {
+		if !shouldPublishDelay(delay) {
+			return
+		}
 		sendMessage(Message{
 			Type: DelayMessage,
 			Data: &Delay{
@@ -832,16 +695,9 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
-		notifyProbeRoute(c)
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,
-		})
-	}
-	dns.DefaultQueryNotify = func(record dns.QueryRecord) {
-		sendMessage(Message{
-			Type: DnsMessage,
-			Data: newDnsQuery(record),
 		})
 	}
 	executor.DefaultProviderLoadedHook = func(providerName string) {
@@ -857,9 +713,6 @@ func init() {
 		} else {
 			releaseGeoUpdateFromHook(geoType)
 			scheduleReclaimOwnership()
-			if !skipped && updateErr == nil {
-				bumpRouteEpoch()
-			}
 		}
 		status := GeoUpdateStatus{
 			Type:     geoType,

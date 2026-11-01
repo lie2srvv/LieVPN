@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -100,6 +99,16 @@ class AppPath {
     return join(mHomeDirPath, 'database.sqlite');
   }
 
+  Future<String> get backupFilePath async {
+    final mHomeDirPath = await homeDirPath;
+    return join(mHomeDirPath, 'backup.zip');
+  }
+
+  Future<String> get restoreDirPath async {
+    final mHomeDirPath = await homeDirPath;
+    return join(mHomeDirPath, 'restore');
+  }
+
   Future<String> get tempFilePath async {
     final mTempDir = await tempDir.future;
     return join(mTempDir.path, 'temp$uniqueId');
@@ -107,7 +116,7 @@ class AppPath {
 
   Future<String> get lockFilePath async {
     final homeDirPath = await appPath.homeDirPath;
-    return join(homeDirPath, 'LieVPN.lock');
+    return join(homeDirPath, 'FlClash.lock');
   }
 
   Future<String> get configFilePath async {
@@ -137,22 +146,6 @@ class AppPath {
   Future<String> getScriptPath(String fileName) async {
     final path = await scriptsDirPath;
     return join(path, '$fileName.js');
-  }
-
-  Future<String> get providerCacheRootPath async {
-    final directory = await homeDirPath;
-    return join(directory, providersDirectoryName);
-  }
-
-  Future<String> getProviderCachePath(
-    ProviderKind kind,
-    String fileName,
-  ) async {
-    return join(
-      await providerCacheRootPath,
-      providerCacheDirectoryName(kind),
-      fileName,
-    );
   }
 
   Future<String> getProvidersRootPath() async {
@@ -195,12 +188,10 @@ class AppPath {
     }
 
     final targetEntities = targetDir.listSync();
-    final hasExistingData = targetEntities.any(
-      (e) =>
-          basename(e.path) == 'database.sqlite' ||
-          basename(e.path) == 'config.yaml' ||
-          basename(e.path) == 'profiles',
-    );
+    final hasExistingData = targetEntities.any((e) =>
+        basename(e.path) == 'database.sqlite' ||
+        basename(e.path) == 'config.yaml' ||
+        basename(e.path) == 'profiles');
 
     if (hasExistingData) {
       return;
@@ -209,10 +200,7 @@ class AppPath {
     await _copyDirectory(legacyDir, targetDir);
   }
 
-  static Future<void> _copyDirectory(
-    Directory source,
-    Directory destination,
-  ) async {
+  static Future<void> _copyDirectory(Directory source, Directory destination) async {
     await for (final entity in source.list(recursive: false)) {
       final name = basename(entity.path);
       if (name.endsWith('.lock') || name.endsWith('.sock')) {
@@ -232,6 +220,7 @@ class AppPath {
       }
     }
   }
+
 }
 
 final appPath = AppPath();

@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:fl_clash/common/context.dart';
 import 'package:fl_clash/common/system.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -63,32 +62,6 @@ enum GroupType {
       String() => throw UnimplementedError(),
     };
   }
-
-  /// The core refuses a relay group, so it stays parseable but unofferable.
-  static List<GroupType> get selectableValues =>
-      values.where((item) => item != Relay).toList();
-}
-
-enum LoadBalanceStrategy {
-  @JsonValue('consistent-hashing')
-  consistentHashing('consistent-hashing'),
-  @JsonValue('round-robin')
-  roundRobin('round-robin'),
-  @JsonValue('sticky-sessions')
-  stickySessions('sticky-sessions');
-
-  final String value;
-
-  const LoadBalanceStrategy(this.value);
-
-  static LoadBalanceStrategy? parse(String? value) {
-    for (final item in values) {
-      if (item.value == value) {
-        return item;
-      }
-    }
-    return null;
-  }
 }
 
 extension GroupTypeExtension on GroupType {
@@ -108,8 +81,6 @@ extension GroupTypeExtension on GroupType {
 
 enum UsedProxy { GLOBAL, DIRECT, REJECT }
 
-enum DelayTestPhase { queued, running }
-
 extension UsedProxyExtension on UsedProxy {
   static List<String> get valueList =>
       UsedProxy.values.map((e) => e.toString().split('.').last).toList();
@@ -123,46 +94,15 @@ enum ViewMode { mobile, laptop, desktop }
 
 enum LogLevel { debug, info, warning, error, silent }
 
-enum RecordTone { muted, neutral, warning, error }
-
-extension RecordToneExt on RecordTone {
-  Color? accentColor(BuildContext context) {
+extension LogLevelExt on LogLevel {
+  Color? color(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return switch (this) {
-      RecordTone.warning => colorScheme.tertiary,
-      RecordTone.error => colorScheme.error,
-      RecordTone.muted || RecordTone.neutral => null,
-    };
-  }
-
-  Color? tintColor(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return switch (this) {
-      RecordTone.warning => colorScheme.tertiaryContainer.withValues(
-        alpha: 0.2,
-      ),
-      RecordTone.error => colorScheme.errorContainer.withValues(alpha: 0.2),
-      RecordTone.muted || RecordTone.neutral => null,
-    };
-  }
-
-  Color labelColor(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return switch (this) {
-      RecordTone.muted => colorScheme.outline,
-      RecordTone.neutral => colorScheme.onSurfaceVariant,
-      RecordTone.warning => colorScheme.onTertiaryContainer,
-      RecordTone.error => colorScheme.onErrorContainer,
-    };
-  }
-
-  Color labelContainerColor(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return switch (this) {
-      RecordTone.muted => colorScheme.surfaceContainerHigh,
-      RecordTone.neutral => colorScheme.surfaceContainerHighest,
-      RecordTone.warning => colorScheme.tertiaryContainer,
-      RecordTone.error => colorScheme.errorContainer,
+      LogLevel.silent => colorScheme.outline,
+      LogLevel.debug => colorScheme.onSurfaceVariant,
+      LogLevel.info => null,
+      LogLevel.warning => colorScheme.tertiary,
+      LogLevel.error => colorScheme.error,
     };
   }
 }
@@ -170,12 +110,12 @@ extension RecordToneExt on RecordTone {
 enum MessageLevel { info, success, warning, error }
 
 extension MessageLevelExt on MessageLevel {
-  Glyph? get glyph {
+  IconData? get icon {
     return switch (this) {
       MessageLevel.info => null,
-      MessageLevel.success => AppGlyphs.checkCircle,
-      MessageLevel.warning => AppGlyphs.warning,
-      MessageLevel.error => AppGlyphs.error,
+      MessageLevel.success => Icons.check_circle_outline,
+      MessageLevel.warning => Icons.warning_amber_outlined,
+      MessageLevel.error => Icons.error_outline,
     };
   }
 
@@ -216,13 +156,13 @@ extension MessageLevelExt on MessageLevel {
 
 enum TrafficUnit { B, KB, MB, GB, TB }
 
-enum NavigationItemMode { mobile, desktop, more, moreFull }
+enum NavigationItemMode { mobile, desktop, more }
 
 enum Network { tcp, udp }
 
 enum ProxiesSortType { none, delay, name }
 
-enum TunStack { gvisor, system, mixed, mips }
+enum TunStack { gvisor, system, mixed }
 
 enum AccessControlMode { acceptSelected, rejectSelected }
 
@@ -237,16 +177,7 @@ enum ResultType {
   error,
 }
 
-enum CoreEventType {
-  log,
-  delay,
-  request,
-  dns,
-  loaded,
-  crash,
-  geoUpdate,
-  routeChanged,
-}
+enum CoreEventType { log, delay, request, loaded, crash, geoUpdate }
 
 enum InvokeMessageType { protect, process }
 
@@ -273,71 +204,6 @@ enum DnsMode {
   hosts,
 }
 
-enum DnsCacheAlgorithm { lru, arc }
-
-enum FakeIpFilterMode { blacklist, whitelist, rule }
-
-@JsonEnum(valueField: 'path')
-enum DnsOverrideKey {
-  enable('enable'),
-  listen('listen'),
-  listenRoutingMark('listen-routing-mark'),
-  useHosts('use-hosts'),
-  useSystemHosts('use-system-hosts'),
-  ipv6('ipv6'),
-  ipv6Timeout('ipv6-timeout'),
-  respectRules('respect-rules'),
-  preferH3('prefer-h3'),
-  cacheAlgorithm('cache-algorithm'),
-  cacheMaxSize('cache-max-size'),
-  enhancedMode('enhanced-mode'),
-  fakeIpRange('fake-ip-range'),
-  fakeIpRange6('fake-ip-range6'),
-  fakeIpFilter('fake-ip-filter'),
-  fakeIpFilterMode('fake-ip-filter-mode'),
-  fakeIpTtl('fake-ip-ttl'),
-  defaultNameserver('default-nameserver'),
-  nameserverPolicy('nameserver-policy'),
-  nameserver('nameserver'),
-  fallback('fallback'),
-  fallbackLazyQuery('fallback-lazy-query'),
-  proxyServerNameserver('proxy-server-nameserver'),
-  proxyServerNameserverPolicy('proxy-server-nameserver-policy'),
-  directNameserver('direct-nameserver'),
-  directNameserverFollowPolicy('direct-nameserver-follow-policy'),
-  fallbackFilterGeoip('fallback-filter.geoip'),
-  fallbackFilterGeoipCode('fallback-filter.geoip-code'),
-  fallbackFilterGeosite('fallback-filter.geosite'),
-  fallbackFilterIpcidr('fallback-filter.ipcidr'),
-  fallbackFilterDomain('fallback-filter.domain');
-
-  const DnsOverrideKey(this.path);
-
-  final String path;
-
-  static const fallbackFilterSection = 'fallback-filter';
-
-  bool get isFallbackFilter => path.startsWith('$fallbackFilterSection.');
-
-  String get jsonKey => isFallbackFilter
-      ? path.substring(fallbackFilterSection.length + 1)
-      : path;
-}
-
-@JsonEnum(valueField: 'path')
-enum NtpOverrideKey {
-  enable('enable'),
-  server('server'),
-  port('port'),
-  interval('interval'),
-  dialerProxy('dialer-proxy'),
-  writeToSystem('write-to-system');
-
-  const NtpOverrideKey(this.path);
-
-  final String path;
-}
-
 enum ExternalControllerStatus {
   @JsonValue('')
   close(''),
@@ -362,40 +228,18 @@ enum KeyboardModifier {
   const KeyboardModifier(this.physicalKeys);
 }
 
-enum HotAction {
-  start,
-  view,
-  mode,
-  proxy,
-  tun,
-  ruleMode,
-  globalMode,
-  directMode,
-  delayTest,
-  updateProfiles,
-  copyEnv,
-  exit,
-}
+enum HotAction { start, view, mode, proxy, tun }
 
-enum ProxiesIconStyle { filled, plain, hidden }
+enum ProxiesIconStyle { none, standard, icon }
 
 enum FontFamily {
   twEmoji('Twemoji'),
-  jetBrainsMono('JetBrainsMono');
+  jetBrainsMono('JetBrainsMono'),
+  icon('Icons');
 
   final String value;
 
   const FontFamily(this.value);
-}
-
-enum EditorFontSize {
-  standard(16),
-  large(18),
-  extraLarge(20);
-
-  final double value;
-
-  const EditorFontSize(this.value);
 }
 
 enum RouteMode { bypassPrivate, config }
@@ -408,33 +252,32 @@ enum FunctionTag {
   updateConfig,
   setupConfig,
   updateGroups,
+  addCheckIpNum,
   applyProfile,
   savePreferences,
   changeProxy,
+  checkIp,
   handleWill,
   updateDelay,
   vpnTip,
   autoLaunch,
+  renderPause,
   updatePageIndex,
   pageChange,
   proxiesTabChange,
   logs,
   requests,
-  dnsQueries,
   autoScrollToEnd,
   loadedProvider,
   saveSharedFile,
   removeProxy,
   suspend,
   coreErrorNotifier,
-  reloadPackages,
-  addCheckIpNum,
-  checkIp,
-  renderPause,
 }
 
 enum DashboardWidget {
   networkSpeed,
+  outboundModeV2,
   outboundMode,
   trafficUsage,
   networkDetection,
@@ -442,42 +285,12 @@ enum DashboardWidget {
   vpnButton(platforms: [SupportPlatform.Android]),
   systemProxyButton(platforms: desktopPlatforms),
   intranetIp,
-  memoryInfo,
-  serviceStatus,
-  dnsQueries,
-  requests,
-  connections,
-  overrideDnsButton,
-  overrideNtpButton,
-  runTime,
-  proxyGroups,
-  profiles;
+  memoryInfo;
 
   final List<SupportPlatform> platforms;
 
   const DashboardWidget({this.platforms = SupportPlatform.values});
 }
-
-enum DnsQueryInitiator { app, rule, direct, proxy, other }
-
-enum IpType { residential, mobile, business, hosting }
-
-enum IpQualityLevel { good, normal, risky }
-
-enum IpQualitySource {
-  identMe('ident.me'),
-  ipApiCom('ip-api.com'),
-  ipQuery('ipquery.io'),
-  ipLocate('iplocate.io'),
-  proxyCheck('proxycheck.io'),
-  ipApiIs('ipapi.is');
-
-  const IpQualitySource(this.label);
-
-  final String label;
-}
-
-enum IpQualitySourceStatus { noType, timeout, rateLimited, failed, ipMismatch }
 
 enum GeodataLoader { standard, memconservative }
 
@@ -526,7 +339,6 @@ enum PageLabel {
   requests,
   resources,
   connections,
-  dns,
   addRules,
 }
 
@@ -655,56 +467,20 @@ extension RuleActionExt on RuleAction {
   }
 }
 
-enum RulePayloadError { network, numberRange, dscpRange }
-
-extension RulePayloadErrorExt on RulePayloadError {
-  String getMessage(BuildContext context) {
-    final appLocalizations = context.appLocalizations;
-    return switch (this) {
-      RulePayloadError.network => appLocalizations.invalidNetworkContent,
-      RulePayloadError.numberRange => appLocalizations.invalidRangeContent,
-      RulePayloadError.dscpRange => appLocalizations.invalidDscpContent,
-    };
-  }
-}
-
 enum OverwriteType { standard, script, custom }
 
 enum RuleTarget {
-  DIRECT('DIRECT'),
-  REJECT('REJECT'),
-  REJECT_DROP('REJECT-DROP');
-
-  final String value;
-
-  const RuleTarget(this.value);
+  DIRECT,
+  REJECT;
 
   static final List<String> baseTargetNames = List.unmodifiable(
-    RuleTarget.values.map((item) => item.value),
+    RuleTarget.values.map((item) => item.name),
   );
 
   static final Set<String> baseTargets = Set.unmodifiable(baseTargetNames);
 }
 
-enum ProviderKind { proxy, rule }
-
-/// Where a provider name a custom overwrite uses resolves, in lookup order.
-enum ProviderSource { subscription, profile, app }
-
-enum RuleProviderBehavior { domain, ipcidr, classical }
-
-enum RuleProviderFormat { yaml, text, mrs }
-
-extension RuleProviderFormatExt on RuleProviderFormat? {
-  /// The core reads an mrs set only as a domain or an ipcidr one.
-  List<RuleProviderBehavior> get behaviors => this == RuleProviderFormat.mrs
-      ? const [RuleProviderBehavior.domain, RuleProviderBehavior.ipcidr]
-      : RuleProviderBehavior.values;
-}
-
 enum RestoreStrategy { compatible, override }
-
-enum TabAnimation { slide, fade }
 
 enum Language { yaml, javaScript, json }
 
@@ -714,12 +490,10 @@ enum QueryTag { proxies, access }
 
 enum LoadingTag {
   profiles,
-  scripts,
   backup_restore,
   access,
   proxies,
   batteryOptimization,
-  checkUpdate,
 }
 
 enum CoreStatus { connecting, connected, disconnected }

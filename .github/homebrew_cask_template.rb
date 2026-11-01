@@ -23,11 +23,9 @@ cask "flclash" do
 
   app "FlClash.app"
 
-  postflight_steps do
-    run "/usr/bin/xattr",
-        args:           ["-rd", "com.apple.quarantine", "{{appdir}}/FlClash.app"],
-        writable_paths: ["FlClash.app"],
-        writable_base:  :appdir
+  postflight do
+    system_command "xattr",
+                   args: ["-rd", "com.apple.quarantine", "#{appdir}/FlClash.app"]
   end
 
   uninstall quit: "com.follow.clash"

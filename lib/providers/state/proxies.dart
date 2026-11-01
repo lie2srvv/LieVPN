@@ -5,28 +5,28 @@ GroupsState currentGroupsState(Ref ref) {
   final mode = ref.watch(
     patchClashConfigProvider.select((state) => state.mode),
   );
-  final groups = ref.watch(groupsProvider);
-  final shown = switch (mode) {
-    Mode.direct => const <Group>[],
-    Mode.global => groups,
-    Mode.rule => groups.where(
-      (item) => item.hidden == false && item.name != GroupName.GLOBAL.name,
+  final groups = ref.watch(
+    groupsProvider.select(
+      (state) => state.map((item) {
+        return item.copyWith(
+          now: '',
+          all: item.all.map((proxy) => proxy.copyWith(now: '')).toList(),
+        );
+      }),
     ),
-  };
-  return GroupsState(value: shown.map(_withoutSelection).toList());
+  );
+  return GroupsState(
+    value: switch (mode) {
+      Mode.direct => [],
+      Mode.global => groups.toList(),
+      Mode.rule =>
+        groups
+            .where((item) => item.hidden == false)
+            .where((element) => element.name != GroupName.GLOBAL.name)
+            .toList(),
+    },
+  );
 }
-
-Group _withoutSelection(Group group) {
-  final all = group.all.any(_hasSelection)
-      ? [
-          for (final proxy in group.all)
-            _hasSelection(proxy) ? proxy.copyWith(now: '') : proxy,
-        ]
-      : group.all;
-  return group.copyWith(now: '', all: all);
-}
-
-bool _hasSelection(Proxy proxy) => proxy.now?.isNotEmpty ?? false;
 
 @riverpod
 ProxyState proxyState(Ref ref) {
@@ -67,60 +67,18 @@ ProxiesActionsState proxiesActionsState(Ref ref) {
   );
 }
 
-/// Watching the delay map instead would drop nodes one probe at a time, and
-/// reading it on any other rebuild would drop them whenever something
-/// unrelated changed mid-test.
-@riverpod
-DelayMap delaysAtLastTestBatch(Ref ref) {
-  ref.watch(sortNumProvider);
-  ref.listen(delayDataSourceProvider.select((state) => state.isEmpty), (
-    _,
-    isEmpty,
-  ) {
-    if (isEmpty) ref.invalidateSelf();
-  });
-  return {
-    for (final entry in ref.read(delayDataSourceProvider).entries)
-      entry.key: {...entry.value},
-  };
-}
-
-@riverpod
-GroupsState visibleGroupsState(Ref ref) {
-  final currentGroups = ref.watch(currentGroupsStateProvider);
-  final hideTimeoutProxies = ref.watch(
-    proxiesStyleSettingProvider.select((state) => state.hideTimeoutProxies),
-  );
-  if (!hideTimeoutProxies) {
-    return currentGroups;
-  }
-  return currentGroups.copyWith(
-    value: computeHideTimeout(
-      groups: currentGroups.value,
-      allGroups: ref.watch(groupsProvider),
-      delayMap: ref.watch(delaysAtLastTestBatchProvider),
-      selectedMap: ref.watch(selectedMapProvider),
-      defaultTestUrl: ref.watch(realTestUrlProvider()),
-    ),
-  );
-}
-
 @riverpod
 GroupsState filterGroupsState(Ref ref, String query) {
-  final currentGroups = ref.watch(visibleGroupsStateProvider);
-  final searchQuery = SearchQuery(query);
-  if (searchQuery.isEmpty) {
+  final currentGroups = ref.watch(currentGroupsStateProvider);
+  if (query.isEmpty) {
     return currentGroups;
   }
-  final matches = <Proxy, bool>{};
+  final lowQuery = query.toLowerCase();
   final groups = currentGroups.value
       .map((group) {
         return group.copyWith(
           all: group.all
-              .where(
-                (proxy) =>
-                    matches[proxy] ??= searchQuery.matches(proxy.searchFields),
-              )
+              .where((proxy) => proxy.name.toLowerCase().contains(lowQuery))
               .toList(),
         );
       })
@@ -186,15 +144,16 @@ ProxyGroupSelectorState proxyGroupSelectorState(
 ) {
   final proxiesStyle = ref.watch(proxiesStyleSettingProvider);
   final group = ref.watch(
-    visibleGroupsStateProvider.select(
+    currentGroupsStateProvider.select(
       (state) => state.value.getGroup(groupName),
     ),
   );
   final sortNum = ref.watch(sortNumProvider);
+  final lowQuery = query.toLowerCase();
   final proxies =
-      group?.all
-          .whereMatches(SearchQuery(query), (proxy) => proxy.searchFields)
-          .toList() ??
+      group?.all.where((item) {
+        return item.name.toLowerCase().contains(lowQuery);
+      }).toList() ??
       [];
   return ProxyGroupSelectorState(
     testUrl: group?.testUrl,
@@ -226,16 +185,14 @@ int? delay(Ref ref, {required String proxyName, String? testUrl}) {
 }
 
 @riverpod
-DelayTestPhase? delayTestPhase(
-  Ref ref, {
-  required String proxyName,
-  String? testUrl,
-}) {
+bool delayTestPending(Ref ref, {required String proxyName, String? testUrl}) {
   final currentTestUrl = ref.watch(realTestUrlProvider(testUrl));
   final proxyState = ref.watch(realSelectedProxyStateProvider(proxyName));
   final effectiveTestUrl = proxyState.testUrl.takeFirstValid([currentTestUrl]);
   final key = delayTestKey(effectiveTestUrl, proxyState.proxyName);
-  return ref.watch(pendingDelayTestsProvider.select((state) => state[key]));
+  return ref.watch(
+    pendingDelayTestsProvider.select((state) => state.contains(key)),
+  );
 }
 
 @riverpod

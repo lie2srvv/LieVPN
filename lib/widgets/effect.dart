@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -120,7 +119,7 @@ class _CommonExpandIconState extends State<CommonExpandIcon>
       builder: (_, child) {
         return RotationTransition(turns: _iconTurns, child: child!);
       },
-      child: const GlyphIcon(AppGlyphs.caretDown, fill: 1),
+      child: const Icon(Icons.expand_more),
     );
   }
 }

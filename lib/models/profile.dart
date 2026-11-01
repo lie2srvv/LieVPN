@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -120,18 +120,14 @@ extension ProfilesExt on List<Profile> {
     return index == -1 ? null : this[index];
   }
 
-  /// A profile doubles as a proxy provider, so its label must also stay
-  /// clear of the app-level ones.
-  Profile optimizeLabel(Profile profile, {Set<String> reserved = const {}}) {
-    return profile.copyWith(
-      label: uniqueLabelFor(
-        profile.label,
-        fallback: profile.id.toString(),
-        taken: (label) =>
-            reserved.contains(label) ||
-            any((item) => item.label == label && item.id != profile.id),
-      ),
-    );
+  String _getLabel(String label, int id) {
+    final realLabel = label.takeFirstValid([id.toString()]);
+    final clean = realLabel.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
+    return clean.isNotEmpty ? clean : 'LieVPN';
+  }
+
+  Profile optimizeLabel(Profile profile) {
+    return profile.copyWith(label: _getLabel(profile.label, profile.id));
   }
 }
 
@@ -173,10 +169,7 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({required ValidateConfig validate}) async {
-    final (newProfile, _) = await checkAndUpdate(
-      validate: validate,
-      force: true,
-    );
+    final (newProfile, _) = await checkAndUpdate(validate: validate, force: true);
     return newProfile;
   }
 
@@ -225,6 +218,9 @@ extension ProfileExtension on Profile {
     final message = await validate(path);
     if (message.isNotEmpty) {
       throw MessageException(message);
+    }
+    if (type == ProfileType.url && !checkHasProxies(bytes)) {
+      throw MessageException(currentAppLocalizations.subscriptionInvalidOrEmpty);
     }
     final mFile = await file;
     await tempFile.copy(mFile.path);

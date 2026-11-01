@@ -67,13 +67,12 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             result.error("INVALID_ARGUMENT", "Method call payload must be a string", null)
             return
         }
-        // Inline rather than a coroutine per call, which could swap two: watchRoute
-        // keeps the latest intent by the order calls reach the Core
-        // (dispatchMethodCall in core/method.go), and this only hands data over.
-        ServiceController.invokeMethod(data) { response ->
-            result.success(response)
-        }.onFailure { error ->
-            result.error("CORE_ERROR", error.message, null)
+        scope.launch {
+            ServiceController.invokeMethod(data) { response ->
+                result.success(response)
+            }.onFailure { error ->
+                result.error("CORE_ERROR", error.message, null)
+            }
         }
     }
 

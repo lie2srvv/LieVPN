@@ -55,10 +55,11 @@ var (
 	// configMu -> selectMu.
 	selectMu sync.Mutex
 
-	isInit     atomic.Bool
-	isRunning  atomic.Bool
-	sdkVersion atomic.Int32
-	testURL    atomic.Pointer[string]
+	isInit      atomic.Bool
+	isRunning   atomic.Bool
+	isSuspended atomic.Bool
+	sdkVersion  atomic.Int32
+	testURL     atomic.Pointer[string]
 
 	delayTestSlots = make(chan struct{}, delayTestConcurrency)
 
@@ -289,10 +290,7 @@ func updateConfig(params *UpdateParams) error {
 		general.UnifiedDelay = *params.UnifiedDelay
 		adapter.UnifiedDelay.Store(general.UnifiedDelay)
 	}
-	// IPv6 belongs with mode: turning it on moves a direct dial to another exit address.
-	routeChanged := false
 	if params.Mode != nil {
-		routeChanged = routeChanged || general.Mode != *params.Mode
 		general.Mode = *params.Mode
 		tunnel.SetMode(general.Mode)
 	}
@@ -301,7 +299,6 @@ func updateConfig(params *UpdateParams) error {
 		log.SetLevel(general.LogLevel)
 	}
 	if params.IPv6 != nil {
-		routeChanged = routeChanged || general.IPv6 != *params.IPv6
 		general.IPv6 = *params.IPv6
 		resolver.DisableIPv6 = !general.IPv6
 	}
@@ -318,13 +315,7 @@ func updateConfig(params *UpdateParams) error {
 	}
 
 	updateListeners(currentConfig)
-	for geoType, link := range params.GeoXUrl {
-		setGeoResourceUrl(geoType, link)
-	}
 	syncGeoUpdater(params.GeoAutoUpdate, params.GeoUpdateInterval)
-	if routeChanged {
-		bumpRouteEpoch()
-	}
 	return nil
 }
 
@@ -374,24 +365,12 @@ func reconcileGeoUpdater() {
 	stopGeoUpdater()
 }
 
-// mihomo writes the NTP time with settimeofday, which Android's app seccomp
-// policy answers by killing the process rather than with EPERM.
-var systemTimeWritable = runtime.GOOS != "android"
-
 func loadConfig(path string) (*config.Config, error) {
 	buf, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := executor.ParseWithBytes(buf)
-	if err != nil {
-		return nil, err
-	}
-	if cfg.NTP.WriteToSystem && !systemTimeWritable {
-		log.Warnln("ntp write-to-system ignored: Android does not let apps set the system time")
-		cfg.NTP.WriteToSystem = false
-	}
-	return cfg, nil
+	return executor.ParseWithBytes(buf)
 }
 
 func applyConfig(params *SetupParams) error {
@@ -421,7 +400,6 @@ func applyConfig(params *SetupParams) error {
 	currentConfig = cfg
 	hub.ApplyConfig(cfg)
 	patchSelectGroup(params.SelectedMap)
-	bumpRouteEpoch()
 	updateListeners(cfg)
 	reconcileGeoUpdater()
 	return err

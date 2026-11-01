@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' hide context;
 
-import '../helpers/glyph_finders.dart';
 import '../helpers/test_app.dart';
 
 void main() {
@@ -82,9 +80,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(DecorationListItem), findsNWidgets(6));
-    expect(find.byType(ItemPositionProvider), findsNWidgets(6));
+    expect(find.byType(ItemPositionProvider), findsNWidgets(4));
     expect(find.byType(Switch), findsOneWidget);
-    expect(find.byGlyph(AppGlyphs.more), findsNWidgets(4));
+    expect(find.byIcon(Icons.more_vert), findsNWidgets(4));
     expect(find.byType(FutureBuilder<FileInfo?>), findsNWidgets(4));
     for (final url in defaultGeoXUrl.values) {
       expect(find.text(url), findsNothing);
@@ -95,7 +93,7 @@ void main() {
       matching: find.byType(DecorationListItem),
     );
     await tester.tap(
-      find.descendant(of: mmdbItem, matching: find.byGlyph(AppGlyphs.more)),
+      find.descendant(of: mmdbItem, matching: find.byIcon(Icons.more_vert)),
     );
     await tester.pumpAndSettle();
 

@@ -115,7 +115,6 @@ void main() {
           const SharedState(
             stopTip: 'stopTip',
             startTip: 'startTip',
-            localNetworkTip: 'localNetworkTip',
             currentProfileName: 'profile',
             stopText: 'stop',
             onlyStatisticsProxy: false,
@@ -131,7 +130,6 @@ void main() {
       const state = SharedState(
         stopTip: 'stopTip',
         startTip: 'startTip',
-        localNetworkTip: 'localNetworkTip',
         currentProfileName: 'profile',
         stopText: 'stop',
         onlyStatisticsProxy: true,
@@ -169,10 +167,8 @@ void main() {
   group('invokeMethod', () {
     test('encodes the call and decodes the response envelope', () async {
       mockChannel(
-        (_) async => utf8.encode(
-          json.encode(
-            const CoreMethodResponse(id: '7', result: {'up': 1}).toJson(),
-          ),
+        (_) async => json.encode(
+          const CoreMethodResponse(id: '7', result: {'up': 1}).toJson(),
         ),
       );
 
@@ -199,21 +195,6 @@ void main() {
       expect(response.error, isNull);
     });
 
-    test('decodes a large UTF-8 envelope off the calling isolate', () async {
-      final names = List.generate(5000, (index) => '节点-$index');
-      mockChannel(
-        (_) async => utf8.encode(
-          json.encode(CoreMethodResponse(id: '3', result: names).toJson()),
-        ),
-      );
-
-      final response = await Service().invokeMethod(
-        const CoreMethodCall(id: '3', method: CoreMethod.getProxies),
-      );
-
-      expect(response!.result, names);
-    });
-
     test('returns null when the platform sends no envelope', () async {
       mockChannel((_) async => null);
 
@@ -227,13 +208,11 @@ void main() {
 
     test('surfaces a Core error inside the envelope', () async {
       mockChannel(
-        (_) async => utf8.encode(
-          json.encode({
-            'id': '1',
-            'result': null,
-            'error': {'code': 'unavailable', 'message': 'core down'},
-          }),
-        ),
+        (_) async => json.encode({
+          'id': '1',
+          'result': null,
+          'error': {'code': 'unavailable', 'message': 'core down'},
+        }),
       );
 
       final response = await Service().invokeMethod(

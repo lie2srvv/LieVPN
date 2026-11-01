@@ -6,17 +6,13 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/window.dart';
 import 'package:fl_clash/bootstrap.dart';
 import 'package:fl_clash/common/system_dns.dart';
-import 'package:fl_clash/icons/icons.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
 import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/manager/streak_manager.dart';
-import 'package:fl_clash/manager/connection_health_manager.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/focus.dart';
-import 'package:fl_clash/widgets/keyboard_inset_hold.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,18 +57,7 @@ class Application extends ConsumerStatefulWidget {
   ConsumerState<Application> createState() => ApplicationState();
 }
 
-const _actionIconTheme = ActionIconThemeData(
-  backButtonIconBuilder: _backButtonIcon,
-  closeButtonIconBuilder: _closeButtonIcon,
-);
-
-Widget _backButtonIcon(BuildContext context) =>
-    GlyphIcon(AppGlyphs.backFor(Theme.of(context).platform));
-
-Widget _closeButtonIcon(BuildContext context) =>
-    const GlyphIcon(AppGlyphs.close);
-
-class ApplicationState extends ConsumerState<Application> {
+class ApplicationState extends ConsumerState<Application> with WidgetsBindingObserver {
   Timer? _autoUpdateProfilesTaskTimer;
   bool _preHasVpn = false;
 
@@ -92,6 +77,7 @@ class ApplicationState extends ConsumerState<Application> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     SystemNavigator.setFrameworkHandlesBack(true);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (globalState.navigatorKey.currentContext != null) {
@@ -107,36 +93,23 @@ class ApplicationState extends ConsumerState<Application> {
       );
       unawaited(AppUpdateManager.autoCheckUpdate(ref));
       unawaited(StreakManager.instance.init());
+      unawaited(LiePaymentManager.checkPendingPayment(ref));
       _initLink();
-      if (!safeModeBuild) {
-        unawaited(app?.initShortcuts());
-      }
+      unawaited(app?.initShortcuts());
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      unawaited(LiePaymentManager.checkPendingPayment(ref));
+    }
   }
 
   void _initLink() {
     linkManager.initAppLinksListen((url) async {
       unawaited(window?.show());
-      final message = currentAppLocalizations.createProfileFromUrlTip(url);
-      final parts = message.split(url);
-      final res = await dialogs.showMessage(
-        title: currentAppLocalizations.addProfile,
-        message: TextSpan(
-          children: [
-            TextSpan(text: parts.first),
-            TextSpan(
-              text: url,
-              style: TextStyle(
-                color: context.colorScheme.primary,
-                decoration: TextDecoration.underline,
-                decorationColor: context.colorScheme.primary,
-              ),
-            ),
-            if (parts.length > 1) TextSpan(text: parts.last),
-          ],
-        ),
-      );
-      if (res != true) return;
       unawaited(
         ref.read(profilesActionProvider.notifier).addProfileFormURL(url),
       );
@@ -163,9 +136,30 @@ class ApplicationState extends ConsumerState<Application> {
     unawaited(ref.read(systemActionProvider.notifier).updateLocalIp());
     final hasVpn = results.contains(ConnectivityResult.vpn);
     if (_preHasVpn == hasVpn) {
-      ref.read(routeTrackerProvider.notifier).bumpHostEpoch();
+      ref.read(checkIpNumProvider.notifier).add();
     }
     _preHasVpn = hasVpn;
+
+    final isRunning = ref.read(isStartProvider);
+    final hasInternet = results.any((r) =>
+        r == ConnectivityResult.wifi ||
+        r == ConnectivityResult.mobile ||
+        r == ConnectivityResult.ethernet);
+    if (isRunning && hasInternet) {
+      debouncer.call(
+        FunctionTag.vpnTip,
+        () async {
+          if (!ref.read(isStartProvider)) return;
+          commonPrint.log(
+            'Network interface change detected, resetting connections...',
+          );
+          try {
+            await ref.read(coreHandlerProvider).resetConnections();
+          } catch (_) {}
+        },
+        duration: const Duration(milliseconds: 1500),
+      );
+    }
   }
 
   @override
@@ -182,35 +176,51 @@ class ApplicationState extends ConsumerState<Application> {
           onNavigationNotification: (_) => true,
           localizationsDelegates: const [
             AppLocalizations.delegate,
+            ModernFallbackMaterialLocalizationsDelegate(),
+            ModernFallbackCupertinoLocalizationsDelegate(),
+            FallbackMaterialLocalizationsDelegate(),
+            FallbackCupertinoLocalizationsDelegate(),
+            FallbackWidgetsLocalizationsDelegate(),
             ...GlobalMaterialLocalizations.delegates,
           ],
           builder: (context, child) {
-            return buildManagerStack(
-              isDesktop: system.isDesktop,
-              onConnectivityChanged: _handleConnectivityChanged,
-              child: RemoteFocusAdapter(enabled: system.isTV, child: child!),
+            // The bridge's legacy Theme swaps in its own default IconTheme color,
+            // which material_ui IconButton.filled reads as custom and loses onPrimary.
+            // ignore: deprecated_member_use
+            return MaterialUiCompatibilityBridge(
+              delegates: const [
+                FallbackMaterialLocalizationsDelegate(),
+                FallbackCupertinoLocalizationsDelegate(),
+                FallbackWidgetsLocalizationsDelegate(),
+              ],
+              child: IconTheme(
+                data: Theme.of(context).iconTheme,
+                child: buildManagerStack(
+                  isDesktop: system.isDesktop,
+                  onConnectivityChanged: _handleConnectivityChanged,
+                  child: child!,
+                ),
+              ),
             );
           },
           scrollBehavior: const BaseScrollBehavior(),
           title: appName,
-          locale: getLocaleForString(locale),
+          locale: getLocaleForString(locale) ?? const Locale('en'),
           supportedLocales: AppLocalizations.delegate.supportedLocales,
           themeMode: themeProps.themeMode,
           theme: ThemeData(
             useMaterial3: true,
             pageTransitionsTheme: _pageTransitionsTheme,
-            actionIconTheme: _actionIconTheme,
             colorScheme: _getAppColorScheme(brightness: Brightness.light),
           ).withAppShapes,
           darkTheme: ThemeData(
             useMaterial3: true,
             pageTransitionsTheme: _pageTransitionsTheme,
-            actionIconTheme: _actionIconTheme,
-            colorScheme: _getAppColorScheme(brightness: Brightness.dark),
+            colorScheme: _getAppColorScheme(
+              brightness: Brightness.dark,
+            ).toPureBlack(themeProps.pureBlack),
           ).withAppShapes,
-          home: ConnectionHealthManager(
-            child: KeyboardInsetHold(child: child!),
-          ),
+          home: ConnectionHealthManager(child: child!),
         );
       },
       child: const HomePage(),
@@ -219,6 +229,7 @@ class ApplicationState extends ConsumerState<Application> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     linkManager.destroy();
     _autoUpdateProfilesTaskTimer?.cancel();
     super.dispose();

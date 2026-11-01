@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/core.dart';
-import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,8 +31,6 @@ class EditProfileView extends ConsumerStatefulWidget {
 class _EditProfileViewState extends ConsumerState<EditProfileView> {
   late final TextEditingController _labelController;
   late final TextEditingController _urlController;
-  late final TextEditingController _autoUpdateDurationController;
-  late bool _autoUpdate;
   String? _rawText;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _fileInfoNotifier = ValueNotifier<FileInfo?>(null);
@@ -45,10 +42,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     super.initState();
     _labelController = TextEditingController(text: widget.profile.label);
     _urlController = TextEditingController(text: widget.profile.url);
-    _autoUpdate = widget.profile.autoUpdate;
-    _autoUpdateDurationController = TextEditingController(
-      text: widget.profile.autoUpdateDuration.inMinutes.toString(),
-    );
     _setupAction = ref.read(setupActionProvider.notifier);
     _updateFileInfo();
   }
@@ -67,39 +60,12 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     var profile = widget.profile.copyWith(
       url: _urlController.text,
       label: _labelController.text,
-      autoUpdate: _autoUpdate,
-      autoUpdateDuration: Duration(
-        minutes: int.parse(_autoUpdateDurationController.text),
-      ),
+      autoUpdate: true,
+      autoUpdateDuration: const Duration(hours: 1),
     );
     final profilesAction = ref.read(profilesActionProvider.notifier);
-    final appLocalizations = context.appLocalizations;
-    final rename = await profilesAction.providerRename(widget.profile, profile);
-    if (rename.conflicts.isNotEmpty) {
-      await dialogs.showMessage(
-        title: appLocalizations.tip,
-        message: TextSpan(
-          text: appLocalizations.providerRenameShadowed(
-            rename.conflicts.map((item) => item.realLabel).join(', '),
-            profile.realLabel,
-          ),
-        ),
-        cancelable: false,
-      );
-      return;
-    }
-    final renameIn = [for (final item in rename.renameIn) item.id];
     final hasUpdate = widget.profile.url != profile.url;
     if (_fileData != null) {
-      if (profile.type == ProfileType.url && _autoUpdate) {
-        final res = await dialogs.showMessage(
-          title: appLocalizations.tip,
-          message: TextSpan(text: appLocalizations.profileHasUpdate),
-        );
-        if (res == true) {
-          profile = profile.copyWith(autoUpdate: false);
-        }
-      }
       final savedProfile = await globalState.safeRun(
         () => profile.saveFile(
           _fileData!,
@@ -110,15 +76,15 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       if (savedProfile == null) {
         return;
       }
-      profilesAction.putProfile(savedProfile, renameIn: renameIn);
+      profilesAction.putProfile(savedProfile);
     } else if (!hasUpdate) {
-      profilesAction.putProfile(profile, renameIn: renameIn);
+      profilesAction.putProfile(profile);
     } else {
       unawaited(
         globalState.safeRun(() async {
           await Future.delayed(commonDuration);
           if (hasUpdate) {
-            await profilesAction.updateProfile(profile, renameIn: renameIn);
+            await profilesAction.updateProfile(profile);
           }
         }),
       );
@@ -126,13 +92,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     if (mounted) {
       Navigator.of(context).pop();
     }
-  }
-
-  void _setAutoUpdate(bool value) {
-    if (_autoUpdate == value) return;
-    setState(() {
-      _autoUpdate = value;
-    });
   }
 
   Future<void> _handleSaveEdit(BuildContext context, String data) async {
@@ -157,17 +116,25 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   }
 
   Future<void> _editProfileFile() async {
+    if (_rawText == null) {
+      final profilePath = await appPath.getProfilePath(
+        widget.profile.id.toString(),
+      );
+      final file = File(profilePath);
+      if (await file.exists()) {
+        _rawText = await file.readAsString();
+      }
+    }
+    if (!mounted) return;
     final title = widget.profile.label.takeFirstValid([
       widget.profile.id.toString(),
     ]);
     final editorPage = EditorPage(
       title: title,
-      load: () async => _rawText ??=
-          await readTextFileTask(
-            await appPath.getProfilePath(widget.profile.id.toString()),
-          ) ??
-          '',
-      onSave: (context, _, content) => _handleSaveEdit(context, content),
+      content: _rawText!,
+      onSave: (context, _, content) {
+        _handleSaveEdit(context, content);
+      },
       onPop: (context, _, content) async {
         if (content == _rawText) {
           return true;
@@ -229,7 +196,6 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _labelController.dispose();
     _urlController.dispose();
     _fileInfoNotifier.dispose();
-    _autoUpdateDurationController.dispose();
     super.dispose();
     _setupAction.autoApplyProfile();
   }
@@ -238,27 +204,15 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final items = <Widget>[
-      _ProfileNameField(
-        controller: _labelController,
-        reservedLabels: ref.watch(
-          appProviderLabelsProvider(ProviderKind.proxy),
-        ),
-      ),
-      if (widget.profile.type == ProfileType.url) ...[
+      _ProfileNameField(controller: _labelController),
+      if (widget.profile.type == ProfileType.url)
         _ProfileUrlField(controller: _urlController),
-        ListItem.toggle(
-          title: Text(appLocalizations.autoUpdate),
-          value: _autoUpdate,
-          onChanged: _setAutoUpdate,
+      if (widget.profile.type == ProfileType.file)
+        _ProfileFileItem(
+          fileInfoNotifier: _fileInfoNotifier,
+          onEdit: _editProfileFile,
+          onUpload: _uploadProfileFile,
         ),
-        if (_autoUpdate)
-          _AutoUpdateIntervalField(controller: _autoUpdateDurationController),
-      ],
-      _ProfileFileItem(
-        fileInfoNotifier: _fileInfoNotifier,
-        onEdit: _editProfileFile,
-        onUpload: _uploadProfileFile,
-      ),
     ];
     return FocusTraversalGroup(
       policy: PageTraversalPolicy(),
@@ -271,30 +225,31 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
             _handleBack();
             return false;
           },
-          child: CommonScaffold(
-            title: appLocalizations.edit,
-            iconActions: [
-              IconButtonData(
-                glyph: AppGlyphs.check,
+          child: FloatLayout(
+            floatingWidget: FloatWrapper(
+              child: CommonFloatingActionButton(
                 onPressed: _handleConfirm,
-                tooltip: appLocalizations.save,
+                icon: const Icon(Icons.save),
+                label: appLocalizations.save,
               ),
-            ],
-            body: Form(
+            ),
+            child: Form(
               key: _formKey,
-              child: Builder(
-                builder: (context) => ListView.separated(
-                  padding: kMaterialListPadding.copyWith(
-                    top: context.contentTopPadding,
-                    bottom: BottomInsetScope.of(context) + 16,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Builder(
+                  builder: (context) => ListView.separated(
+                    padding: kMaterialListPadding.copyWith(
+                      bottom: BottomInsetScope.of(context),
+                    ),
+                    itemBuilder: (_, index) {
+                      return items[index];
+                    },
+                    separatorBuilder: (_, _) {
+                      return const SizedBox(height: 24);
+                    },
+                    itemCount: items.length,
                   ),
-                  itemBuilder: (_, index) {
-                    return items[index];
-                  },
-                  separatorBuilder: (_, _) {
-                    return const SizedBox(height: 24);
-                  },
-                  itemCount: items.length,
                 ),
               ),
             ),
@@ -306,13 +261,9 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
 }
 
 class _ProfileNameField extends StatelessWidget {
-  const _ProfileNameField({
-    required this.controller,
-    required this.reservedLabels,
-  });
+  const _ProfileNameField({required this.controller});
 
   final TextEditingController controller;
-  final Set<String> reservedLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -326,9 +277,6 @@ class _ProfileNameField extends StatelessWidget {
         validator: (String? value) {
           if (value == null || value.isEmpty) {
             return appLocalizations.profileNameNullValidationDesc;
-          }
-          if (reservedLabels.contains(value.trim())) {
-            return appLocalizations.existsTip(appLocalizations.name);
           }
           return null;
         },
@@ -361,38 +309,9 @@ class _ProfileUrlField extends StatelessWidget {
           if (!value.isUrl) {
             return appLocalizations.profileUrlInvalidValidationDesc;
           }
-          return null;
-        },
-      ),
-    );
-  }
-}
-
-class _AutoUpdateIntervalField extends StatelessWidget {
-  const _AutoUpdateIntervalField({required this.controller});
-
-  final TextEditingController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final appLocalizations = context.appLocalizations;
-    return ListItem(
-      title: TextFormField(
-        textInputAction: TextInputAction.next,
-        controller: controller,
-        inputFormatters: TextInputLimits.digitsOnly(TextInputLimits.interval),
-        decoration: InputDecoration(
-          labelText: appLocalizations.autoUpdateInterval,
-        ),
-        validator: (String? value) {
-          if (value == null || value.isEmpty) {
-            return appLocalizations.profileAutoUpdateIntervalNullValidationDesc;
-          }
-          try {
-            int.parse(value);
-          } catch (_) {
-            return appLocalizations
-                .profileAutoUpdateIntervalInvalidValidationDesc;
+          final val = value.trim();
+          if (!isValidLieVpnSubscriptionUrl(val)) {
+            return appLocalizations.notLieVpnSubscription;
           }
           return null;
         },
@@ -433,12 +352,12 @@ class _ProfileFileItem extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return [
       CommonPopupMenuItem(
-        glyph: AppGlyphs.edit,
+        icon: Icons.edit_outlined,
         label: appLocalizations.edit,
         onPressed: onEdit,
       ),
       CommonPopupMenuItem(
-        glyph: AppGlyphs.upload,
+        icon: Icons.upload_outlined,
         label: appLocalizations.upload,
         onPressed: onUpload,
       ),
@@ -469,9 +388,15 @@ class _ProfileFileItem extends StatelessWidget {
                             CommonPopupMenu(items: _menuItems(context)),
                         targetBuilder: (open) {
                           return IconButton(
-                            tooltip: appLocalizations.more,
-                            onPressed: open,
-                            icon: const GlyphIcon(AppGlyphs.more),
+                            style: IconButton.styleFrom(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.standard,
+                            ),
+                            tooltip: context.appLocalizations.more,
+                            onPressed: () {
+                              open();
+                            },
+                            icon: const Icon(Icons.more_vert),
                           );
                         },
                       ),

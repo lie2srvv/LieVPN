@@ -140,14 +140,14 @@ void main() {
         matching: find.byType(DecoratedBox),
       ),
     );
-    final decoration = decoratedBox.decoration as ShapeDecoration;
+    final decoration = decoratedBox.decoration as BoxDecoration;
     final customPaint = find.descendant(
       of: find.byType(CommonCircleLoading),
       matching: find.byType(CustomPaint),
     );
 
     expect(decoration.color, colorScheme.primaryContainer);
-    expect(decoration.shape, AppShape.full);
+    expect(decoration.borderRadius, AppRadius.full);
     expect(tester.getSize(customPaint), const Size.square(32));
     expect(
       tester.getSize(find.byType(CommonCircleLoading)),

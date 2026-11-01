@@ -6,18 +6,28 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/config.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:screen_retriever/screen_retriever.dart';
-import 'package:window/window.dart';
+import 'package:window_manager/window_manager.dart';
 
 class Window implements WindowPort {
   static Window? _instance;
   bool _supportsPosition = false;
-  WindowEffect? _blurEffect;
+  bool _isReady = false;
   late final WindowVisibilityController _visibility =
       WindowVisibilityController(
         showWindow: _showWindow,
         hideWindow: _hideWindow,
         isWindowVisible: _isWindowVisible,
-        setSkipTaskbar: (skip) => desktopWindow.setSkipTaskbar(skip),
+        setSkipTaskbar: (skip) async {
+          if (!_isReady) return;
+          try {
+            await windowManager.setSkipTaskbar(skip);
+          } catch (e) {
+            commonPrint.log(
+              'setSkipTaskbar failed: $e',
+              logLevel: LogLevel.warning,
+            );
+          }
+        },
         dockSettleDuration: system.isMacOS
             ? const Duration(seconds: 1)
             : Duration.zero,
@@ -33,31 +43,53 @@ class Window implements WindowPort {
   Future<void> init(int version, WindowProps props) async {
     final acquire = await singleInstanceLock.acquire();
     if (!acquire) {
-      commonPrint.log('another instance owns the data directory, exiting');
+      commonPrint.log(
+        'another instance owns the data directory, notifying and exiting',
+      );
+      if (system.isLinux) {
+        await singleInstanceLock.notifyRunningInstance();
+      }
       exit(0);
     }
-    if (!safeModeBuild) {
-      if (system.isWindows) {
-        for (final scheme in protocolSchemes) {
-          protocol.register(scheme);
-        }
-      }
-      if (system.isLinux) {
-        unawaited(protocol.registerLinux(protocolSchemes));
+    if (system.isLinux) {
+      unawaited(
+        singleInstanceLock.startListening(() {
+          show();
+        }),
+      );
+    }
+    if (system.isWindows) {
+      for (final scheme in protocolSchemes) {
+        protocol.register(scheme);
       }
     }
-    await desktopWindow.ensureInitialized();
+    if (system.isLinux) {
+      unawaited(protocol.registerLinux(protocolSchemes));
+    }
+    await windowManager.ensureInitialized();
     _supportsPosition = !system.isMacOS;
     if (system.isLinux) {
-      _supportsPosition = await desktopWindow.isPositionSupported();
+      _supportsPosition = await windowManager.isPositionSupported();
     }
+    final WindowOptions windowOptions = WindowOptions(
+      size: props.size,
+      minimumSize: const Size(380, 400),
+    );
     if (!system.isMacOS || version > 10) {
-      await desktopWindow.setTitleBarStyle(TitleBarStyle.hidden);
+      await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     }
-    await desktopWindow.setSize(props.size);
-    await desktopWindow.setMinimumSize(const Size(380, 400));
-    await _windowPosition(props);
-    await desktopWindow.setPreventClose(true);
+    await windowManager.setMaximizable(true);
+    // On Linux the compositor only honors positioning after the window is shown;
+    // elsewhere position it pre-show to avoid a visible jump.
+    if (!system.isLinux) {
+      await _windowPosition(props);
+    }
+    await windowManager.waitUntilReadyToShow(windowOptions);
+    _isReady = true;
+    if (system.isLinux) {
+      await _windowPosition(props);
+    }
+    await windowManager.setPreventClose(true);
   }
 
   Future<void> _windowPosition(WindowProps props) async {
@@ -65,7 +97,7 @@ class Window implements WindowPort {
       final left = props.left;
       final top = props.top;
       if (left == null || top == null) {
-        await desktopWindow.setAlignment(Alignment.center);
+        await windowManager.setAlignment(Alignment.center);
       } else {
         final size = props.size;
         final right = left + size.width;
@@ -86,9 +118,9 @@ class Window implements WindowPort {
               displayBounds.contains(Offset(right, bottom));
         });
         if (isPositionValid) {
-          await desktopWindow.setPosition(Offset(left, top));
+          await windowManager.setPosition(Offset(left, top));
         } else {
-          await desktopWindow.setAlignment(Alignment.center);
+          await windowManager.setAlignment(Alignment.center);
         }
       }
     }
@@ -97,15 +129,15 @@ class Window implements WindowPort {
   @override
   Future<WindowProps?> captureNormalGeometry(WindowProps current) async {
     final states = await Future.wait<bool>([
-      desktopWindow.isMaximized(),
-      desktopWindow.isFullScreen(),
-      desktopWindow.isMinimized(),
+      windowManager.isMaximized(),
+      windowManager.isFullScreen(),
+      windowManager.isMinimized(),
     ]);
     if (states.any((state) => state)) {
       return null;
     }
 
-    final bounds = await desktopWindow.getBounds();
+    final bounds = await windowManager.getBounds();
     if (!bounds.width.isFinite ||
         !bounds.height.isFinite ||
         bounds.width <= 0 ||
@@ -122,57 +154,20 @@ class Window implements WindowPort {
     );
   }
 
-  /// A probe that finds no effect is not cached, so a failure at startup
-  /// does not pin the toggle to off for the rest of the session.
-  Future<WindowEffect> _resolveBlurEffect() async {
-    final cached = _blurEffect;
-    if (cached != null) {
-      return cached;
-    }
-    final candidates = system.isMacOS
-        ? const [WindowEffect.blur]
-        : const [WindowEffect.acrylic, WindowEffect.blur];
-    for (final effect in candidates) {
-      if (await desktopWindow.isEffectSupported(effect)) {
-        return _blurEffect = effect;
-      }
-    }
-    return WindowEffect.none;
-  }
-
-  /// Only Windows 10's accent blur uses the tint; it draws nothing without one.
-  @override
-  Future<bool> setBlur({
-    required bool enabled,
-    required Brightness brightness,
-    required Color tint,
-  }) async {
-    if (system.isLinux) {
-      return false;
-    }
-    final effect = enabled ? await _resolveBlurEffect() : WindowEffect.none;
-    await desktopWindow.setEffect(
-      effect,
-      tint: system.isWindows
-          ? tint.withValues(alpha: kSidebarBlurOpacity)
-          : null,
-      brightness: brightness,
-    );
-    return effect != WindowEffect.none;
-  }
-
   /// Every desktop runner leaves the window hidden until [init] reveals it, so
   /// a failure before that point would leave the error screen with no window.
   Future<void> showInitFailure() async {
     try {
-      await desktopWindow.ensureInitialized();
-      if (await desktopWindow.isVisible()) {
+      await windowManager.ensureInitialized();
+      if (await windowManager.isVisible()) {
         return;
       }
-      await desktopWindow.setSize(const Size(680, 580));
-      await desktopWindow.center();
-      await desktopWindow.show();
-      await desktopWindow.focus();
+      await windowManager.waitUntilReadyToShow(
+        const WindowOptions(size: Size(680, 580), center: true),
+      );
+      _isReady = true;
+      await windowManager.show();
+      await windowManager.focus();
     } catch (e) {
       commonPrint.log(
         'show init failure window failed ${e.toString()}',
@@ -191,23 +186,25 @@ class Window implements WindowPort {
   Future<void> toggle() => _visibility.toggle();
 
   Future<void> _showWindow() async {
-    await desktopWindow.show();
-    await desktopWindow.focus();
+    render?.resume();
+    await windowManager.show();
+    await windowManager.focus();
   }
 
   Future<void> _hideWindow() async {
-    await desktopWindow.hide();
+    render?.pause();
+    await windowManager.hide();
   }
 
   Future<bool> _isWindowVisible() async {
-    final value = await desktopWindow.isVisible();
+    final value = await windowManager.isVisible();
     commonPrint.log('window visible check: $value');
     return value;
   }
 
   @override
   Future<void> close() async {
-    await desktopWindow.close();
+    await windowManager.close();
   }
 
   @override

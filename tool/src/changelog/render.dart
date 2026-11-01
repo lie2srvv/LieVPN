@@ -98,7 +98,7 @@ String escapeTelegramHtml(String value) => value
 
 /// Telegram captions are capped at 1024 characters, so the text is truncated
 /// with a pointer to the full notes instead of failing the upload.
-String renderTelegram(ChangelogVersion version, {String? moreUrl}) {
+String renderTelegram(ChangelogVersion version, {required String moreUrl}) {
   final buffer = StringBuffer();
   if (version.isEmpty) {
     buffer.writeln('• ${escapeTelegramHtml(emptyVersionNote)}');

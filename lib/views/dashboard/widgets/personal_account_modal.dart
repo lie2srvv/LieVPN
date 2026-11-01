@@ -1,3 +1,4 @@
+import 'package:fl_clash/views/payment/lie_payment_sheet.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -30,10 +31,8 @@ Future<void> showAddSubscriptionFlow(
       final colorScheme = Theme.of(sheetContext).colorScheme;
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 8,
-          ).copyWith(bottom: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8)
+              .copyWith(bottom: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,10 +111,8 @@ Future<void> showAddSubscriptionFlow(
       unawaited(profilesAction.addProfileFormQrCode(replaceOld: replaceOld));
       return;
     }
-    final url = await BaseNavigator.push<String>(
-      activeContext,
-      const ScanPage(),
-    );
+    final url =
+        await BaseNavigator.push<String>(activeContext, const ScanPage());
     if (url != null) {
       unawaited(profilesAction.addProfileFormURL(url, replaceOld: replaceOld));
     }
@@ -146,8 +143,7 @@ Future<void> showAddSubscriptionFlow(
     );
     if (enteredUrl != null && enteredUrl.isNotEmpty) {
       unawaited(
-        profilesAction.addProfileFormURL(enteredUrl, replaceOld: replaceOld),
-      );
+          profilesAction.addProfileFormURL(enteredUrl, replaceOld: replaceOld));
     }
   }
 }
@@ -268,7 +264,11 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
               color: const Color(0xFF10B981).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppCorner.md),
             ),
-            child: Icon(icon, size: 20, color: const Color(0xFF10B981)),
+            child: Icon(
+              icon,
+              size: 20,
+              color: const Color(0xFF10B981),
+            ),
           ),
         ],
       ),
@@ -313,10 +313,8 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
     if (!hasSub) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 12,
-          ).copyWith(bottom: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)
+              .copyWith(bottom: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,14 +334,16 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(AppCorner.xl),
                   border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -369,8 +369,9 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                     Text(
                       appLocalizations.subscriptionFromClipboardHint,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -409,9 +410,8 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
 
     final total = info?.total ?? 0;
     final used = (info?.upload ?? 0) + (info?.download ?? 0);
-    final limitText = total > 0
-        ? total.traffic.show
-        : appLocalizations.unlimited;
+    final limitText =
+        total > 0 ? total.traffic.show : appLocalizations.unlimited;
     final usedText = used.traffic.show;
 
     final expireText = (info != null && info.expire > 0)
@@ -420,10 +420,8 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 12,
-        ).copyWith(bottom: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)
+            .copyWith(bottom: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,22 +550,22 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
               const SizedBox(height: 14),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: isExpired
-                      ? Theme.of(
-                          context,
-                        ).colorScheme.errorContainer.withValues(alpha: 0.3)
+                      ? Theme.of(context)
+                          .colorScheme
+                          .errorContainer
+                          .withValues(alpha: 0.3)
                       : Colors.amber.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppCorner.md),
                   border: Border.all(
                     color: isExpired
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.error.withValues(alpha: 0.3)
+                        ? Theme.of(context)
+                            .colorScheme
+                            .error
+                            .withValues(alpha: 0.3)
                         : Colors.amber.withValues(alpha: 0.4),
                   ),
                 ),
@@ -587,13 +585,14 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
                       child: Text(
                         expiryStatus.dynamicWarningText,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isExpired
-                              ? Theme.of(context).colorScheme.error
-                              : (Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.amber.shade300
-                                    : Colors.amber.shade900),
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: isExpired
+                                  ? Theme.of(context).colorScheme.error
+                                  : (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.amber.shade300
+                                      : Colors.amber.shade900),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
                   ],
@@ -605,7 +604,13 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
               width: double.infinity,
               height: 48,
               child: FilledButton.icon(
-                onPressed: () => dialogs.openUrl('https://t.me/liesubbot'),
+                onPressed: () {
+                  showLiePaymentDialog(
+                    context,
+                    currentProfile: currentProfile,
+                    isRenewal: true,
+                  );
+                },
                 icon: const Icon(Icons.bolt_rounded),
                 label: const Text(
                   'Продлить подписку',

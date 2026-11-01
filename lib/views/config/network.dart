@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -7,7 +5,6 @@ import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' show dirname, join;
 
 typedef _VpnUpdate<T> = VpnProps Function(VpnProps state, T value);
 
@@ -99,6 +96,7 @@ class AllowBypassItem extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return _vpnToggle(
       title: (l) => l.allowBypass,
+      subtitle: (l) => l.allowBypassDesc,
       select: (state) => state.allowBypass,
       update: (state, value) => state.copyWith(allowBypass: value),
     );
@@ -115,9 +113,9 @@ class VpnSystemProxyItem extends ConsumerWidget {
     );
     return _vpnToggle(
       title: (l) => l.systemProxy,
-      subtitle: authenticationEnable
-          ? (l) => l.authenticationSystemProxyDesc
-          : null,
+      subtitle: (l) => authenticationEnable
+          ? l.authenticationSystemProxyDesc
+          : l.systemProxyDesc,
       select: (state) => state.systemProxy,
       update: (state, value) => state.copyWith(systemProxy: value),
     );
@@ -131,6 +129,7 @@ class SystemProxyItem extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return _networkToggle(
       title: (l) => l.systemProxy,
+      subtitle: (l) => l.systemProxyDesc,
       select: (state) => state.systemProxy,
       update: (state, value) => state.copyWith(systemProxy: value),
     );
@@ -221,6 +220,14 @@ class InterfaceNameItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final isCustom = ref.watch(
+      patchClashConfigProvider.select(
+        (state) => state.interfaceNameMode == InterfaceNameMode.custom,
+      ),
+    );
+    if (!isCustom) {
+      return Container();
+    }
     return ConfigTextItem(
       title: (l) => l.interfaceName,
       subtitle: (l) => l.interfaceNameDesc,
@@ -255,7 +262,7 @@ class BypassDomainItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    return ConfigListEditItem(
+    return ConfigListInputItem(
       title: (l) => l.bypassDomain,
       subtitle: (l) => l.bypassDomainDesc,
       itemMaxLength: TextInputLimits.domain,
@@ -272,9 +279,19 @@ class RouteAddressItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    return ConfigListEditItem(
+    final bypassPrivate = ref.watch(
+      networkSettingProvider.select(
+        (state) => state.routeMode == RouteMode.bypassPrivate,
+      ),
+    );
+    if (bypassPrivate) {
+      return Container();
+    }
+    return ConfigListInputItem(
       title: (l) => l.routeAddress,
+      subtitle: (l) => l.routeAddressDesc,
       itemMaxLength: TextInputLimits.cidr,
+      maxWidth: 360,
       selector: patchClashConfigProvider.select(
         (state) => state.tun.routeAddress,
       ),
@@ -285,28 +302,9 @@ class RouteAddressItem extends ConsumerWidget {
   }
 }
 
-class LoopbackItem extends StatelessWidget {
-  const LoopbackItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem(
-      title: Text(context.appLocalizations.loopback),
-      onTap: () {
-        windows?.runas(
-          '"${join(dirname(Platform.resolvedExecutable), "EnableLoopback.exe")}"',
-          '',
-        );
-      },
-    );
-  }
-}
-
 List<Widget> networkOptionsItems({
   required bool isDesktop,
   required bool isMacOS,
-  required bool isCustomInterfaceName,
-  required bool isBypassPrivateRoute,
 }) {
   return [
     if (isDesktop) const TUNItem(),
@@ -317,79 +315,10 @@ List<Widget> networkOptionsItems({
     // apply on desktop.
     if (isDesktop) ...[
       const InterfaceNameModeItem(),
-      if (isCustomInterfaceName) const InterfaceNameItem(),
+      const InterfaceNameItem(),
     ],
-    if (!isDesktop) ...[
-      const RouteModeItem(),
-      if (!isBypassPrivateRoute) const RouteAddressItem(),
-    ],
+    if (!isDesktop) ...[const RouteModeItem(), const RouteAddressItem()],
   ];
-}
-
-class VpnSections extends StatelessWidget {
-  const VpnSections({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        generateSectionV3(items: const [VPNItem()]),
-        generateSectionV3(
-          title: 'VPN',
-          items: const [
-            VpnSystemProxyItem(),
-            BypassDomainItem(),
-            AllowBypassItem(),
-            Ipv6Item(),
-            DNSHijackingItem(),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class SystemProxySection extends StatelessWidget {
-  const SystemProxySection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return generateSectionV3(
-      title: context.appLocalizations.system,
-      items: [
-        const SystemProxyItem(),
-        const BypassDomainItem(),
-        if (system.isWindows) const LoopbackItem(),
-      ],
-    );
-  }
-}
-
-class NetworkOptionsSection extends ConsumerWidget {
-  const NetworkOptionsSection({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isCustomInterfaceName = ref.watch(
-      patchClashConfigProvider.select(
-        (state) => state.interfaceNameMode == InterfaceNameMode.custom,
-      ),
-    );
-    final isBypassPrivateRoute = ref.watch(
-      networkSettingProvider.select(
-        (state) => state.routeMode == RouteMode.bypassPrivate,
-      ),
-    );
-    return generateSectionV3(
-      title: context.appLocalizations.options,
-      items: networkOptionsItems(
-        isDesktop: system.isDesktop,
-        isMacOS: system.isMacOS,
-        isCustomInterfaceName: isCustomInterfaceName,
-        isBypassPrivateRoute: isBypassPrivateRoute,
-      ),
-    );
-  }
 }
 
 class NetworkListView extends StatelessWidget {
@@ -397,15 +326,32 @@ class NetworkListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ).copyWith(top: context.contentTopPadding, bottom: 16),
-      children: [
-        if (system.isAndroid) const VpnSections(),
-        if (system.isDesktop) const SystemProxySection(),
-        const NetworkOptionsSection(),
-      ],
-    );
+    final appLocalizations = context.appLocalizations;
+    return generateListView([
+      if (system.isAndroid) const VPNItem(),
+      if (system.isAndroid)
+        ...generateSection(
+          title: 'VPN',
+          items: [
+            const VpnSystemProxyItem(),
+            const BypassDomainItem(),
+            const AllowBypassItem(),
+            const Ipv6Item(),
+            const DNSHijackingItem(),
+          ],
+        ),
+      if (system.isDesktop)
+        ...generateSection(
+          title: appLocalizations.system,
+          items: [const SystemProxyItem(), const BypassDomainItem()],
+        ),
+      ...generateSection(
+        title: appLocalizations.options,
+        items: networkOptionsItems(
+          isDesktop: system.isDesktop,
+          isMacOS: system.isMacOS,
+        ),
+      ),
+    ]);
   }
 }

@@ -12,13 +12,10 @@ class _DelayTestTarget {
   final String key;
 }
 
-typedef _DelayTestBatch = ({List<Proxy> proxies, String? testUrl});
-
 class _DelayTestJob {
   _DelayTestJob(Iterable<String> keys) : held = keys.toSet();
 
   final Set<String> held;
-  final Set<String> startedOnDispatch = {};
   bool cancelled = false;
 }
 
@@ -30,19 +27,10 @@ class ProxiesAction extends _$ProxiesAction {
 
   final List<_DelayTestJob> _delayTestJobs = [];
 
-  final List<Delay> _bufferedDelays = [];
-
-  final List<String> _bufferedStarts = [];
-
-  final List<String> _bufferedFinishes = [];
-
-  Timer? _delayFlushTimer;
-
   final Map<String, String> _pendingSelectedRollback = {};
 
   @override
   void build() {
-    ref.onDispose(() => _delayFlushTimer?.cancel());
     ref.listen(coreStatusProvider, (_, next) {
       if (next != CoreStatus.connected) {
         cancelDelayTests();
@@ -55,35 +43,7 @@ class ProxiesAction extends _$ProxiesAction {
       job.cancelled = true;
       job.held.clear();
     }
-    _delayFlushTimer?.cancel();
-    _delayFlushTimer = null;
-    _bufferedDelays.clear();
-    _bufferedStarts.clear();
-    _bufferedFinishes.clear();
     ref.read(pendingDelayTestsProvider.notifier).clear();
-  }
-
-  void _scheduleDelayFlush() {
-    _delayFlushTimer ??= Timer(renderThrottleDuration, _flushDelayResults);
-  }
-
-  void _flushDelayResults() {
-    _delayFlushTimer?.cancel();
-    _delayFlushTimer = null;
-    if (_bufferedDelays.isNotEmpty) {
-      final delays = List.of(_bufferedDelays);
-      _bufferedDelays.clear();
-      ref.read(delayDataSourceProvider.notifier).setDelays(delays);
-    }
-    if (_bufferedStarts.isNotEmpty || _bufferedFinishes.isNotEmpty) {
-      final started = List.of(_bufferedStarts);
-      final finished = List.of(_bufferedFinishes);
-      _bufferedStarts.clear();
-      _bufferedFinishes.clear();
-      ref
-          .read(pendingDelayTestsProvider.notifier)
-          .apply(started: started, finished: finished);
-    }
   }
 
   void updateGroupsDebounce([Duration? duration]) {
@@ -171,8 +131,7 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void setDelay(Delay delay) {
-    _bufferedDelays.add(delay);
-    _scheduleDelayFlush();
+    ref.read(delayDataSourceProvider.notifier).setDelay(delay);
   }
 
   Future<void> changeProxy({
@@ -184,14 +143,10 @@ class ProxiesAction extends _$ProxiesAction {
         _pendingSelectedRollback.remove(groupName) ??
         _currentSelectedName(groupName);
     profilesAction.updateCurrentSelectedMap(groupName, proxyName);
-    final ChangeProxyResult result;
     try {
-      result = await _core.changeProxy(
+      await _core.changeProxy(
         ChangeProxyParams(groupName: groupName, proxyName: proxyName),
       );
-      if (result.message.isNotEmpty) {
-        throw MessageException(result.message);
-      }
     } catch (error) {
       commonPrint.log(
         'changeProxy($groupName -> $proxyName) failed: $error',
@@ -202,9 +157,6 @@ class ProxiesAction extends _$ProxiesAction {
         currentAppLocalizations.changeProxyFailedTip,
         level: MessageLevel.error,
       );
-      return;
-    }
-    if (!result.changed) {
       return;
     }
     try {
@@ -219,6 +171,7 @@ class ProxiesAction extends _$ProxiesAction {
         logLevel: coreFailureLogLevel(error),
       );
     }
+    ref.read(checkIpNumProvider.notifier).add();
   }
 
   Future<String> updateProvider(
@@ -278,93 +231,59 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   Future<void> proxyDelayTest(Proxy proxy, [String? testUrl]) {
-    return _runDelayTests([
-      (proxies: [proxy], testUrl: testUrl),
-    ]);
+    return _runDelayTests([proxy], testUrl);
   }
 
   Future<void> delayTest(List<Proxy> proxies, [String? testUrl]) async {
-    await _runDelayTests([(proxies: proxies, testUrl: testUrl)]);
+    await _runDelayTests(proxies, testUrl);
     ref.read(sortNumProvider.notifier).add();
-  }
-
-  Future<void> delayTestGroups(List<Group> groups) async {
-    await _runDelayTests([
-      for (final group in groups) (proxies: group.all, testUrl: group.testUrl),
-    ]);
-    ref.read(sortNumProvider.notifier).add();
-  }
-
-  Future<void> delayTestPageGroup(String groupName) async {
-    final group = ref.read(groupsProvider).getGroup(groupName);
-    if (group == null) {
-      return;
-    }
-    final testing = ref.read(delayTestingGroupsProvider.notifier);
-    if (!testing.start(groupName)) {
-      return;
-    }
-    try {
-      final query = SearchQuery(ref.read(queryProvider(QueryTag.proxies)));
-      await delayTest(
-        group.all.whereMatches(query, (proxy) => proxy.searchFields).toList(),
-        group.testUrl,
-      );
-    } finally {
-      testing.stop(groupName);
-    }
   }
 
   List<_DelayTestTarget> _resolveDelayTestTargets(
-    List<_DelayTestBatch> batches,
+    List<Proxy> proxies,
+    String? testUrl,
   ) {
     final groups = ref.read(groupsProvider);
     final selectedMap = ref.read(
       currentProfileProvider.select((state) => state?.selectedMap ?? {}),
     );
+    final fallbackTestUrl = ref.read(realTestUrlProvider(testUrl));
     final seen = <String>{};
     final targets = <_DelayTestTarget>[];
-    for (final batch in batches) {
-      final fallbackTestUrl = ref.read(realTestUrlProvider(batch.testUrl));
-      for (final proxy in batch.proxies) {
-        final state = computeRealSelectedProxyState(
-          proxy.name,
-          groups: groups,
-          selectedMap: selectedMap,
-        );
-        if (state.proxyName.isEmpty) {
-          continue;
-        }
-        final currentTestUrl = state.testUrl.takeFirstValid([fallbackTestUrl]);
-        final key = delayTestKey(currentTestUrl, state.proxyName);
-        if (!seen.add(key)) {
-          continue;
-        }
-        targets.add(
-          _DelayTestTarget(
-            proxyName: state.proxyName,
-            testUrl: currentTestUrl,
-            key: key,
-          ),
-        );
+    for (final proxy in proxies) {
+      final state = computeRealSelectedProxyState(
+        proxy.name,
+        groups: groups,
+        selectedMap: selectedMap,
+      );
+      if (state.proxyName.isEmpty) {
+        continue;
       }
+      final currentTestUrl = state.testUrl.takeFirstValid([fallbackTestUrl]);
+      final key = delayTestKey(currentTestUrl, state.proxyName);
+      if (!seen.add(key)) {
+        continue;
+      }
+      targets.add(
+        _DelayTestTarget(
+          proxyName: state.proxyName,
+          testUrl: currentTestUrl,
+          key: key,
+        ),
+      );
     }
     return targets;
   }
 
-  Future<void> _runDelayTests(List<_DelayTestBatch> batches) async {
-    final targets = _resolveDelayTestTargets(batches);
+  Future<void> _runDelayTests(List<Proxy> proxies, String? testUrl) async {
+    final targets = _resolveDelayTestTargets(proxies, testUrl);
     if (targets.isEmpty) {
       return;
     }
     final pending = ref.read(pendingDelayTestsProvider.notifier);
     final job = _DelayTestJob(targets.map((target) => target.key));
     _delayTestJobs.add(job);
-    // TaskPool.run starts a task synchronously while it has an idle slot.
-    job.startedOnDispatch.addAll(
-      targets.take(_delayTestPool.idleSlots).map((target) => target.key),
-    );
-    pending.apply(acquired: job.held, started: job.startedOnDispatch);
+    pending.acquire(job.held);
     try {
       await Future.wait(
         targets.map(
@@ -373,25 +292,15 @@ class ProxiesAction extends _$ProxiesAction {
       );
     } finally {
       _delayTestJobs.remove(job);
-      _flushDelayResults();
       final abandoned = job.held.toList();
       job.held.clear();
-      pending.apply(
-        finished: abandoned.where(job.startedOnDispatch.contains),
-        released: abandoned.where(
-          (key) => !job.startedOnDispatch.contains(key),
-        ),
-      );
+      pending.release(abandoned);
     }
   }
 
   Future<void> _runDelayTest(_DelayTestJob job, _DelayTestTarget target) async {
     if (job.cancelled) {
       return;
-    }
-    if (!job.startedOnDispatch.contains(target.key)) {
-      _bufferedStarts.add(target.key);
-      _scheduleDelayFlush();
     }
     try {
       final delay = await _core.getDelay(target.testUrl, target.proxyName);
@@ -408,8 +317,7 @@ class ProxiesAction extends _$ProxiesAction {
       );
     } finally {
       if (job.held.remove(target.key)) {
-        _bufferedFinishes.add(target.key);
-        _scheduleDelayFlush();
+        ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
       }
     }
   }

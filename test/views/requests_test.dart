@@ -4,12 +4,10 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/connection/requests.dart';
 import 'package:fl_clash/widgets/null_status.dart';
-import 'package:fl_clash/widgets/scroll.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/scrollbar.dart';
 import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
 
@@ -124,7 +122,7 @@ void main() {
     await teardownView(tester);
   });
 
-  testWidgets('holding the scrollbar thumb floats the start time beside it', (
+  testWidgets('dragging the list floats the start time next to the scrollbar', (
     tester,
   ) async {
     final requests = List.generate(
@@ -151,9 +149,10 @@ void main() {
     const hintKey = ValueKey('scrollbarHintPill');
     expect(find.byKey(hintKey), findsNothing);
 
-    final thumb = await revealScrollbarThumb(tester);
-    final gesture = await tester.startGesture(thumb);
-    await gesture.moveBy(const Offset(0, -1));
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(Scrollable).first),
+    );
+    await gesture.moveBy(const Offset(0, 300));
     await tester.pump();
 
     expect(find.byKey(hintKey), findsOneWidget);
@@ -162,44 +161,40 @@ void main() {
     );
     expect(label.data, requests.last.start.showFull);
     // The hint is pinned to the thumb: at the newest end the thumb center
-    // rests 24px (half the 48px minimum thumb) below the track's top edge,
-    // which the list running under the bar leaves at the bar's foot.
+    // rests 24px (half the 48px minimum thumb) below the track's top edge.
     expect(
       tester.getCenter(find.byKey(hintKey)).dy,
-      closeTo(tester.getRect(find.byType(AppBar)).bottom + 24, 6),
+      closeTo(tester.getRect(find.byType(Scrollable).first).top + 24, 6),
     );
 
     await gesture.up();
+    // The pill outlives the gesture briefly so transient scroll ends do not
+    // blink it. No pumpAndSettle here: the fling's ballistic keeps frames
+    // scheduled for seconds of fake time, which would elapse straight past
+    // the hide window.
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(hintKey), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pumpAndSettle();
+    for (var i = 0; i < 20 && find.byKey(hintKey).evaluate().isNotEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
     expect(find.byKey(hintKey), findsNothing);
+    await tester.pumpAndSettle();
 
     await teardownView(tester);
   });
 
-  testWidgets('following pauses when the list is scrolled off its head and '
-      'resumes when it is scrolled back', (tester) async {
-    seedRequests([for (var i = 0; i < 60; i++) _tracker(id: '$i')]);
+  testWidgets('the scroll-to-end button toggles its icon', (tester) async {
+    seedRequests([_tracker(id: 'a', host: 'alpha.test')]);
 
     await pumpRequests(tester);
+
+    expect(find.byIcon(Icons.block), findsOneWidget);
+    expect(find.byIcon(Icons.vertical_align_top), findsNothing);
+
+    await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    final box = find.byType(ScrollToEndBox<TrackerInfo>);
-    bool following() => tester.widget<ScrollToEndBox<TrackerInfo>>(box).enable;
-    expect(find.byType(FloatingActionButton), findsNothing);
-    expect(following(), isTrue);
-
-    // The list is reversed, so its head is the end of the scroll extent and
-    // an upward drag moves away from it.
-    await tester.drag(box, const Offset(0, -300));
-    await tester.pumpAndSettle();
-    expect(following(), isFalse);
-
-    await tester.drag(box, const Offset(0, 600));
-    await tester.pumpAndSettle();
-    expect(following(), isTrue);
+    expect(find.byIcon(Icons.vertical_align_top), findsOneWidget);
 
     await teardownView(tester);
   });

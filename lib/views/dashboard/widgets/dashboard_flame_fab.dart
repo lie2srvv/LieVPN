@@ -7,10 +7,6 @@ import 'package:flutter/material.dart';
 class DashboardFlameFab extends StatefulWidget {
   const DashboardFlameFab({super.key});
 
-  static void showStreakSheet(BuildContext context, StreakState state) {
-    _DashboardFlameFabState.showStreakSheet(context, state);
-  }
-
   @override
   State<DashboardFlameFab> createState() => _DashboardFlameFabState();
 }
@@ -32,17 +28,13 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    StreakManager.instance.pendingMilestoneNotifier.addListener(
-      _onMilestoneChanged,
-    );
+    StreakManager.instance.pendingMilestoneNotifier.addListener(_onMilestoneChanged);
   }
 
   @override
   void dispose() {
     _milestoneDismissTimer?.cancel();
-    StreakManager.instance.pendingMilestoneNotifier.removeListener(
-      _onMilestoneChanged,
-    );
+    StreakManager.instance.pendingMilestoneNotifier.removeListener(_onMilestoneChanged);
     _pulseController.dispose();
     super.dispose();
   }
@@ -59,7 +51,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
     }
   }
 
-  static void showStreakSheet(BuildContext context, StreakState state) {
+  void _showStreakSheet(BuildContext context, StreakState state) {
     final l = context.appLocalizations;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -78,9 +70,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
             return Container(
               decoration: BoxDecoration(
                 color: colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.18),
@@ -100,9 +90,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.4,
-                        ),
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -122,9 +110,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFFFF5722,
-                                    ).withValues(alpha: 0.35),
+                                    color: const Color(0xFFFF5722).withValues(alpha: 0.35),
                                     blurRadius: 36,
                                     spreadRadius: 10,
                                   ),
@@ -137,31 +123,22 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                             size: 110,
                             color: isActive
                                 ? const Color(0xFFFF4500)
-                                : colorScheme.onSurfaceVariant.withValues(
-                                    alpha: 0.35,
-                                  ),
+                                : colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                           ),
                           // Number in the flame center
                           Positioned(
                             bottom: 24,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: isActive
                                     ? Colors.black.withValues(alpha: 0.7)
-                                    : colorScheme.surface.withValues(
-                                        alpha: 0.85,
-                                      ),
+                                    : colorScheme.surface.withValues(alpha: 0.85),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: isActive
                                       ? const Color(0xFFFFD54F)
-                                      : colorScheme.outline.withValues(
-                                          alpha: 0.4,
-                                        ),
+                                      : colorScheme.outline.withValues(alpha: 0.4),
                                   width: 1.5,
                                 ),
                               ),
@@ -170,9 +147,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
-                                  color: isActive
-                                      ? const Color(0xFFFFEB3B)
-                                      : colorScheme.onSurfaceVariant,
+                                  color: isActive ? const Color(0xFFFFEB3B) : colorScheme.onSurfaceVariant,
                                   letterSpacing: -0.5,
                                 ),
                               ),
@@ -186,8 +161,9 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                     // Title
                     Text(
                       l.streakFlameTitle,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 6),
 
@@ -209,10 +185,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFF5722),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -223,8 +196,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         onPressed: () async {
-                          final success = await StreakManager.instance
-                              .restoreStreak();
+                          final success = await StreakManager.instance.restoreStreak();
                           if (ctx.mounted) {
                             if (success) {
                               ScaffoldMessenger.of(ctx).showSnackBar(
@@ -251,9 +223,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                       l.streakRestoresLeft(restoresLeft),
                       style: TextStyle(
                         fontSize: 12,
-                        color: colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
 
@@ -310,10 +280,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                 if (milestone != null) ...[
                   Container(
                     margin: const EdgeInsets.only(bottom: 10, right: 60),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFFFF5722), Color(0xFFFF9800)],
@@ -330,11 +297,12 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('🎉 ', style: TextStyle(fontSize: 16)),
+                        const Text(
+                          '🎉 ',
+                          style: TextStyle(fontSize: 16),
+                        ),
                         Text(
-                          context.appLocalizations.streakMilestoneCongrats(
-                            milestone,
-                          ),
+                          context.appLocalizations.streakMilestoneCongrats(milestone),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -364,21 +332,16 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                   children: [
                     // Flame widget
                     GestureDetector(
-                      onTap: () => showStreakSheet(context, streakState),
+                      onTap: () => _showStreakSheet(context, streakState),
                       child: Container(
                         height: 56,
                         margin: const EdgeInsets.only(right: 18), // ~0.5 cm
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
                           color: isActive
                               ? const Color(0xFF2C150A)
-                              : colorScheme.surfaceContainerHighest.withValues(
-                                  alpha: 0.8,
-                                ),
-                          borderRadius: BorderRadius.circular(16),
+                              : colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(28),
                           border: Border.all(
                             color: isActive
                                 ? const Color(0xFFFF5722).withValues(alpha: 0.8)
@@ -388,9 +351,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                           boxShadow: isActive
                               ? [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFFFF5722,
-                                    ).withValues(alpha: 0.35),
+                                    color: const Color(0xFFFF5722).withValues(alpha: 0.35),
                                     blurRadius: 12,
                                     spreadRadius: 1,
                                     offset: const Offset(0, 2),
@@ -409,9 +370,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                                 fontWeight: FontWeight.w900,
                                 color: isActive
                                     ? const Color(0xFFFFB74D)
-                                    : colorScheme.onSurfaceVariant.withValues(
-                                        alpha: 0.6,
-                                      ),
+                                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                                 letterSpacing: -0.2,
                               ),
                             ),
@@ -429,9 +388,7 @@ class _DashboardFlameFabState extends State<DashboardFlameFab>
                             else
                               Icon(
                                 Icons.local_fire_department_rounded,
-                                color: colorScheme.onSurfaceVariant.withValues(
-                                  alpha: 0.4,
-                                ),
+                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                                 size: 26,
                               ),
                           ],
@@ -465,104 +422,6 @@ class _RuleLine extends StatelessWidget {
         height: 1.35,
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
-    );
-  }
-}
-
-class StreakFlameDockButton extends StatefulWidget {
-  const StreakFlameDockButton({super.key});
-
-  @override
-  State<StreakFlameDockButton> createState() => _StreakFlameDockButtonState();
-}
-
-class _StreakFlameDockButtonState extends State<StreakFlameDockButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 0.94, end: 1.08).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<StreakState>(
-      valueListenable: StreakManager.instance.streakNotifier,
-      builder: (context, streakState, _) {
-        final isActive = streakState.isActiveToday;
-        final count = streakState.count;
-        final colorScheme = Theme.of(context).colorScheme;
-
-        return Material(
-          color: isActive
-              ? const Color(0xFF2C150A)
-              : colorScheme.surfaceContainer,
-          shape: AppShape.md,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () =>
-                DashboardFlameFab.showStreakSheet(context, streakState),
-            child: SizedBox(
-              height: 56,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$count',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: isActive
-                            ? const Color(0xFFFFB74D)
-                            : colorScheme.onSurfaceVariant.withValues(
-                                alpha: 0.7,
-                              ),
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    if (isActive)
-                      ScaleTransition(
-                        scale: _pulseAnimation,
-                        child: const Icon(
-                          Icons.local_fire_department_rounded,
-                          color: Color(0xFFFF3D00),
-                          size: 26,
-                        ),
-                      )
-                    else
-                      Icon(
-                        Icons.local_fire_department_rounded,
-                        color: colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.4,
-                        ),
-                        size: 26,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

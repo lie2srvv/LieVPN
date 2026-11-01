@@ -3,13 +3,7 @@ import 'package:flutter/widgets.dart';
 class ProxyCountryResolver {
   static const List<CountryEntry> _countries = [
     CountryEntry(
-      patterns: [
-        'Нидерланды',
-        'Netherlands',
-        'Holland',
-        'Nederland',
-        'Одерланды',
-      ],
+      patterns: ['Нидерланды', 'Netherlands', 'Holland', 'Nederland', 'Одерланды'],
       ru: 'Нидерланды',
       en: 'Netherlands',
       ja: 'オランダ',
@@ -58,14 +52,7 @@ class ProxyCountryResolver {
       zh: '法国',
     ),
     CountryEntry(
-      patterns: [
-        'Великобритания',
-        'United Kingdom',
-        'Great Britain',
-        'England',
-        'Англия',
-        'UK',
-      ],
+      patterns: ['Великобритания', 'United Kingdom', 'Great Britain', 'England', 'Англия', 'UK'],
       ru: 'Великобритания',
       en: 'United Kingdom',
       ja: 'イギリス',

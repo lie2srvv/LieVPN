@@ -1,5 +1,6 @@
 export 'android_manager.dart';
 export 'app_manager.dart';
+export 'connection_health_manager.dart';
 export 'connectivity_manager.dart';
 export 'core_manager.dart';
 export 'locale_manager.dart';
@@ -10,3 +11,4 @@ export 'tile_manager.dart';
 export 'tray_manager.dart';
 export 'vpn_manager.dart';
 export 'window_manager.dart';
+export 'streak_manager.dart';

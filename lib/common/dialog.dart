@@ -17,16 +17,17 @@ class Dialogs {
     required Widget child,
     BuildContext? context,
     bool? dismissible,
+    bool filter = true,
   }) async {
-    final host = context ?? _context;
     return showModal<T>(
       useRootNavigator: false,
-      context: host,
+      context: context ?? _context,
       configuration: FadeScaleTransitionConfiguration(
-        barrierColor: host.colorScheme.modalScrim,
+        barrierColor: Colors.black38,
         barrierDismissible: dismissible ?? true,
       ),
       builder: (_) => child,
+      filter: filter ? commonFilter : null,
     );
   }
 
@@ -111,43 +112,29 @@ class Dialogs {
     );
   }
 
-  Future<String?> showUrlInput({required String title, String value = ''}) {
-    final appLocalizations = currentAppLocalizations;
-    return showCommonDialog<String>(
-      child: InputDialog(
-        title: title,
-        value: value,
-        labelText: appLocalizations.url,
-        inputFormatters: TextInputLimits.limit(TextInputLimits.url),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return appLocalizations.emptyTip(appLocalizations.value);
-          }
-          if (!value.isUrl) {
-            return appLocalizations.urlTip(appLocalizations.value);
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Future<({String label, String url})?> showNamedUrlInput({
-    required String title,
-    String label = '',
-    String url = '',
-    FormFieldValidator<String>? labelValidator,
-    FormFieldValidator<String>? urlValidator,
-  }) {
-    return showCommonDialog<({String label, String url})>(
-      child: NamedUrlDialog(
-        title: title,
-        label: label,
-        url: url,
-        labelValidator: labelValidator,
-        urlValidator: urlValidator,
-      ),
-    );
+  Future<bool> showDisclaimer() async {
+    return await showCommonDialog<bool>(
+          dismissible: false,
+          child: CommonDialog(
+            title: currentAppLocalizations.disclaimer,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(_context).pop<bool>(false);
+                },
+                child: Text(currentAppLocalizations.exit),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(_context).pop<bool>(true);
+                },
+                child: Text(currentAppLocalizations.agree),
+              ),
+            ],
+            child: Text(currentAppLocalizations.disclaimerDesc),
+          ),
+        ) ??
+        false;
   }
 
   void showNotifier(

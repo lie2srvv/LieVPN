@@ -1,7 +1,7 @@
 import Cocoa
 import FlutterMacOS
 
-public class TrayPlugin: NSObject, FlutterPlugin {
+public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     private var channel: FlutterMethodChannel!
     private var statusItem: TrayStatusItem?
     private var menu: TrayMenu?
@@ -49,15 +49,11 @@ public class TrayPlugin: NSObject, FlutterPlugin {
         item.setTitle(arguments["title"] as? String ?? "")
 
         if let items = arguments["menu"] as? [[String: Any]] {
-            menu = TrayMenu(
-                items: items,
-                onSelect: { [weak self] id in
-                    self?.channel.invokeMethod("onMenuItemSelected", arguments: ["id": id])
-                },
-                onClose: { [weak self] in
-                    self?.statusItem?.closeMenu()
-                }
-            )
+            let built = TrayMenu(items: items) { [weak self] id in
+                self?.channel.invokeMethod("onMenuItemSelected", arguments: ["id": id])
+            }
+            built.delegate = self
+            menu = built
         }
 
         return true
@@ -86,9 +82,14 @@ public class TrayPlugin: NSObject, FlutterPlugin {
     }
 
     private func makeStatusItem() -> TrayStatusItem? {
-        guard let item = TrayStatusItem(onMenuRequested: { [weak self] in
-            self?.channel.invokeMethod("onMenuRequested", arguments: nil)
-        }) else {
+        guard let item = TrayStatusItem(
+            onActivate: { [weak self] in
+                self?.channel.invokeMethod("onIconActivated", arguments: nil)
+            },
+            onMenuRequested: { [weak self] in
+                self?.channel.invokeMethod("onMenuRequested", arguments: nil)
+            }
+        ) else {
             return nil
         }
         statusItem = item
@@ -113,5 +114,9 @@ public class TrayPlugin: NSObject, FlutterPlugin {
         }
         image.isTemplate = icon["isTemplate"] as? Bool ?? false
         return image
+    }
+
+    public func menuDidClose(_ menu: NSMenu) {
+        statusItem?.closeMenu()
     }
 }

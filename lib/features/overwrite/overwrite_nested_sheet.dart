@@ -13,12 +13,16 @@ Future<void> showOverwriteNestedSheet<T>({
   required int profileId,
   required List<Override> overrides,
   required T Function(WidgetRef ref) currentOf,
-  required FutureOr<bool> Function(BuildContext context, WidgetRef ref) save,
+  required bool Function(BuildContext context, WidgetRef ref) save,
   required WidgetBuilder formBuilder,
 }) {
   return showSheet(
     context: context,
-    props: nestedPagedSheetProps,
+    props: const SheetProps(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      maxWidth: double.maxFinite,
+    ),
     builder: (_) {
       return ProfileIdProvider(
         profileId: profileId,
@@ -37,7 +41,7 @@ Future<void> showOverwriteNestedSheet<T>({
 
 class OverwriteNestedSheet<T> extends ConsumerStatefulWidget {
   final T Function(WidgetRef ref) currentOf;
-  final FutureOr<bool> Function(BuildContext context, WidgetRef ref) save;
+  final bool Function(BuildContext context, WidgetRef ref) save;
   final WidgetBuilder formBuilder;
 
   const OverwriteNestedSheet({
@@ -54,6 +58,7 @@ class OverwriteNestedSheet<T> extends ConsumerStatefulWidget {
 
 class _OverwriteNestedSheetState<T>
     extends ConsumerState<OverwriteNestedSheet<T>> {
+  final GlobalKey<NavigatorState> _nestedNavigatorKey = GlobalKey();
   late final T _origin;
   bool _closing = false;
 
@@ -63,11 +68,12 @@ class _OverwriteNestedSheetState<T>
     _origin = widget.currentOf(ref);
   }
 
-  Future<void> _handleDismiss(bool hasPushedPages) async {
+  Future<void> _handleClose() async {
     if (_closing) return;
     _closing = true;
     try {
-      if (hasPushedPages) {
+      final state = _nestedNavigatorKey.currentState;
+      if (state != null && state.canPop()) {
         final res = await dialogs.showMessage(
           message: TextSpan(text: context.appLocalizations.confirmExitWindow),
         );
@@ -76,7 +82,7 @@ class _OverwriteNestedSheetState<T>
         }
       }
       if (context.mounted) {
-        await _handleExit();
+        unawaited(_handleExit());
       }
     } finally {
       _closing = false;
@@ -100,17 +106,66 @@ class _OverwriteNestedSheetState<T>
       Navigator.of(context).pop();
       return;
     }
-    if (await widget.save(context, ref) && mounted) {
+    if (widget.save(context, ref)) {
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _handlePop() async {
+    final state = _nestedNavigatorKey.currentState;
+    if (state != null && state.canPop()) {
+      state.pop();
+    } else {
+      unawaited(_handleExit());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return NestedPagedSheet(
-      builder: widget.formBuilder,
-      onExit: () => unawaited(_handleExit()),
-      onDismiss: _handleDismiss,
+    final nestedNavigator = Navigator(
+      key: _nestedNavigatorKey,
+      onGenerateInitialRoutes: (navigator, initialRoute) {
+        return [
+          PagedSheetRoute(builder: (context) => widget.formBuilder(context)),
+        ];
+      },
+    );
+    final sheetProvider = SheetProvider.of(context);
+    return CommonPopScope(
+      onPop: (_) async {
+        unawaited(_handlePop());
+        return false;
+      },
+      child: sheetProvider!.copyWith(
+        nestedNavigatorPop: ([data]) {
+          Navigator.of(context).pop(data);
+        },
+        child: SizedBox(
+          width: sheetProvider.type == SheetType.sideSheet ? 400 : null,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () async {
+                    await _handleClose();
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: PagedSheet(child: nestedNavigator),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

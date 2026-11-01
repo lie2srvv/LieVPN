@@ -246,12 +246,6 @@ var (
 )
 
 func handleUpdateDns(value string) {
-	// mihomo turns the [""] that Split returns for no servers into a "udp://:"
-	// nameserver, which keeps the system resolver off its default fallback.
-	var addr []string
-	if value != "" {
-		addr = strings.Split(value, ",")
-	}
 	seq := dnsUpdateSeq.Add(1)
 	safeGoDetached("updateDns", func() {
 		dnsUpdateMu.Lock()
@@ -260,7 +254,7 @@ func handleUpdateDns(value string) {
 			return
 		}
 		log.Infoln("[DNS] updateDns %s", value)
-		dns.UpdateSystemDNS(addr)
+		dns.UpdateSystemDNS(strings.Split(value, ","))
 		dns.FlushCacheWithDefaultResolver()
 	})
 }
@@ -291,7 +285,7 @@ func invokeMethod(callback unsafe.Pointer, paramsChar *C.char) {
 		newMethodResponse("", callback).failure("invalid_method_call", err.Error(), nil)
 		return
 	}
-	dispatchMethodCall(call, newMethodResponse(call.ID, callback))
+	go handleMethodCall(call, newMethodResponse(call.ID, callback))
 }
 
 //export startTUN
@@ -335,26 +329,14 @@ func quickSetup(callback unsafe.Pointer, initParamsChar *C.char, setupParamsChar
 	}()
 }
 
-// The listener goes away with the Flutter engine, which never gets to release
-// the route watch it held, while the service and this core run on.
-//
 //export setEventListener
 func setEventListener(listener unsafe.Pointer) {
 	eventListenerLock.Lock()
+	defer eventListenerLock.Unlock()
 	if eventListener != nil {
 		releaseObject(eventListener)
 	}
 	eventListener = listener
-	eventListenerLock.Unlock()
-	if listener == nil {
-		stopRouteWatch()
-	}
-}
-
-func hasEventListener() bool {
-	eventListenerLock.RLock()
-	defer eventListenerLock.RUnlock()
-	return eventListener != nil
 }
 
 //export getTotalTraffic
@@ -391,6 +373,11 @@ func stopTun() {
 	if isRunning.Load() {
 		handleStopListener()
 	}
+}
+
+//export suspend
+func suspend(suspended bool) {
+	handleSuspend(suspended)
 }
 
 //export forceGC

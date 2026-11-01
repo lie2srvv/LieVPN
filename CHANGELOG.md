@@ -1,41 +1,5 @@
 # Changelog
 
-## v1.1.1 (2026-10-06)
-
-**Features**
-
-- Upgrade base to FlClash v0.8.99 with LieVPN UI, routing, and streak adaptations (0a84258)
-
-**Bug Fixes**
-
-- **updater** Fix Android PackageInstaller invocation, resolve Linux ETXTBSY on restart, and update release changelog (fb6f113)
-- **ci** Fix Windows runner plugin includes, format code, and improve update parsing (798b314)
-- **ui** Restore speedtest layout and theme, fix dock overlap, specify FlClash fork in about (9020c2f)
-- **ui** Remove PRE ribbon, restore LieVPN logo everywhere, squircle dock buttons, streak flame in dock, and fix dark theme contrast (3de05ac)
-- **setup** Improve distributor and dependency checks on Arch/Linux (1dd6db1)
-
-## v0.8.99 (2026-10-03)
-
-**Features**
-
-- **editor** Editor word wrap and snippets (e131675)
-- **dashboard** More dashboard cards (e62afb7)
-- **views** Hide timed-out nodes and search every list (8378c70)
-- **ui** Sidebar, floating dock and drag to go back (841d603)
-- **ui** New app glyphs, empty states and theme page (ee6a497)
-- **overwrite** Invalid override warnings and rule presets (46fb7fe)
-- **config** DNS query log and per-key DNS/NTP overrides (a390a42)
-- **core** Proxied service checks and outbound IP risk (8068e68)
-- **platform** Tray hotkeys, node delays and a delay test (1e97716)
-
-**Bug Fixes**
-
-- **core** A changed resource link is now used by the next sync and by auto update (ff23f30)
-- **core** DNS lookups no longer fail on networks that report no DNS servers (e55f6d1)
-- **proxies** Smaller icons in icon-only group headers (786a6ab)
-- **core,android** Push notifications reconnect in Doze (1e9955d)
-- **backup,database** Restores never apply halfway (bee8f24)
-
 ## v0.8.98 (2026-09-14)
 
 **Bug Fixes**

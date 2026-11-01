@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 const _platformPackages = [
   'tray',
-  'window',
+  'window_manager',
   'launch_at_startup',
   'screen_retriever',
 ];

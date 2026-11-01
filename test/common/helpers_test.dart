@@ -66,44 +66,33 @@ void main() {
     });
   });
 
-  group('uniqueLabelFor', () {
-    String unique(String name, Set<String> taken) =>
-        uniqueLabelFor(name, fallback: 'Fallback', taken: taken.contains);
-
-    test('keeps a free label', () {
-      expect(unique('foo', {}), 'foo');
-    });
-
+  group('getOverwriteLabel', () {
     test('appends (1) to label without number', () {
-      expect(unique('foo', {'foo'}), 'foo(1)');
+      expect(getOverwriteLabel('foo'), 'foo(1)');
     });
 
     test('increments existing number', () {
-      expect(unique('foo(1)', {'foo(1)'}), 'foo(2)');
+      expect(getOverwriteLabel('foo(1)'), 'foo(2)');
     });
 
     test('increments higher numbers', () {
-      expect(unique('foo(9)', {'foo(9)'}), 'foo(10)');
+      expect(getOverwriteLabel('foo(9)'), 'foo(10)');
     });
 
     test('increments a two-digit suffix into three digits', () {
-      expect(unique('foo(99)', {'foo(99)'}), 'foo(100)');
+      expect(getOverwriteLabel('foo(99)'), 'foo(100)');
     });
 
     test('increments an existing three-digit suffix', () {
-      expect(unique('foo(100)', {'foo(100)'}), 'foo(101)');
+      expect(getOverwriteLabel('foo(100)'), 'foo(101)');
     });
 
     test('increments a bare parenthesized number', () {
-      expect(unique('(1)', {'(1)'}), '(2)');
+      expect(getOverwriteLabel('(1)'), '(2)');
     });
 
     test('increments a single-character label', () {
-      expect(unique('a(1)', {'a(1)'}), 'a(2)');
-    });
-
-    test('steps past numbers already taken', () {
-      expect(unique('foo', {'foo', 'foo(1)', 'foo(2)'}), 'foo(3)');
+      expect(getOverwriteLabel('a(1)'), 'a(2)');
     });
   });
 
@@ -146,25 +135,6 @@ void main() {
 
     test('desktop for large width', () {
       expect(getViewMode(1000).name, 'desktop');
-    });
-  });
-
-  group('canExpandSidebar', () {
-    test('expands only in the desktop view mode', () {
-      expect(canExpandSidebar(getViewMode(maxLaptopWidth + 1)), isTrue);
-      expect(canExpandSidebar(getViewMode(maxLaptopWidth.toDouble())), isFalse);
-      expect(canExpandSidebar(ViewMode.mobile), isFalse);
-    });
-  });
-
-  group('windowControlsOverSidebar', () {
-    test('only macOS 11 and later draw the traffic lights over it', () {
-      expect(
-        windowControlsOverSidebar(isMacOS: true, version: 15),
-        macOSTrafficLightsArea,
-      );
-      expect(windowControlsOverSidebar(isMacOS: true, version: 10), Size.zero);
-      expect(windowControlsOverSidebar(isMacOS: false, version: 11), Size.zero);
     });
   });
 

@@ -83,9 +83,7 @@ abstract final class AppShape {
   static const RoundedSuperellipseBorder xxl = RoundedSuperellipseBorder(
     borderRadius: AppRadius.xxl,
   );
-  static const RoundedSuperellipseBorder full = RoundedSuperellipseBorder(
-    borderRadius: AppRadius.full,
-  );
+  static const StadiumBorder full = StadiumBorder();
   static const CircleBorder circle = CircleBorder();
   static const AppInputBorder input = AppInputBorder();
 
@@ -275,22 +273,5 @@ extension AppShapeThemeExt on ThemeData {
     progressIndicatorTheme: progressIndicatorTheme.copyWith(
       borderRadius: AppRadius.full,
     ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: filledButtonTheme.style?.merge(_pillButton) ?? _pillButton,
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: textButtonTheme.style?.merge(_pillButton) ?? _pillButton,
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: outlinedButtonTheme.style?.merge(_pillButton) ?? _pillButton,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: elevatedButtonTheme.style?.merge(_pillButton) ?? _pillButton,
-    ),
-    iconButtonTheme: IconButtonThemeData(
-      style: iconButtonTheme.style?.merge(_pillButton) ?? _pillButton,
-    ),
   );
 }
-
-const _pillButton = ButtonStyle(shape: WidgetStatePropertyAll(AppShape.full));

@@ -11,13 +11,9 @@ class StoreAction extends _$StoreAction {
     final profileIds = ref.read(profilesProvider).map((item) => item.id);
     final scripts = await ref.read(scriptsProvider.future);
     final scriptIds = scripts.map((item) => item.id);
-    final providerFileNames = await database.clashProvidersDao
-        .fileNames()
-        .get();
     final pathsToDelete = await shakingProfileTask((
       profileIds: profileIds,
       scriptIds: scriptIds,
-      providerFileNames: providerFileNames,
     ));
     await Future.wait(pathsToDelete.map(safeDeletePath));
   }

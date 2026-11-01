@@ -12,17 +12,6 @@ type MethodCall struct {
 	ID        string          `json:"id,omitempty"`
 	Method    CoreMethod      `json:"method"`
 	Arguments json.RawMessage `json:"arguments"`
-	seq       uint64
-}
-
-var methodCallSeq atomic.Uint64
-
-// Each call runs on its own goroutine, so a handler that must honour the
-// host's latest intent compares seq, stamped here in arrival order; every
-// transport has to deliver calls in the order the host sent them.
-func dispatchMethodCall(call *MethodCall, response MethodResponse) {
-	call.seq = methodCallSeq.Add(1)
-	go handleMethodCall(call, response)
 }
 
 func (call MethodCall) decodeArguments(target any) error {
@@ -183,9 +172,6 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	validateConfigMethod: withArguments(func(path *string, response MethodResponse) {
 		response.success(handleValidateConfig(*path))
 	}),
-	validateProxiesMethod: withArguments(func(mappings *[]map[string]any, response MethodResponse) {
-		response.success(handleValidateProxies(*mappings))
-	}),
 	updateConfigMethod: withArguments(func(params *UpdateParams, response MethodResponse) {
 		response.success(handleUpdateConfig(params))
 	}),
@@ -199,16 +185,6 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			return
 		}
 		response.success(rawConfig)
-	}),
-	dumpRuleSetMethod: withArguments(func(path *string, response MethodResponse) {
-		safeGo(response, func() {
-			text, err := handleDumpRuleSet(*path)
-			if err != nil {
-				response.failure("core_error", err.Error(), nil)
-				return
-			}
-			response.success(text)
-		})
 	}),
 	getProxiesMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleGetProxies())
@@ -233,26 +209,8 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			response.success(handleTestDelay(params))
 		})
 	}),
-	probeMethod: withArguments(func(params *ProbeParams, response MethodResponse) {
-		safeGo(response, func() {
-			response.success(handleProbe(params))
-		})
-	}),
-	outboundIpMethod: withArguments(func(params *OutboundIpParams, response MethodResponse) {
-		safeGo(response, func() {
-			response.success(handleOutboundIp(params))
-		})
-	}),
-	serviceCheckMethod: withArguments(func(params *ServiceCheckParams, response MethodResponse) {
-		safeGo(response, func() {
-			response.success(handleServiceCheck(params))
-		})
-	}),
 	getConnectionsMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleGetConnections())
-	}),
-	getConnectionCountMethod: withoutArguments(func(response MethodResponse) {
-		response.success(handleGetConnectionCount())
 	}),
 	closeConnectionsMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleCloseConnections())
@@ -304,9 +262,9 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	stopListenerMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleStopListener())
 	}),
-	getMemoryStatsMethod: withoutArguments(func(response MethodResponse) {
+	getMemoryMethod: withoutArguments(func(response MethodResponse) {
 		safeGo(response, func() {
-			response.success(handleGetMemoryStats())
+			response.success(handleGetMemory())
 		})
 	}),
 	clearEffectMethod: withArguments(func(profileId *int64, response MethodResponse) {
@@ -314,15 +272,6 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			response.success(handleClearEffect(*profileId))
 		})
 	}),
-	watchRouteMethod: func(call *MethodCall, response MethodResponse) {
-		var watch bool
-		if !decodeMethodArguments(call, response, &watch) {
-			return
-		}
-		safeGo(response, func() {
-			response.success(handleWatchRoute(watch, call.seq))
-		})
-	},
 }
 
 func registerMethod(method CoreMethod, handler methodHandler) {

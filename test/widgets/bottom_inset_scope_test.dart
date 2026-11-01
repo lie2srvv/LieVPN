@@ -1,3 +1,4 @@
+import 'package:fl_clash/widgets/float_layout.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +36,6 @@ void main() {
         ),
       );
       return TestApp(
-        wrapInProviderScope: true,
         includeNavigatorKey: false,
         child: inset == null
             ? scaffold
@@ -60,7 +60,6 @@ void main() {
   ) async {
     Widget buildWith({double inset = 0, bool withFab = false}) {
       return TestApp(
-        wrapInProviderScope: true,
         includeNavigatorKey: false,
         child: BottomInsetScope(
           inset: inset,
@@ -102,7 +101,6 @@ void main() {
   ) async {
     Widget buildWith({double inset = 0, bool withFab = false}) {
       return TestApp(
-        wrapInProviderScope: true,
         includeNavigatorKey: false,
         child: BottomInsetScope(
           inset: inset,
@@ -134,7 +132,6 @@ void main() {
   testWidgets('does not reserve FAB space on TV', (tester) async {
     await tester.pumpWidget(
       TestApp(
-        wrapInProviderScope: true,
         includeNavigatorKey: false,
         child: BottomInsetScope(
           inset: navigationInset,
@@ -152,6 +149,37 @@ void main() {
     );
 
     expect(contentInset, navigationInset);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('float layout stacks its own inset on the inherited one', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        includeNavigatorKey: false,
+        child: BottomInsetScope(
+          inset: navigationInset,
+          child: Scaffold(
+            body: FloatLayout(
+              isTV: false,
+              floatingWidget: FloatWrapper(
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  child: const Icon(Icons.save),
+                ),
+              ),
+              child: contentProbe(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(contentInset, navigationInset + fabInset);
+    final stackBottom = tester.getRect(find.byType(FloatLayout)).bottom;
+    final fabBottom = tester.getRect(find.byType(FloatWrapper)).bottom;
+    expect(stackBottom - fabBottom, navigationInset);
     expect(tester.takeException(), isNull);
   });
 }

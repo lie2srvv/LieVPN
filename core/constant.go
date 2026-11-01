@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/metacubex/http"
-
 	"github.com/metacubex/mihomo/adapter/provider"
 	P "github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/constant"
@@ -36,7 +34,6 @@ type UpdateParams struct {
 	Authentication     *[]string          `json:"authentication"`
 	GeoAutoUpdate      *bool              `json:"geo-auto-update"`
 	GeoUpdateInterval  *int               `json:"geo-update-interval"`
-	GeoXUrl            map[string]string  `json:"geox-url"`
 }
 
 type tunSchema struct {
@@ -58,61 +55,15 @@ type ChangeProxyParams struct {
 	ProxyName string `json:"proxy-name"`
 }
 
-type ChangeProxyResult struct {
-	Message string `json:"message"`
-	Changed bool   `json:"changed"`
-}
-
-type RouteState struct {
-	CoreEpoch    uint64            `json:"core-epoch"`
-	PicksVersion uint64            `json:"picks-version"`
-	Picks        map[string]string `json:"picks"`
-}
-
 type TestDelayParams struct {
 	ProxyName string `json:"proxy-name"`
 	TestUrl   string `json:"test-url"`
 	Timeout   int64  `json:"timeout"`
 }
 
-type ProbeParams struct {
-	Url       string            `json:"url"`
-	ProxyName string            `json:"proxy-name"`
-	Headers   map[string]string `json:"headers"`
-	Timeout   int64             `json:"timeout"`
-	MaxBody   int64             `json:"max-body"`
-}
-
-type ProbeResult struct {
-	StatusCode  int      `json:"status-code"`
-	Delay       int64    `json:"delay"`
-	Body        string   `json:"body"`
-	Url         string   `json:"url"`
-	Chains      []string `json:"chains"`
-	Rule        string   `json:"rule"`
-	RulePayload string   `json:"rule-payload"`
-	Error       string   `json:"error,omitempty"`
-	Message     string   `json:"message,omitempty"`
-
-	CoreEpoch    uint64 `json:"core-epoch"`
-	PicksVersion uint64 `json:"picks-version"`
-
-	// Unexported, so it never reaches Dart: only the in-core checks read
-	// response headers, and ProbeResult is the shape the Dart side decodes.
-	header http.Header
-}
-
 type Traffic struct {
 	Up   int64 `json:"up"`
 	Down int64 `json:"down"`
-}
-
-type MemoryStats struct {
-	Rss          uint64 `json:"rss"`
-	HeapInuse    uint64 `json:"heapInuse"`
-	HeapIdle     uint64 `json:"heapIdle"`
-	StackInuse   uint64 `json:"stackInuse"`
-	RuntimeOther uint64 `json:"runtimeOther"`
 }
 
 type ExternalProvider struct {
@@ -126,13 +77,8 @@ type ExternalProvider struct {
 }
 
 type ProxiesData struct {
-	Proxies map[string]any `json:"proxies"`
-	All     []string       `json:"all"`
-}
-
-type nodeView struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Proxies map[string]constant.Proxy `json:"proxies"`
+	All     []string                  `json:"all"`
 }
 
 const (
@@ -142,7 +88,6 @@ const (
 	forceGcMethod                  CoreMethod = "forceGc"
 	shutdownMethod                 CoreMethod = "shutdown"
 	validateConfigMethod           CoreMethod = "validateConfig"
-	validateProxiesMethod          CoreMethod = "validateProxies"
 	updateConfigMethod             CoreMethod = "updateConfig"
 	getProxiesMethod               CoreMethod = "getProxies"
 	changeProxyMethod              CoreMethod = "changeProxy"
@@ -150,17 +95,13 @@ const (
 	getTotalTrafficMethod          CoreMethod = "getTotalTraffic"
 	resetTrafficMethod             CoreMethod = "resetTraffic"
 	asyncTestDelayMethod           CoreMethod = "asyncTestDelay"
-	probeMethod                    CoreMethod = "probe"
-	outboundIpMethod               CoreMethod = "outboundIp"
-	serviceCheckMethod             CoreMethod = "serviceCheck"
 	getConnectionsMethod           CoreMethod = "getConnections"
-	getConnectionCountMethod       CoreMethod = "getConnectionCount"
 	closeConnectionsMethod         CoreMethod = "closeConnections"
 	resetConnectionsMethod         CoreMethod = "resetConnections"
 	closeConnectionMethod          CoreMethod = "closeConnection"
 	getExternalProvidersMethod     CoreMethod = "getExternalProviders"
 	getExternalProviderMethod      CoreMethod = "getExternalProvider"
-	getMemoryStatsMethod           CoreMethod = "getMemoryStats"
+	getMemoryMethod                CoreMethod = "getMemory"
 	updateGeoDataMethod            CoreMethod = "updateGeoData"
 	updateExternalProviderMethod   CoreMethod = "updateExternalProvider"
 	sideLoadExternalProviderMethod CoreMethod = "sideLoadExternalProvider"
@@ -172,9 +113,7 @@ const (
 	crashMethod                    CoreMethod = "crash"
 	setupConfigMethod              CoreMethod = "setupConfig"
 	getConfigMethod                CoreMethod = "getConfig"
-	dumpRuleSetMethod              CoreMethod = "dumpRuleSet"
 	clearEffectMethod              CoreMethod = "clearEffect"
-	watchRouteMethod               CoreMethod = "watchRoute"
 )
 
 type CoreMethod string
@@ -196,11 +135,8 @@ const (
 	LogMessage       MessageType = "log"
 	DelayMessage     MessageType = "delay"
 	RequestMessage   MessageType = "request"
-	DnsMessage       MessageType = "dns"
 	LoadedMessage    MessageType = "loaded"
 	GeoUpdateMessage MessageType = "geoUpdate"
-	// Named after the Dart enum value, which is how CoreEvent.fromJson decodes it.
-	RouteChangedMessage MessageType = "routeChanged"
 )
 
 type GeoUpdateStatus struct {

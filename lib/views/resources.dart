@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -81,7 +80,7 @@ class ResourcesView extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
-        ).copyWith(top: context.appBarInset, bottom: 16),
+        ).copyWith(bottom: 16),
         children: [
           generateSectionV3(
             title: appLocalizations.geoOptions,
@@ -208,14 +207,14 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
     final appLocalizations = context.appLocalizations;
     return [
       CommonPopupMenuItem(
-        glyph: AppGlyphs.edit,
+        icon: Icons.edit_outlined,
         label: appLocalizations.edit,
         onPressed: () {
           _updateUrl(url);
         },
       ),
       CommonPopupMenuItem(
-        glyph: AppGlyphs.sync,
+        icon: Icons.sync,
         label: appLocalizations.sync,
         onPressed: _handleUpdateGeoDataItem,
       ),
@@ -284,7 +283,7 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                               return IconButton(
                                 tooltip: context.appLocalizations.more,
                                 onPressed: open,
-                                icon: const GlyphIcon(AppGlyphs.more),
+                                icon: const Icon(Icons.more_vert),
                               );
                             },
                           ),

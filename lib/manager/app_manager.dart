@@ -4,11 +4,10 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/permission.dart';
 import 'package:fl_clash/common/system_dns.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/manager/window_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
-import 'package:fl_clash/widgets/icon.dart';
-import 'package:fl_clash/widgets/sidebar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,11 +26,9 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // A desktop build started to the tray mounts while hidden, and a paused
-    // render never runs a post-frame callback.
-    scheduleMicrotask(() {
-      if (mounted) {
-        _updateVisible(WidgetsBinding.instance.lifecycleState);
+    ref.listenManual(checkIpProvider, (prev, next) {
+      if (prev != next && next.isInit && next.containsDetection) {
+        ref.read(networkDetectionProvider.notifier).startCheck();
       }
     });
     ref.listenManual(configProvider, (prev, next) {
@@ -39,11 +36,6 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
         ref.read(storeActionProvider.notifier).savePreferencesDebounce();
       }
     });
-    ref.listenManual(groupsProvider, (prev, next) {
-      if (prev != next) {
-        unawaited(precacheTargetIcons(next.map((group) => group.icon)));
-      }
-    }, fireImmediately: true);
     ref.listenManual(needUpdateGroupsProvider, (prev, next) {
       if (prev != next) {
         ref.read(proxiesActionProvider.notifier).updateGroupsDebounce();
@@ -51,7 +43,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
     });
     ref.listenManual(suspendProvider, (prev, next) {
       final isStart = ref.read(isStartProvider);
-      if (prev != next && isStart && !ref.read(safeModeProvider)) {
+      if (prev != next && isStart) {
         debouncer.call(FunctionTag.suspend, () async {
           final core = ref.read(coreHandlerProvider);
           if (next == true) {
@@ -59,6 +51,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
           } else {
             await core.startListener();
           }
+          ref.read(checkIpNumProvider.notifier).add();
         });
       }
     });
@@ -76,26 +69,17 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
     super.dispose();
   }
 
-  void _updateVisible(AppLifecycleState? state) {
-    ref.read(appVisibleProvider.notifier).value = switch (state) {
-      null || AppLifecycleState.resumed || AppLifecycleState.inactive => true,
-      AppLifecycleState.hidden ||
-      AppLifecycleState.paused ||
-      AppLifecycleState.detached => false,
-    };
-  }
-
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     commonPrint.log('$state');
-    _updateVisible(state);
     if (state == AppLifecycleState.resumed) {
       permissions.check(ref.read);
+      render?.resume();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) {
           return;
         }
-        ref.read(routeTrackerProvider.notifier).markResumed();
+        ref.read(setupActionProvider.notifier).tryCheckIp();
       });
     }
   }
@@ -111,74 +95,82 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
   }
 }
 
-class AppEnvManager extends ConsumerWidget {
+class AppFpsManager extends StatefulWidget {
   final Widget child;
 
-  const AppEnvManager({super.key, required this.child});
-
-  String? _bannerMessage({required bool safeMode}) {
-    if (safeMode) {
-      return 'SAFE MODE';
-    }
-    return null;
-  }
+  const AppFpsManager({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final message = _bannerMessage(safeMode: ref.watch(safeModeProvider));
-    if (message == null) {
-      return child;
-    }
-    return Banner(
-      message: message,
-      location: BannerLocation.topEnd,
-      child: child,
+  State<AppFpsManager> createState() => _AppFpsManagerState();
+}
+
+class _AppFpsManagerState extends State<AppFpsManager> {
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerHover: (_) {
+        render?.resume();
+      },
+      child: widget.child,
     );
   }
 }
 
-class _Sidebar extends ConsumerWidget {
-  const _Sidebar({
+class AppEnvManager extends StatelessWidget {
+  final Widget child;
+
+  const AppEnvManager({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return child;
+  }
+}
+
+class _SidebarRail extends StatelessWidget {
+  const _SidebarRail({
     required this.items,
     required this.currentIndex,
-    required this.viewMode,
+    required this.showLabel,
     required this.onSelected,
   });
 
   final List<NavigationItem> items;
   final int currentIndex;
-  final ViewMode viewMode;
+  final bool showLabel;
   final void Function(int index) onSelected;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final canExpand = canExpandSidebar(viewMode);
-    final sidebarExpanded = ref.watch(
-      appSettingProvider.select((state) => state.sidebarExpanded),
+  Widget build(BuildContext context) {
+    final labelStyle = context.textTheme.labelLarge!.copyWith(
+      color: context.colorScheme.onSurface,
     );
-    final version = ref.watch(versionProvider);
-    return NavigationSidebar(
-      destinations: [
-        for (final item in items)
-          SidebarDestination(glyph: item.glyph, label: item.label.label),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: NavigationRail(
+            scrollable: true,
+            minExtendedWidth: 200,
+            backgroundColor: Colors.transparent,
+            selectedLabelTextStyle: labelStyle,
+            unselectedLabelTextStyle: labelStyle,
+            destinations: [
+              for (final item in items)
+                NavigationRailDestination(
+                  icon: item.icon,
+                  label: Text(item.label.label),
+                ),
+            ],
+            onDestinationSelected: onSelected,
+            extended: false,
+            selectedIndex: currentIndex,
+            labelType: showLabel
+                ? NavigationRailLabelType.all
+                : NavigationRailLabelType.none,
+          ),
+        ),
       ],
-      selectedIndex: currentIndex,
-      expanded: canExpand && sidebarExpanded,
-      onSelected: onSelected,
-      onToggle: canExpand
-          ? () {
-              ref
-                  .read(appSettingProvider.notifier)
-                  .update(
-                    (state) =>
-                        state.copyWith(sidebarExpanded: !state.sidebarExpanded),
-                  );
-            }
-          : null,
-      windowControls: windowControlsOverSidebar(
-        isMacOS: system.isMacOS,
-        version: version,
-      ),
     );
   }
 }
@@ -189,15 +181,10 @@ class AppSidebarContainer extends ConsumerWidget {
   const AppSidebarContainer({super.key, required this.child});
 
   Widget _buildBackground({
-    required Color color,
-    required Color edge,
+    required BuildContext context,
     required Widget child,
   }) {
-    return Material(
-      color: color,
-      shape: BorderDirectional(end: BorderSide(color: edge)),
-      child: child,
-    );
+    return Material(color: context.colorScheme.surfaceContainer, child: child);
   }
 
   void _updateSideBarWidth(WidgetRef ref, double contentWidth) {
@@ -210,9 +197,8 @@ class AppSidebarContainer extends ConsumerWidget {
 
   void _handleToPage(WidgetRef ref, PageLabel pageLabel) {
     final focusNode = FocusManager.instance.primaryFocus;
-    final focusContext = focusNode?.context;
     final preserveNavigationFocus =
-        focusContext?.findAncestorWidgetOfExactType<NavigationSidebar>() !=
+        focusNode?.context?.findAncestorWidgetOfExactType<NavigationRail>() !=
         null;
     ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
     if (!preserveNavigationFocus || focusNode == null) {
@@ -229,37 +215,58 @@ class AppSidebarContainer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navigationState = ref.watch(navigationStateProvider);
     final navigationItems = navigationState.navigationItems;
-    final viewMode = navigationState.viewMode;
+    final isMobileView = navigationState.viewMode == ViewMode.mobile;
     final currentIndex = navigationState.currentIndex;
-    final blur = ref.watch(windowBlurProvider);
-    final colorScheme = context.colorScheme;
-    final surfaceContainer = colorScheme.surfaceContainer;
-    void onSelected(int index) {
-      _handleToPage(ref, navigationItems[index].label);
-    }
-
-    final hasSidebar = viewMode != ViewMode.mobile;
-    final isLtr = Directionality.of(context) == TextDirection.ltr;
+    final showLabel = ref.watch(appSettingProvider).showLabel;
     return Container(
-      color: blur ? Colors.transparent : surfaceContainer,
+      color: context.colorScheme.surfaceContainer,
       child: Row(
         children: [
           AnimatedVisibility.sidebar(
-            visible: hasSidebar,
+            visible: !isMobileView,
             child: _buildBackground(
-              color: blur
-                  ? surfaceContainer.withValues(alpha: kSidebarBlurOpacity)
-                  : surfaceContainer,
-              edge: colorScheme.outlineVariant,
-              child: MediaQuery.removePadding(
-                context: context,
-                removeLeft: !isLtr,
-                removeRight: isLtr,
-                child: _Sidebar(
-                  items: navigationItems,
-                  currentIndex: currentIndex,
-                  viewMode: viewMode,
-                  onSelected: onSelected,
+              context: context,
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (system.isMacOS) const SizedBox(height: 22),
+                    const SizedBox(height: 10),
+                    if (!system.isMacOS) ...[
+                      const ClipRect(child: AppIcon()),
+                      const SizedBox(height: 12),
+                    ],
+                    Expanded(
+                      child: ScrollConfiguration(
+                        behavior: const HiddenBarScrollBehavior(),
+                        child: _SidebarRail(
+                          items: navigationItems,
+                          currentIndex: currentIndex,
+                          showLabel: showLabel,
+                          onSelected: (index) {
+                            _handleToPage(ref, navigationItems[index].label);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    IconButton(
+                      tooltip: context.appLocalizations.toggleLabel,
+                      onPressed: () {
+                        ref
+                            .read(appSettingProvider.notifier)
+                            .update(
+                              (state) =>
+                                  state.copyWith(showLabel: !state.showLabel),
+                            );
+                      },
+                      icon: Icon(
+                        Icons.menu,
+                        color: context.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
             ),
@@ -270,12 +277,7 @@ class AppSidebarContainer extends ConsumerWidget {
               child: LayoutBuilder(
                 builder: (_, constraints) {
                   _updateSideBarWidth(ref, constraints.maxWidth);
-                  return MediaQuery.removePadding(
-                    context: context,
-                    removeLeft: hasSidebar && isLtr,
-                    removeRight: hasSidebar && !isLtr,
-                    child: child,
-                  );
+                  return child;
                 },
               ),
             ),

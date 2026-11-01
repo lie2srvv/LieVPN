@@ -5,7 +5,7 @@
 #include <gdk/gdkx.h>
 #endif
 
-#include <window/window_plugin.h>
+#include <window_manager/window_manager_plugin.h>
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -17,10 +17,21 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
+static void restore_and_present_window(GApplication* application) {
+  GList* windows = gtk_application_get_windows(GTK_APPLICATION(application));
+  if (windows != nullptr) {
+    GtkWindow* window = GTK_WINDOW(windows->data);
+    gtk_widget_show_all(GTK_WIDGET(window));
+    gtk_window_deiconify(window);
+    gtk_window_present(window);
+  }
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
   if (self->had_window_before_emit) {
+    restore_and_present_window(application);
     return;
   }
   GtkWindow* window =
@@ -46,11 +57,11 @@ static void my_application_activate(GApplication* application) {
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "FlClash");
+    gtk_header_bar_set_title(header_bar, "LieVPN");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   } else {
-    gtk_window_set_title(window, "FlClash");
+    gtk_window_set_title(window, "LieVPN");
   }
 
   gtk_window_set_default_size(window, 680, 580);
@@ -102,26 +113,21 @@ static void my_application_before_emit(GApplication* application, GVariant* plat
 static void my_application_after_emit(GApplication* application, GVariant* platform_data) {
   MyApplication* self = MY_APPLICATION(application);
   if (self->had_window_before_emit) {
-    window_plugin_activate();
+    restore_and_present_window(application);
+    window_manager_plugin_activate();
   }
   G_APPLICATION_CLASS(my_application_parent_class)->after_emit(application, platform_data);
 }
 
 // Implements GApplication::startup.
 static void my_application_startup(GApplication* application) {
-  //MyApplication* self = MY_APPLICATION(object);
-
   // Perform any actions required at application startup.
-
   G_APPLICATION_CLASS(my_application_parent_class)->startup(application);
 }
 
 // Implements GApplication::shutdown.
 static void my_application_shutdown(GApplication* application) {
-  //MyApplication* self = MY_APPLICATION(object);
-
   // Perform any actions required at application shutdown.
-
   G_APPLICATION_CLASS(my_application_parent_class)->shutdown(application);
 }
 

@@ -3,12 +3,10 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/permission.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/features/overwrite/overwrite.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/views/profiles/overwrite/custom/widgets.dart';
 import 'package:fl_clash/widgets/widgets.dart';
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wifi_ssid/wifi_ssid.dart';
@@ -27,8 +25,6 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
     with UniqueKeyStateMixin {
   static const _authorizeButtonPadding = 12.0;
   static const _minAuthorizeButtonWidth = 80.0;
-
-  bool _requestingLocation = false;
 
   bool get _isAndroid => widget.isAndroid ?? system.isAndroid;
 
@@ -51,9 +47,6 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   }
 
   Future<void> _handleRequestLocationPermission() async {
-    if (_requestingLocation) {
-      return;
-    }
     final appLocalizations = context.appLocalizations;
     final permission = ref.read(locationPermissionsProvider);
     if (permission == WifiSsidPermission.granted) {
@@ -64,16 +57,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       return;
     }
     final permissionsNotifier = ref.read(locationPermissionsProvider.notifier);
-    final WifiSsidPermission res;
-    _requestingLocation = true;
-    try {
-      res = await wifiSsidManager.requestPermission();
-    } on PlatformException catch (e) {
-      commonPrint.log('requestPermission error $e', logLevel: LogLevel.warning);
-      return;
-    } finally {
-      _requestingLocation = false;
-    }
+    final res = await wifiSsidManager.requestPermission();
     permissionsNotifier.value = res;
     if (!mounted) {
       return;
@@ -206,36 +190,34 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   }) {
     final appLocalizations = context.appLocalizations;
     return CommonMinFilledButtonTheme(
-      child: ElasticButton(
-        child: FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: authorized ? null : context.colorScheme.error,
-            padding: const EdgeInsets.symmetric(
-              horizontal: _authorizeButtonPadding,
-            ),
-            minimumSize: const Size(_minAuthorizeButtonWidth, 40),
+      child: FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: authorized ? null : context.colorScheme.error,
+          padding: const EdgeInsets.symmetric(
+            horizontal: _authorizeButtonPadding,
           ),
-          onPressed: onPressed,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              ExcludeSemantics(
-                child: Opacity(
-                  opacity: 0,
-                  child: Text(
-                    authorized
-                        ? appLocalizations.tapToAuthorize
-                        : appLocalizations.authorized,
-                  ),
+          minimumSize: const Size(_minAuthorizeButtonWidth, 40),
+        ),
+        onPressed: onPressed,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ExcludeSemantics(
+              child: Opacity(
+                opacity: 0,
+                child: Text(
+                  authorized
+                      ? appLocalizations.tapToAuthorize
+                      : appLocalizations.authorized,
                 ),
               ),
-              Text(
-                authorized
-                    ? appLocalizations.authorized
-                    : appLocalizations.tapToAuthorize,
-              ),
-            ],
-          ),
+            ),
+            Text(
+              authorized
+                  ? appLocalizations.authorized
+                  : appLocalizations.tapToAuthorize,
+            ),
+          ],
         ),
       ),
     );
@@ -268,8 +250,6 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
 
   Widget _buildBatteryOptimizationItem() {
     final appLocalizations = context.appLocalizations;
-    // HyperOS takes a running VPN app off the battery optimization whitelist,
-    // so the status reads as not authorized until the VPN stops.
     final isStart = ref.watch(isStartProvider);
     final isLoading = ref.watch(
       loadingProvider(LoadingTag.batteryOptimization),
@@ -336,28 +316,26 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       title: appLocalizations.excludeSsids,
       subTitle: appLocalizations.excludeSsidsDesc,
       actions: [
+        const SizedBox(width: 8),
         if (hasSelection)
           CommonMinIconButtonTheme(
-            child: ElasticButton(
-              child: IconButton.filledTonal(
-                tooltip: context.appLocalizations.delete,
-                onPressed: _handleDelete,
-                icon: const GlyphIcon(AppGlyphs.delete, fill: 1),
-              ),
+            child: IconButton.filledTonal(
+              tooltip: context.appLocalizations.delete,
+              onPressed: _handleDelete,
+              icon: const Icon(Icons.delete),
             ),
           ),
+        const SizedBox(width: 2),
         CommonMinFilledButtonTheme(
-          child: ElasticButton(
-            child: hasSelection
-                ? FilledButton(
-                    onPressed: _handleSelectAll,
-                    child: Text(appLocalizations.selectAll),
-                  )
-                : FilledButton.tonal(
-                    onPressed: _handleAddOrUpdate,
-                    child: Text(appLocalizations.add),
-                  ),
-          ),
+          child: hasSelection
+              ? FilledButton(
+                  onPressed: _handleSelectAll,
+                  child: Text(appLocalizations.selectAll),
+                )
+              : FilledButton.tonal(
+                  onPressed: _handleAddOrUpdate,
+                  child: Text(appLocalizations.add),
+                ),
         ),
       ],
     );
@@ -408,9 +386,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ).copyWith(top: context.appBarInset),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverToBoxAdapter(child: _buildPrerequisites()),
           ),
           SliverPadding(

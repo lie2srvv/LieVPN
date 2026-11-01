@@ -1,32 +1,19 @@
 import AppKit
 
-final class TrayMenu: NSMenu, NSMenuDelegate {
+final class TrayMenu: NSMenu {
     private let onSelect: (Int) -> Void
-    private let onClose: (() -> Void)?
-    private var contents: [TrayMenuItemView.Content?] = []
 
-    init(items: [[String: Any]], onSelect: @escaping (Int) -> Void, onClose: (() -> Void)? = nil) {
+    init(items: [[String: Any]], onSelect: @escaping (Int) -> Void) {
         self.onSelect = onSelect
-        self.onClose = onClose
         super.init(title: "")
         autoenablesItems = false
-        delegate = self
         for entry in items {
-            let item = makeItem(entry)
-            addItem(item)
-            contents.append(item.isSeparatorItem ? nil : TrayMenu.content(entry, item))
+            addItem(makeItem(entry))
         }
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private static func detail(_ entry: [String: Any]) -> String? {
-        guard let detail = entry["detail"] as? String, !detail.isEmpty else {
-            return nil
-        }
-        return detail
     }
 
     private func makeItem(_ entry: [String: Any]) -> NSMenuItem {
@@ -39,49 +26,21 @@ final class TrayMenu: NSMenu, NSMenuDelegate {
         item.title = entry["label"] as? String ?? ""
         item.tag = entry["id"] as? Int ?? 0
         item.isEnabled = entry["enabled"] as? Bool ?? true
-        item.state = type == "checkbox" && entry["checked"] as? Bool == true ? .on : .off
 
-        if type == "submenu" {
+        switch type {
+        case "checkbox":
+            item.state = (entry["checked"] as? Bool ?? false) ? .on : .off
+            item.target = self
+            item.action = #selector(didSelectItem(_:))
+        case "submenu":
             let children = entry["items"] as? [[String: Any]] ?? []
             setSubmenu(TrayMenu(items: children, onSelect: onSelect), for: item)
-        } else {
+        default:
             item.target = self
             item.action = #selector(didSelectItem(_:))
         }
+
         return item
-    }
-
-    private static func content(_ entry: [String: Any], _ item: NSMenuItem) -> TrayMenuItemView.Content {
-        TrayMenuItemView.Content(
-            label: item.title,
-            detail: detail(entry),
-            checked: item.state == .on,
-            enabled: item.isEnabled,
-            hasSubmenu: item.hasSubmenu
-        )
-    }
-
-    // A delay test rebuilds the menu per result; measuring every row then costs ~20x.
-    func menuNeedsUpdate(_ menu: NSMenu) {
-        guard !contents.isEmpty else {
-            return
-        }
-        for (item, content) in zip(items, contents) {
-            if let content = content {
-                item.view = TrayMenuItemView(content: content)
-            }
-        }
-        contents = []
-    }
-
-    // AppKit does not redraw an item's view when its highlight changes.
-    func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-        highlightedItem?.view?.needsDisplay = true
-        item?.view?.needsDisplay = true
-    }
-
-    func menuDidClose(_ menu: NSMenu) {
-        onClose?()
     }
 
     @objc private func didSelectItem(_ sender: NSMenuItem) {

@@ -3,6 +3,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'card.dart';
@@ -44,22 +45,26 @@ final class _CheckboxAction extends _ListItemAction {
 
 final class _OpenAction extends _ListItemAction {
   final Widget widget;
-  final ValueChanged<dynamic>? onChanged;
-
+  final double? maxWidth;
+  final bool blur;
   final bool forceFull;
+  final ValueChanged<dynamic>? onChanged;
 
   const _OpenAction({
     required this.widget,
-    this.onChanged,
+    this.maxWidth,
+    required this.blur,
     required this.forceFull,
+    this.onChanged,
   });
 }
 
 final class _NextAction extends _ListItemAction {
   final Widget widget;
   final double? maxWidth;
+  final bool blur;
 
-  const _NextAction({required this.widget, this.maxWidth});
+  const _NextAction({required this.widget, this.maxWidth, required this.blur});
 }
 
 final class _OptionsAction<T> extends _ListItemAction {
@@ -145,8 +150,10 @@ class ListItem<T> extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 16),
     this.trailing,
     required Widget widget,
-    ValueChanged<dynamic>? onChanged,
+    double? maxWidth,
+    bool blur = true,
     bool forceFull = true,
+    ValueChanged<dynamic>? onChanged,
     this.horizontalTitleGap,
     this.dense,
     this.titleTextStyle,
@@ -158,8 +165,10 @@ class ListItem<T> extends StatelessWidget {
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : _action = _OpenAction(
          widget: widget,
-         onChanged: onChanged,
+         maxWidth: maxWidth,
+         blur: blur,
          forceFull: forceFull,
+         onChanged: onChanged,
        ),
        onTap = null;
 
@@ -172,6 +181,7 @@ class ListItem<T> extends StatelessWidget {
     this.trailing,
     required Widget widget,
     double? maxWidth,
+    bool blur = true,
     this.horizontalTitleGap,
     this.dense,
     this.titleTextStyle,
@@ -181,7 +191,7 @@ class ListItem<T> extends StatelessWidget {
     this.visualDensity,
     this.minVerticalPadding = 12,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
-  }) : _action = _NextAction(widget: widget, maxWidth: maxWidth),
+  }) : _action = _NextAction(widget: widget, maxWidth: maxWidth, blur: blur),
        onTap = null;
 
   ListItem.options({
@@ -314,26 +324,10 @@ class ListItem<T> extends StatelessWidget {
        onTap = null;
 
   Widget _buildListTile({
-    required ItemPosition? position,
     void Function()? onTap,
     Widget? trailing,
     Widget? leading,
   }) {
-    if (position != null) {
-      // OpenContainer reparents the closed tile out of the section's provider.
-      return ItemPositionProvider(
-        position: position,
-        child: DecorationListItem(
-          leading: leading ?? this.leading,
-          title: title,
-          subtitle: subtitle,
-          trailing: trailing ?? this.trailing,
-          contentPadding: padding,
-          horizontalTitleGap: horizontalTitleGap,
-          onPressed: onTap,
-        ),
-      );
-    }
     return ListTile(
       key: key,
       dense: dense,
@@ -356,27 +350,35 @@ class ListItem<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final position = ItemPositionProvider.of(context)?.position;
     switch (_action) {
       case final _OpenAction openDelegate:
         final child = openDelegate.widget;
         final onChanged = openDelegate.onChanged;
-        if (!context.isMobileView) {
-          return _buildListTile(
-            position: position,
-            onTap: () async {
-              final result = await showExtend<dynamic>(
-                context,
-                props: ExtendProps(forceFull: openDelegate.forceFull),
-                builder: (_) => child,
-              );
-              onChanged?.call(result);
-            },
-          );
-        }
         return OpenContainer<dynamic>(
           closedBuilder: (context, action) {
-            return _buildListTile(position: position, onTap: action);
+            Future<void> openAction() async {
+              final isMobile = context.isMobileView;
+              if (!isMobile || kDebugMode) {
+                final res = await showExtend(
+                  context,
+                  props: ExtendProps(
+                    blur: openDelegate.blur,
+                    maxWidth: openDelegate.maxWidth,
+                    forceFull: openDelegate.forceFull,
+                  ),
+                  builder: (_) {
+                    return child;
+                  },
+                );
+                if (onChanged != null) {
+                  onChanged(res);
+                }
+                return;
+              }
+              action();
+            }
+
+            return _buildListTile(onTap: openAction);
           },
           onClosed: onChanged,
           openBuilder: (_, action) {
@@ -387,11 +389,13 @@ class ListItem<T> extends StatelessWidget {
         final child = nextDelegate.widget;
 
         return _buildListTile(
-          position: position,
           onTap: () {
             showExtend(
               context,
-              props: ExtendProps(maxWidth: nextDelegate.maxWidth),
+              props: ExtendProps(
+                blur: nextDelegate.blur,
+                maxWidth: nextDelegate.maxWidth,
+              ),
               builder: (_) {
                 return child;
               },
@@ -401,29 +405,20 @@ class ListItem<T> extends StatelessWidget {
       case final _OptionsAction options:
         final optionsDelegate = options as _OptionsAction<T>;
         return _buildListTile(
-          position: position,
           onTap: () async {
-            // Options are boxed so that a nullable option such as the default
-            // locale stays distinct from the null a dismissed dialog returns.
-            final selected = await dialogs.showCommonDialog<(T,)>(
-              child: OptionsDialog<(T,)>(
+            final value = await dialogs.showCommonDialog<T>(
+              child: OptionsDialog<T>(
                 title: optionsDelegate.title,
-                options: [
-                  for (final option in optionsDelegate.options) (option,),
-                ],
-                textBuilder: (option) => optionsDelegate.textBuilder(option.$1),
-                value: (optionsDelegate.value,),
+                options: optionsDelegate.options,
+                textBuilder: optionsDelegate.textBuilder,
+                value: optionsDelegate.value,
               ),
             );
-            if (selected == null) {
-              return;
-            }
-            optionsDelegate.onChanged(selected.$1);
+            optionsDelegate.onChanged(value);
           },
         );
       case final _InputAction inputDelegate:
         return _buildListTile(
-          position: position,
           onTap: () async {
             final value = await dialogs.showCommonDialog<String>(
               child: InputDialog(
@@ -443,7 +438,6 @@ class ListItem<T> extends StatelessWidget {
         );
       case final _CheckboxAction checkboxDelegate:
         return _buildListTile(
-          position: position,
           onTap: checkboxDelegate.onChanged == null
               ? null
               : () {
@@ -456,7 +450,6 @@ class ListItem<T> extends StatelessWidget {
         );
       case final _ToggleAction toggleAction:
         return _buildListTile(
-          position: position,
           onTap: toggleAction.onChanged == null
               ? null
               : () {
@@ -470,7 +463,6 @@ class ListItem<T> extends StatelessWidget {
       case final _RadioAction radio:
         final radioDelegate = radio as _RadioAction<T>;
         return _buildListTile(
-          position: position,
           onTap: radioDelegate.onTap,
           leading: ExcludeFocus(
             child: Radio<T>(
@@ -483,7 +475,7 @@ class ListItem<T> extends StatelessWidget {
           trailing: trailing,
         );
       case _DefaultAction():
-        return _buildListTile(position: position, onTap: onTap);
+        return _buildListTile(onTap: onTap);
     }
   }
 }
@@ -512,6 +504,9 @@ class ListHeader extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: subTitle == null
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         spacing: actions.isEmpty ? 0 : 12,
         children: [
           Expanded(
@@ -540,8 +535,7 @@ class ListHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
-            spacing: space ?? appBarActionSpace,
-            children: [...actions],
+            children: [...genActions(actions, space: space)],
           ),
         ],
       ),
@@ -572,17 +566,48 @@ List<Widget> generateSection({
   ];
 }
 
+Widget generateSectionV2({
+  String? title,
+  required Iterable<Widget> items,
+  List<Widget>? actions,
+  bool separated = true,
+}) {
+  final genItems = items
+      .map<Widget>((item) {
+        return ClipRSuperellipse(
+          borderRadius: AppRadius.xs,
+          child: CommonCard(
+            type: CommonCardType.filled,
+            radius: AppCorner.none,
+            child: item,
+          ),
+        );
+      })
+      .separated(const Divider(height: 2, color: Colors.transparent));
+  return Column(
+    children: [
+      if (items.isNotEmpty && title != null)
+        ListHeader(title: title, actions: actions),
+      ClipRSuperellipse(
+        borderRadius: AppRadius.md,
+        child: Column(children: [...genItems]),
+      ),
+    ],
+  );
+}
+
 Widget generateSectionV3({
   String? title,
   required Iterable<Widget> items,
   List<Widget>? actions,
 }) {
-  final genItems = items.mapIndexed<Widget>(
-    (index, item) => ItemPositionProvider(
-      position: ItemPosition.get(index, items.length),
-      child: item,
-    ),
-  );
+  final genItems = items.mapIndexed<Widget>((index, item) {
+    final position = ItemPosition.get(index, items.length);
+    if (position != ItemPosition.middle) {
+      return ItemPositionProvider(position: position, child: item);
+    }
+    return item;
+  });
   return Column(
     children: [
       if (items.isNotEmpty && title != null)
@@ -607,10 +632,10 @@ List<Widget> generateInfoSection({
   ];
 }
 
-Widget generateListView(List<Widget> items, {double topPadding = 0}) {
+Widget generateListView(List<Widget> items) {
   return ListView.builder(
     itemCount: items.length,
     itemBuilder: (_, index) => items[index],
-    padding: EdgeInsets.only(top: topPadding, bottom: 16),
+    padding: const EdgeInsets.only(bottom: 16),
   );
 }

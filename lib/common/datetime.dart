@@ -45,15 +45,15 @@ extension DateTimeExtension on DateTime {
   }
 
   String get show {
-    return toLocal().toString().substring(0, 10);
+    return toString().substring(0, 10);
   }
 
   String get showFull {
-    return toLocal().toString().substring(0, 19);
+    return toString().substring(0, 19);
   }
 
   String get showTime {
-    return toLocal().toString().substring(10, 19);
+    return toString().substring(10, 19);
   }
 }
 

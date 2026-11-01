@@ -56,45 +56,16 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  void putProfile(Profile profile, {Iterable<int> renameIn = const []}) {
-    ref.read(profilesProvider.notifier).put(profile, renameIn: renameIn);
+  void putProfile(Profile profile) {
+    ref.read(profilesProvider.notifier).put(profile);
     if (ref.read(currentProfileIdProvider) != null) return;
     ref.read(currentProfileIdProvider.notifier).value = profile.id;
-  }
-
-  Future<List<Profile>> providerUsers(Profile profile) async {
-    if (!feature.customProviders) {
-      return const [];
-    }
-    final users = await ref
-        .read(clashProvidersActionProvider.notifier)
-        .profilesReferencing(ProviderKind.proxy, profile.realLabel);
-    return [
-      for (final user in users)
-        if (user.id != profile.id) user,
-    ];
-  }
-
-  /// [conflicts] would move to their subscription's provider of the new name.
-  Future<({List<Profile> renameIn, List<Profile> conflicts})> providerRename(
-    Profile previous,
-    Profile next,
-  ) async {
-    final label = ref.read(profilesProvider.notifier).labeled(next).realLabel;
-    if (!feature.customProviders || label == previous.realLabel) {
-      return (renameIn: const <Profile>[], conflicts: const <Profile>[]);
-    }
-    final renameIn = await providerUsers(previous);
-    final conflicts = await ref
-        .read(clashProvidersActionProvider.notifier)
-        .profilesDefining(ProviderKind.proxy, label, renameIn);
-    return (renameIn: renameIn, conflicts: conflicts);
   }
 
   Future<void> updateProfiles() async {
     for (final profile in ref.read(profilesProvider)) {
       if (profile.type == ProfileType.file) continue;
-      await updateProfile(profile, showLoading: true);
+      await updateProfile(profile);
     }
   }
 
@@ -102,13 +73,12 @@ class ProfilesAction extends _$ProfilesAction {
     Profile profile, {
     bool showLoading = false,
     bool force = false,
-    Iterable<int> renameIn = const [],
   }) async {
     final operation = showLoading
         ? ref.read(updatingKeysProvider.notifier).start(profile.updatingKey)
         : null;
     try {
-      ref.read(profilesProvider.notifier).put(profile, renameIn: renameIn);
+      ref.read(profilesProvider.notifier).put(profile);
       final (newProfile, isChanged) = await profile.checkAndUpdate(
         validate: (path) => _core.validateConfig(path),
         force: force,
@@ -149,11 +119,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<bool> addProfileFormURL(
-    String url, {
-    bool replaceOld = true,
-    String? label,
-  }) async {
+  Future<bool> addProfileFormURL(String url, {bool replaceOld = true}) async {
     var trimmed = url.trim();
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       trimmed = 'https://$trimmed';
@@ -173,7 +139,6 @@ class ProfilesAction extends _$ProfilesAction {
       tag: LoadingTag.profiles,
       () async {
         return Profile.normal(
-          label: label,
           url: trimmed,
         ).update(validate: (path) => _core.validateConfig(path));
       },
@@ -194,9 +159,8 @@ class ProfilesAction extends _$ProfilesAction {
           }
         }
       }
-      final cleanLabel = profile.label
-          .replaceAll(RegExp(r'\s*\(\d+\)$'), '')
-          .trim();
+      final cleanLabel =
+          profile.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
       final cleanProfile = profile.copyWith(
         label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
       );

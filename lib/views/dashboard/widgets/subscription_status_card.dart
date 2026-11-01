@@ -2,6 +2,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/dashboard/widgets/personal_account_modal.dart';
+import 'package:fl_clash/views/payment/lie_payment_sheet.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -232,7 +233,13 @@ class SubscriptionStatusCard extends ConsumerWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () => dialogs.openUrl('https://t.me/liesubbot'),
+                      onTap: () {
+                        showLiePaymentDialog(
+                          context,
+                          currentProfile: currentProfile,
+                          isRenewal: true,
+                        );
+                      },
                       borderRadius: BorderRadius.circular(AppCorner.sm),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

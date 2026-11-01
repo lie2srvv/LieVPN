@@ -136,13 +136,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
         }
         val app = host.app()
         if (app != null) {
-            app.requestNotificationPermission { shouldStart ->
-                if (shouldStart) {
-                    app.requestLocalNetworkPermission { launchRequest(true) }
-                } else {
-                    launchRequest(false)
-                }
-            }
+            app.requestNotificationPermission(launchRequest)
         } else {
             launchRequest(true)
         }
@@ -252,7 +246,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
                 return@transition true
             }
             mutableRunState.value = RunState.STARTING
-            val startedAtMillis = host.startService(withLocalNetworkFallback(options))
+            val startedAtMillis = host.startService(options)
             if (startedAtMillis == 0L) {
                 mutableRunState.value = RunState.STOPPED
                 fail(request)
@@ -264,17 +258,6 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             mutableRunState.value = RunState.STARTED
             true
         }
-    }
-
-    // system/mixed hand TCP to the kernel via the tun subnet, which Android 17 gates as local network.
-    private fun withLocalNetworkFallback(options: VpnOptions): VpnOptions {
-        if (!options.enable || options.stack !in KERNEL_TCP_STACKS ||
-            host.isLocalNetworkPermissionGranted()
-        ) {
-            return options
-        }
-        host.showToast(sharedState.localNetworkTip)
-        return options.copy(stack = FALLBACK_STACK)
     }
 
     private suspend fun reconcileStopped() = transitionLock.withLock {
@@ -339,9 +322,6 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     }
 
     internal companion object {
-        val KERNEL_TCP_STACKS = setOf("system", "mixed")
-        const val FALLBACK_STACK = "gvisor"
-
         /**
          * The Core init payload. The key spelling is a cross-language contract with the Go wrapper,
          * not an implementation detail.
@@ -358,6 +338,12 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             stopText = state.stopText,
             onlyStatisticsProxy = state.onlyStatisticsProxy,
             showStopAction = state.showStopAction,
+            liveNotification = state.liveNotification,
+            liveNotificationType = state.liveNotificationType,
+            liveNotificationCustomText = state.liveNotificationCustomText,
+            currentServerName = state.currentServerName,
+            currentServerPing = state.currentServerPing,
+            streakCount = state.streakCount,
         )
     }
 }
