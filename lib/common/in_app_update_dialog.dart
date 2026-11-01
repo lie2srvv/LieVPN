@@ -55,6 +55,16 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog>
     }
   }
 
+  String _cleanNotes(String raw) {
+    return raw
+        .replaceAll(RegExp(r'^#{1,6}\s*', multiLine: true), '')
+        .replaceAll('**', '')
+        .replaceAll('__', '')
+        .replaceAll('`', '')
+        .replaceAll(RegExp(r'^\s*-\s+', multiLine: true), '• ')
+        .trim();
+  }
+
   String _formatBytes(int bytes) {
     if (bytes <= 0) return '0 B';
     const suffixes = ['B', 'KB', 'MB', 'GB'];
@@ -329,7 +339,7 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog>
                   ),
                 ),
                 child: Text(
-                  widget.updateInfo.releaseNotes!,
+                  _cleanNotes(widget.updateInfo.releaseNotes!),
                   style: TextStyle(
                     fontSize: 13,
                     height: 1.4,

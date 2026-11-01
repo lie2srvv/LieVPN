@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/in_app_update_dialog.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -197,7 +196,7 @@ class AppUpdateManager {
     try {
       final cacheBuster = DateTime.now().millisecondsSinceEpoch;
       final response = await dio.get<dynamic>(
-        "$_primaryGitHubVersionUrl?t=$cacheBuster",
+        '$_primaryGitHubVersionUrl?t=$cacheBuster',
       );
       if (response.statusCode == 200 && response.data != null) {
         final data = parseData(response.data);
@@ -215,7 +214,7 @@ class AppUpdateManager {
     try {
       final cacheBuster = DateTime.now().millisecondsSinceEpoch;
       final response = await dio.get<dynamic>(
-        "$_platformServerVersionUrl?t=$cacheBuster",
+        '$_platformServerVersionUrl?t=$cacheBuster',
       );
       if (response.statusCode == 200 && response.data != null) {
         final data = parseData(response.data);
@@ -233,7 +232,7 @@ class AppUpdateManager {
     try {
       final cacheBuster = DateTime.now().millisecondsSinceEpoch;
       final response = await dio.get<dynamic>(
-        "$_fallbackServerVersionUrl?t=$cacheBuster",
+        '$_fallbackServerVersionUrl?t=$cacheBuster',
       );
       if (response.statusCode == 200 && response.data != null) {
         final data = parseData(response.data);
@@ -261,11 +260,18 @@ class AppUpdateManager {
             '',
           );
           final body = rData['body'] as String?;
+          final cleanedBody = body
+              ?.replaceAll(RegExp(r'^#{1,6}\s*', multiLine: true), '')
+              .replaceAll('**', '')
+              .replaceAll('__', '')
+              .replaceAll('`', '')
+              .replaceAll(RegExp(r'^\s*-\s+', multiLine: true), '• ')
+              .trim();
           if (tagName.isNotEmpty && isNewerVersion(tagName, currentVersion)) {
             return AppUpdateInfo(
               version: tagName,
               downloadUrl: AppUpdateInfo.defaultDownloadUrl,
-              releaseNotes: body,
+              releaseNotes: cleanedBody,
             );
           }
           return null;
