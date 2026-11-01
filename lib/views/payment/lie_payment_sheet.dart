@@ -127,8 +127,6 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   String? _paymentUrl;
   Timer? _pollTimer;
   int _pollCount = 0;
-  bool _isResolvingAccount = false;
-  bool _hasLinkedTelegram = false;
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -155,17 +153,11 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   Future<void> _resolveTelegramAccount(String rawIdentifier) async {
     final cleanId = rawIdentifier.trim().replaceAll('@', '');
     if (cleanId.isEmpty) return;
-    setState(() {
-      _isResolvingAccount = true;
-    });
     try {
       final isNumeric = RegExp(r'^\d+$').hasMatch(cleanId);
       final resp = await _dio.post(
         'https://pay.lie2srvv.com/api/check-user',
-        data: {
-          'user_id': isNumeric ? cleanId : '',
-          'username': cleanId,
-        },
+        data: {'user_id': isNumeric ? cleanId : '', 'username': cleanId},
       );
       if (resp.statusCode == 200 && resp.data is Map && mounted) {
         final data = Map<String, dynamic>.from(resp.data as Map);
@@ -173,24 +165,18 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
         final display = data['display_username']?.toString().trim();
         if (linked != null && linked.isNotEmpty) {
           setState(() {
-            _hasLinkedTelegram = true;
             _usernameController.text = linked;
           });
-        } else if (display != null && display.isNotEmpty && !display.startsWith('id_')) {
+        } else if (display != null &&
+            display.isNotEmpty &&
+            !display.startsWith('id_')) {
           setState(() {
-            _hasLinkedTelegram = true;
             _usernameController.text = display;
           });
         }
       }
     } catch (_) {
       // Игнорируем ошибки фонового автоопределения, сохраняя исходный ник подписки
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isResolvingAccount = false;
-        });
-      }
     }
   }
 
@@ -235,17 +221,17 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       _promoError = null;
     });
 
-    final rawUser = _usernameController.text.trim().replaceAll("@", "");
+    final rawUser = _usernameController.text.trim().replaceAll('@', '');
 
     try {
       final response = await _dio.post(
-        "https://pay.lie2srvv.com/api/check-promo",
-        data: {"code": code, "plan_id": _selectedPlanId, "username": rawUser},
+        'https://pay.lie2srvv.com/api/check-promo',
+        data: {'code': code, 'plan_id': _selectedPlanId, 'username': rawUser},
       );
 
       if (response.statusCode == 200 && response.data is Map) {
         final data = Map<String, dynamic>.from(response.data as Map);
-        if (data["ok"] == true) {
+        if (data['ok'] == true) {
           setState(() {
             _appliedPromo = data;
             _promoError = null;
@@ -255,17 +241,17 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
         } else {
           setState(() {
             _appliedPromo = null;
-            _promoError = data["error"]?.toString() ?? "Неверный промокод";
+            _promoError = data['error']?.toString() ?? 'Неверный промокод';
             _isCheckingPromo = false;
           });
           return;
         }
       }
-      throw Exception("Неверный ответ сервера");
+      throw Exception('Неверный ответ сервера');
     } catch (e) {
       setState(() {
         _appliedPromo = null;
-        _promoError = "Промокод не найден или недействителен";
+        _promoError = 'Промокод не найден или недействителен';
         _isCheckingPromo = false;
       });
     }
@@ -325,16 +311,15 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     }
 
     if (!isKnown && mounted) {
-      final refCode = _appliedPromo != null && _appliedPromo!['referrer_id'] != null
+      final refCode =
+          _appliedPromo != null && _appliedPromo!['referrer_id'] != null
           ? _appliedPromo!['code']?.toString()
           : null;
       final verified = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => _LieBotVerificationDialog(
-          username: rawUser,
-          referrerCode: refCode,
-        ),
+        builder: (_) =>
+            _LieBotVerificationDialog(username: rawUser, referrerCode: refCode),
       );
       if (verified != true) {
         return;
@@ -651,51 +636,12 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                 const SizedBox(height: 16),
               ] else ...[
                 // Username field
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.isRenewal
-                          ? (_hasLinkedTelegram
-                              ? 'Привязанный Telegram-аккаунт'
-                              : 'Имя аккаунта (подписка)')
-                          : 'Никнейм в Telegram',
-                      style: textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (_isResolvingAccount)
-                      const SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    else if (_hasLinkedTelegram)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(AppCorner.sm),
-                          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF10B981)),
-                            SizedBox(width: 4),
-                            Text(
-                              'Привязан к Telegram',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
+                Text(
+                  'Юзернейм в Telegram',
+                  style: textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -739,16 +685,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                     ),
                   ),
                 ),
-                if (widget.isRenewal && !_hasLinkedTelegram && !_isResolvingAccount) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Telegram-аккаунт пока не привязан к боту. Продление будет выполнено по текущему имени подписки в базе.',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.65),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
+
                 const SizedBox(height: 18),
 
                 // Plans selection
@@ -919,7 +856,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                               _promoError = null;
                             });
                           },
-                          tooltip: "Удалить промокод",
+                          tooltip: 'Удалить промокод',
                         ),
                       ],
                     ),
@@ -934,7 +871,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                           controller: _promoController,
                           textCapitalization: TextCapitalization.characters,
                           decoration: InputDecoration(
-                            hintText: "ПРОМОКОД",
+                            hintText: 'ПРОМОКОД',
                             prefixIcon: const Icon(
                               Icons.discount_outlined,
                               size: 20,
@@ -990,7 +927,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text("Применить"),
+                              : const Text('Применить'),
                         ),
                       ),
                     ],
@@ -1019,7 +956,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                         });
                       },
                       icon: const Icon(Icons.discount_outlined, size: 16),
-                      label: const Text("Есть промокод или скидка?"),
+                      label: const Text('Есть промокод или скидка?'),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF10B981),
                         visualDensity: VisualDensity.compact,
@@ -1496,15 +1433,11 @@ class _LieCommissionWarningDialogState
   }
 }
 
-
 class _LieBotVerificationDialog extends StatefulWidget {
   final String username;
   final String? referrerCode;
 
-  const _LieBotVerificationDialog({
-    required this.username,
-    this.referrerCode,
-  });
+  const _LieBotVerificationDialog({required this.username, this.referrerCode});
 
   @override
   State<_LieBotVerificationDialog> createState() =>
@@ -1652,7 +1585,9 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
                         Text(
                           'Активация в Telegram-боте',
                           style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ],
@@ -1666,7 +1601,9 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.4,
+                  ),
                   borderRadius: BorderRadius.circular(AppCorner.md),
                   border: Border.all(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.3),
@@ -1688,8 +1625,7 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
                         ),
                       ),
                       TextSpan(
-                        text:
-                            '.\n\nПожалуйста, перейдите в бота и нажмите ',
+                        text: '.\n\nПожалуйста, перейдите в бота и нажмите ',
                       ),
                       TextSpan(
                         text: 'Запустить (Start)',
@@ -1727,7 +1663,10 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
 
               // Radar / Status polling bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF10B981).withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(AppCorner.md),
@@ -1760,7 +1699,9 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
                       '$_secondsLeft сек',
                       style: TextStyle(
                         fontSize: 12,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w500,
                       ),
@@ -1774,7 +1715,9 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.25,
+                  ),
                   borderRadius: BorderRadius.circular(AppCorner.md),
                   border: Border.all(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.2),
@@ -1789,7 +1732,9 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
                       child: Text(
                         'Если вы не можете подтвердить через Telegram, напишите на почту vpn@lie2srvv.com — мы подключим подписку вручную.',
                         style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.7,
+                          ),
                           fontSize: 11,
                           height: 1.35,
                         ),
