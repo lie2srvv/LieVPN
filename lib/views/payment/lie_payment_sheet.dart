@@ -115,6 +115,11 @@ class LiePaymentSheet extends ConsumerStatefulWidget {
 
 class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   late TextEditingController _usernameController;
+  late TextEditingController _promoController;
+  bool _showPromoField = false;
+  bool _isCheckingPromo = false;
+  Map<String, dynamic>? _appliedPromo;
+  String? _promoError;
   String _selectedPlanId = '1m';
   bool _isLoading = false;
   String? _activeOrderId;
@@ -122,6 +127,8 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   String? _paymentUrl;
   Timer? _pollTimer;
   int _pollCount = 0;
+  bool _isResolvingAccount = false;
+  bool _hasLinkedTelegram = false;
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -138,7 +145,53 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       defaultUser = widget.currentProfile!.label;
     }
     _usernameController = TextEditingController(text: defaultUser);
+    _promoController = TextEditingController();
     _checkExistingPendingPayment();
+    if (widget.isRenewal && defaultUser.isNotEmpty) {
+      _resolveTelegramAccount(defaultUser);
+    }
+  }
+
+  Future<void> _resolveTelegramAccount(String rawIdentifier) async {
+    final cleanId = rawIdentifier.trim().replaceAll('@', '');
+    if (cleanId.isEmpty) return;
+    setState(() {
+      _isResolvingAccount = true;
+    });
+    try {
+      final isNumeric = RegExp(r'^\d+$').hasMatch(cleanId);
+      final resp = await _dio.post(
+        'https://pay.lie2srvv.com/api/check-user',
+        data: {
+          'user_id': isNumeric ? cleanId : '',
+          'username': cleanId,
+        },
+      );
+      if (resp.statusCode == 200 && resp.data is Map && mounted) {
+        final data = Map<String, dynamic>.from(resp.data as Map);
+        final linked = data['linked_tg_username']?.toString().trim();
+        final display = data['display_username']?.toString().trim();
+        if (linked != null && linked.isNotEmpty) {
+          setState(() {
+            _hasLinkedTelegram = true;
+            _usernameController.text = linked;
+          });
+        } else if (display != null && display.isNotEmpty && !display.startsWith('id_')) {
+          setState(() {
+            _hasLinkedTelegram = true;
+            _usernameController.text = display;
+          });
+        }
+      }
+    } catch (_) {
+      // Игнорируем ошибки фонового автоопределения, сохраняя исходный ник подписки
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isResolvingAccount = false;
+        });
+      }
+    }
   }
 
   Future<void> _checkExistingPendingPayment() async {
@@ -169,7 +222,53 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
   void dispose() {
     _pollTimer?.cancel();
     _usernameController.dispose();
+    _promoController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkPromoCode() async {
+    final code = _promoController.text.trim().toUpperCase();
+    if (code.isEmpty) return;
+
+    setState(() {
+      _isCheckingPromo = true;
+      _promoError = null;
+    });
+
+    final rawUser = _usernameController.text.trim().replaceAll("@", "");
+
+    try {
+      final response = await _dio.post(
+        "https://pay.lie2srvv.com/api/check-promo",
+        data: {"code": code, "plan_id": _selectedPlanId, "username": rawUser},
+      );
+
+      if (response.statusCode == 200 && response.data is Map) {
+        final data = Map<String, dynamic>.from(response.data as Map);
+        if (data["ok"] == true) {
+          setState(() {
+            _appliedPromo = data;
+            _promoError = null;
+            _isCheckingPromo = false;
+          });
+          return;
+        } else {
+          setState(() {
+            _appliedPromo = null;
+            _promoError = data["error"]?.toString() ?? "Неверный промокод";
+            _isCheckingPromo = false;
+          });
+          return;
+        }
+      }
+      throw Exception("Неверный ответ сервера");
+    } catch (e) {
+      setState(() {
+        _appliedPromo = null;
+        _promoError = "Промокод не найден или недействителен";
+        _isCheckingPromo = false;
+      });
+    }
   }
 
   Future<void> _launchPayment(String payUrl) async {
@@ -195,6 +294,53 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Проверяем регистрацию пользователя в Telegram-боте
+    bool isKnown = false;
+    try {
+      final isNumeric = RegExp(r'^\d+$').hasMatch(rawUser);
+      final checkResp = await _dio.post(
+        'https://pay.lie2srvv.com/api/check-user',
+        data: {
+          'user_id': isNumeric ? rawUser : '',
+          'username': isNumeric ? '' : rawUser,
+        },
+      );
+      if (checkResp.statusCode == 200 && checkResp.data is Map) {
+        final data = Map<String, dynamic>.from(checkResp.data as Map);
+        isKnown = data['known'] == true;
+      }
+    } catch (_) {
+      // При сбое сети или таймауте не блокируем пользователя жестко
+      isKnown = true;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+
+    if (!isKnown && mounted) {
+      final refCode = _appliedPromo != null && _appliedPromo!['referrer_id'] != null
+          ? _appliedPromo!['code']?.toString()
+          : null;
+      final verified = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => _LieBotVerificationDialog(
+          username: rawUser,
+          referrerCode: refCode,
+        ),
+      );
+      if (verified != true) {
+        return;
+      }
+    }
+
     final dismissed = await preferences.getCommissionWarningDismissed();
     if (!dismissed && mounted) {
       final shouldProceed = await showDialog<bool>(
@@ -213,7 +359,14 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     try {
       final response = await _dio.post(
         'https://pay.lie2srvv.com/api/create-order',
-        data: {'plan_id': _selectedPlanId, 'username': rawUser, 'method': 'AC'},
+        data: {
+          'plan_id': _selectedPlanId,
+          'username': rawUser,
+          'method': 'AC',
+          if (_appliedPromo != null) 'promo_code': _appliedPromo!['code'],
+          if (_appliedPromo != null && _appliedPromo!['referrer_id'] != null)
+            'referrer': _appliedPromo!['referrer_id'].toString(),
+        },
       );
 
       if (response.statusCode == 200 && response.data is Map) {
@@ -498,12 +651,51 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                 const SizedBox(height: 16),
               ] else ...[
                 // Username field
-                Text(
-                  'Никнейм в Telegram',
-                  style: textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.isRenewal
+                          ? (_hasLinkedTelegram
+                              ? 'Привязанный Telegram-аккаунт'
+                              : 'Имя аккаунта (подписка)')
+                          : 'Никнейм в Telegram',
+                      style: textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (_isResolvingAccount)
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else if (_hasLinkedTelegram)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(AppCorner.sm),
+                          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF10B981)),
+                            SizedBox(width: 4),
+                            Text(
+                              'Привязан к Telegram',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF10B981),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -547,6 +739,16 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                     ),
                   ),
                 ),
+                if (widget.isRenewal && !_hasLinkedTelegram && !_isResolvingAccount) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Telegram-аккаунт пока не привязан к боту. Продление будет выполнено по текущему имени подписки в базе.',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.65),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 18),
 
                 // Plans selection
@@ -567,6 +769,9 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                         setState(() {
                           _selectedPlanId = plan.id;
                         });
+                        if (_appliedPromo != null) {
+                          _checkPromoCode();
+                        }
                       },
                       borderRadius: BorderRadius.circular(AppCorner.lg),
                       child: Container(
@@ -657,6 +862,174 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                 }),
                 const SizedBox(height: 14),
 
+                // Promo code section
+                if (_appliedPromo != null) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppCorner.lg),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.card_giftcard_rounded,
+                          color: Color(0xFF10B981),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Скидка ${_appliedPromo!['discount_value']}% (${_appliedPromo!['code']})",
+                                style: textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF10B981),
+                                ),
+                              ),
+                              if (_appliedPromo!['description'] != null &&
+                                  _appliedPromo!['description']
+                                      .toString()
+                                      .isNotEmpty)
+                                Text(
+                                  _appliedPromo!['description'].toString(),
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.8),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, size: 18),
+                          onPressed: () {
+                            setState(() {
+                              _appliedPromo = null;
+                              _promoController.clear();
+                              _promoError = null;
+                            });
+                          },
+                          tooltip: "Удалить промокод",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ] else if (_showPromoField) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _promoController,
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: InputDecoration(
+                            hintText: "ПРОМОКОД",
+                            prefixIcon: const Icon(
+                              Icons.discount_outlined,
+                              size: 20,
+                            ),
+                            filled: true,
+                            fillColor: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.4),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(AppCorner.md),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(AppCorner.md),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(AppCorner.md),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF10B981),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        height: 48,
+                        child: FilledButton.tonal(
+                          onPressed: _isCheckingPromo ? null : _checkPromoCode,
+                          style: FilledButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(AppCorner.md),
+                            ),
+                          ),
+                          child: _isCheckingPromo
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text("Применить"),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_promoError != null) ...[
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        _promoError!,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.error,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                ] else ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _showPromoField = true;
+                        });
+                      },
+                      icon: const Icon(Icons.discount_outlined, size: 16),
+                      label: const Text("Есть промокод или скидка?"),
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFF10B981),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
                 // Pay Button
                 SizedBox(
                   height: 50,
@@ -673,7 +1046,11 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                           )
                         : const Icon(Icons.arrow_forward_rounded),
                     label: Text(
-                      _isLoading ? 'Формируем заказ...' : 'Перейти к оплате',
+                      _isLoading
+                          ? 'Формируем заказ...'
+                          : _appliedPromo != null
+                          ? 'Оплатить ${_appliedPromo!['final_price']} ₽ (-${_appliedPromo!['discount_amount']} ₽)'
+                          : 'Перейти к оплате ${kPaymentPlans.firstWhere((p) => p.id == _selectedPlanId).price.toStringAsFixed(0)} ₽',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -1115,6 +1492,351 @@ class _LieCommissionWarningDialogState
           ),
         ),
       ],
+    );
+  }
+}
+
+
+class _LieBotVerificationDialog extends StatefulWidget {
+  final String username;
+  final String? referrerCode;
+
+  const _LieBotVerificationDialog({
+    required this.username,
+    this.referrerCode,
+  });
+
+  @override
+  State<_LieBotVerificationDialog> createState() =>
+      _LieBotVerificationDialogState();
+}
+
+class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
+  int _secondsLeft = 60;
+  Timer? _countdownTimer;
+  Timer? _pollTimer;
+  bool _isChecking = false;
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 4),
+      receiveTimeout: const Duration(seconds: 4),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimers();
+  }
+
+  void _startTimers() {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_secondsLeft <= 1) {
+        timer.cancel();
+        setState(() {
+          _secondsLeft = 0;
+        });
+      } else {
+        setState(() {
+          _secondsLeft--;
+        });
+      }
+    });
+
+    _pollTimer = Timer.periodic(const Duration(milliseconds: 1600), (_) {
+      _checkStatus();
+    });
+  }
+
+  Future<void> _checkStatus() async {
+    if (_isChecking || !mounted) return;
+    _isChecking = true;
+    try {
+      final clean = widget.username.trim().replaceAll('@', '');
+      final isNumeric = RegExp(r'^\d+$').hasMatch(clean);
+      final resp = await _dio.post(
+        'https://pay.lie2srvv.com/api/check-user',
+        data: {
+          'user_id': isNumeric ? clean : '',
+          'username': isNumeric ? '' : clean,
+        },
+      );
+      if (resp.statusCode == 200 && resp.data is Map && mounted) {
+        final data = Map<String, dynamic>.from(resp.data as Map);
+        if (data['known'] == true) {
+          _pollTimer?.cancel();
+          _countdownTimer?.cancel();
+          Navigator.of(context).pop(true);
+          return;
+        }
+      }
+    } catch (_) {
+      // Игнорируем фоновые ошибки опроса
+    } finally {
+      if (mounted) {
+        _isChecking = false;
+      }
+    }
+  }
+
+  Future<void> _openBot() async {
+    final ref = widget.referrerCode != null && widget.referrerCode!.isNotEmpty
+        ? 'ref_${widget.referrerCode}'
+        : 'ref_lie2srvv';
+    final url = 'https://t.me/liesubbot?start=$ref';
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppCorner.xl),
+      ),
+      backgroundColor: colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Icon & Title
+              Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AppCorner.md),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.telegram_rounded,
+                      color: Color(0xFF10B981),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Подтвердите аккаунт',
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Активация в Telegram-боте',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Description
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Вы ещё ни разу не запускали нашего бота ',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      height: 1.45,
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: '@liesubbot',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF10B981),
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            '.\n\nПожалуйста, перейдите в бота и нажмите ',
+                      ),
+                      TextSpan(
+                        text: 'Запустить (Start)',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text:
+                            ', чтобы после оплаты бот мгновенно отправил вам подписку и подключил сервис.',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Button to launch Telegram bot
+              FilledButton.icon(
+                onPressed: _openBot,
+                icon: const Icon(Icons.rocket_launch_rounded, size: 18),
+                label: const Text(
+                  'Запустить @liesubbot',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppCorner.md),
+                  ),
+                  elevation: 2,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Radar / Status polling bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Color(0xFF10B981)),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Ожидаем старт в боте...',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF10B981),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '$_secondsLeft сек',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Alternative email notice
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(AppCorner.md),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('✉️', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Если вы не можете подтвердить через Telegram, напишите на почту vpn@lie2srvv.com — мы подключим подписку вручную.',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          fontSize: 11,
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Actions
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppCorner.md),
+                        ),
+                      ),
+                      child: const Text('Отмена'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton.tonal(
+                      onPressed: () => _checkStatus(),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppCorner.md),
+                        ),
+                      ),
+                      child: const Text(
+                        'Проверить',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
