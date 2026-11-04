@@ -406,7 +406,7 @@ class _PersonalAccountSheetState extends ConsumerState<PersonalAccountSheet> {
 
     final userName = (currentProfile?.label.isNotEmpty == true)
         ? currentProfile!.label
-        : 'LieVPN';
+        : 'LieNetwork';
 
     final total = info?.total ?? 0;
     final used = (info?.upload ?? 0) + (info?.download ?? 0);

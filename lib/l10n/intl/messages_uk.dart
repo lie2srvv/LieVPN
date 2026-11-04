@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uk';
 
   static String m0(code) =>
-      "Windows відказалазь запузкать LieVPNCore.exe (помілка ${code}). Політікі контроля додатків, такіе как Smart App Control або AppLocker, блокіруют неподпізанные программы; разрешіте LieVPN в этой політіке або відключіте её і повторіте попытку.";
+      "Windows відказалазь запузкать LieNetworkCore.exe (помілка ${code}). Політікі контроля додатків, такіе как Smart App Control або AppLocker, блокіруют неподпізанные программы; разрешіте LieNetwork в этой політіке або відключіте её і повторіте попытку.";
 
   static String m1(name) =>
       "Додаток два раза подряд не змогло завершіть запузк. Чтобы разорвать цікл, профіль ${name} знят з выбора, а автоматічезкая налаштування пропущена. Вы можете вібраті его знова в любой момент.";
@@ -104,7 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m33(count) => "Ура! ${count} днів стріку поспіль!";
 
   static String m34(count) =>
-      "Ви ще не заходили в LieVPN сьогодні. Підключіться до 00:00 МСК, щоб зберегти стрік у ${count} дн.!";
+      "Ви ще не заходили в LieNetwork сьогодні. Підключіться до 00:00 МСК, щоб зберегти стрік у ${count} дн.!";
 
   static String m35(count) =>
       "Залишилося відновлень цього місяця: ${count} з 3";
@@ -387,7 +387,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Ядро"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Smart App Control в Windows заблокіровал неподпізанный LieVPNCore.exe. Відкройте Безопазнозть Windows → Управленіе додаткімі і браузером → Параметрі Smart App Control, выберіте «Выкл.» і знова запузтіте LieVPN. Повторно увімкнуті Smart App Control без переузтановкі Windows нельзя.",
+      "Smart App Control в Windows заблокіровал неподпізанный LieNetworkCore.exe. Відкройте Безопазнозть Windows → Управленіе додаткімі і браузером → Параметрі Smart App Control, выберіте «Выкл.» і знова запузтіте LieNetwork. Повторно увімкнуті Smart App Control без переузтановкі Windows нельзя.",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Зтатуз ядра"),
     "country": MessageLookupByLibrary.simpleMessage("Регіон"),
@@ -406,7 +406,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Вирізати"),
     "dark": MessageLookupByLibrary.simpleMessage("Темна"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Панель керування"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("Панель LieVPN"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage(
+      "Панель LieNetwork",
+    ),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Обнаружены ізмененія даніх. Зберегті іх?",
     ),
@@ -583,7 +585,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Кэшіровать ізмененія?",
     ),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Злужба Helper недозтупна, поэтому TUN-режім увімкнуті нельзя. Переузтановіте LieVPN.",
+      "Злужба Helper недозтупна, поэтому TUN-режім увімкнуті нельзя. Переузтановіте LieNetwork.",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Пріховаті із зпізка"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("Пріховаті пароль"),
@@ -699,7 +701,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Макет"),
     "lieVpnSettings": MessageLookupByLibrary.simpleMessage(
-      "Налаштування LieVPN",
+      "Налаштування LieNetwork",
     ),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
       "Параметрі зповіщень і перзоналізаціі",
@@ -865,7 +867,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "none": MessageLookupByLibrary.simpleMessage("Ні"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "Це не посилання LieVPN",
+      "Це не посилання LieNetwork",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "Текущую группу прокзі нельзя вібраті",
@@ -1487,9 +1489,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Підписку оновлено",
     ),
     "supportEmail": MessageLookupByLibrary.simpleMessage("Электронная почта"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("Підтрімка LieVPN"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage(
+      "Підтрімка LieNetwork",
+    ),
     "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
-      "Злужба поддержкі LieVPN",
+      "Злужба поддержкі LieNetwork",
     ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
       "Меззенджер MAX",

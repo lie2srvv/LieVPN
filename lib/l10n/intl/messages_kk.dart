@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'kk';
 
   static String m0(code) =>
-      "Windows бастапказалась запускать LieVPNCore.exe (қате ${code}). Полжәнетжәнекжәне контроля қолданбалардың, такжәнее как Smart App Control немесе AppLocker, блокжәнеруют неподпжәнесанные программы; разрешжәнете LieVPN в этой полжәнетжәнеке немесе бастапключжәнете её және повторжәнете попытку.";
+      "Windows бастапказалась запускать LieNetworkCore.exe (қате ${code}). Полжәнетжәнекжәне контроля қолданбалардың, такжәнее как Smart App Control немесе AppLocker, блокжәнеруют неподпжәнесанные программы; разрешжәнете LieNetwork в этой полжәнетжәнеке немесе бастапключжәнете её және повторжәнете попытку.";
 
   static String m1(name) =>
       "Қолданба два раза подряд не смогло завершжәнеть запуск. Чтобы разорвать цжәнекл, профжәнель ${name} снят с выбора, а автоматжәнеческая баптау пропущена. Вы можете таңдау его снова в любой момент.";
@@ -104,7 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Керемет! Қатарынан ${count} күн стрикке жеттіңіз!";
 
   static String m34(count) =>
-      "Бүгін LieVPN-ге әлі қосылмадыңыз. ${count} күндік стрикті сақтау үшін МСК 00:00-ге дейін қосылыңыз!";
+      "Бүгін LieNetwork-ге әлі қосылмадыңыз. ${count} күндік стрикті сақтау үшін МСК 00:00-ге дейін қосылыңыз!";
 
   static String m35(count) =>
       "Осы айда қалған қалпына келтірулер: ${count} / 3";
@@ -413,7 +413,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Ядро"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Smart App Control в Windows заблокжәнеровал неподпжәнесанный LieVPNCore.exe. Бастапкройте Безопасность Windows → Управленжәнее қолданбалармжәне және браузером → Параметрлер Smart App Control, выбержәнете «Выкл.» және снова запустжәнете LieVPN. Повторно қосу Smart App Control без переустановкжәне Windows нельзя.",
+      "Smart App Control в Windows заблокжәнеровал неподпжәнесанный LieNetworkCore.exe. Бастапкройте Безопасность Windows → Управленжәнее қолданбалармжәне және браузером → Параметрлер Smart App Control, выбержәнете «Выкл.» және снова запустжәнете LieNetwork. Повторно қосу Smart App Control без переустановкжәне Windows нельзя.",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Статус ядра"),
     "country": MessageLookupByLibrary.simpleMessage("Регжәнеон"),
@@ -434,7 +434,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Қиып алу"),
     "dark": MessageLookupByLibrary.simpleMessage("Күңгірт"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Басқару панелі"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("Панель LieVPN"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage(
+      "Панель LieNetwork",
+    ),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Обнаружены жәнезмененжәнея деректердің. Сақтау жәнех?",
     ),
@@ -623,7 +625,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Кэшжәнеровать жәнезмененжәнея?",
     ),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Служба Helper недейінступна, поэтому TUN-режжәнем қосу нельзя. Переустановжәнете LieVPN.",
+      "Служба Helper недейінступна, поэтому TUN-режжәнем қосу нельзя. Переустановжәнете LieNetwork.",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage(
       "Жасыру жәнез спжәнеска",
@@ -750,7 +752,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "В прошлый раз қолданба неожжәнеданно завершжәнелось во уақыт запуска. Автоматжәнеческая баптау үшін этого запуска пропущена; вы можете запустжәнеть её вручную.",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Макет"),
-    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN баптаулары"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage(
+      "LieNetwork баптаулары",
+    ),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
       "Параметрлер уведейінмленжәней және персоналжәнезацжәнежәне",
     ),
@@ -919,7 +923,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "none": MessageLookupByLibrary.simpleMessage("Жоқ"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "Бұл LieVPN сілтемесі емес",
+      "Бұл LieNetwork сілтемесі емес",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "Текущую группу проксжәне нельзя таңдау",
@@ -1569,9 +1573,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Жазылым жаңартылды",
     ),
     "supportEmail": MessageLookupByLibrary.simpleMessage("Электронная почта"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("Қолдау LieVPN"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("Қолдау LieNetwork"),
     "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
-      "Служба поддержкжәне LieVPN",
+      "Служба поддержкжәне LieNetwork",
     ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
       "Мессенджер MAX",

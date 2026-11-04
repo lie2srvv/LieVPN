@@ -1,4 +1,4 @@
-name: Build LieVPN
+name: Build LieNetwork
 
 on:
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LieVPN-Windows
+          name: LieNetwork-Windows
           path: ./dist/*
           overwrite: true
 
@@ -88,7 +88,7 @@ jobs:
           #!/bin/bash
           HERE="$(dirname "$(readlink -f "${0}")")"
           export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          exec "${HERE}/LieVPN" "$@"
+          exec "${HERE}/LieNetwork" "$@"
           RUNNER
               chmod +x "$arg/AppRun"
             fi
@@ -126,9 +126,9 @@ jobs:
         run: |
           cd ./dist
           ls -la
-          for f in LieVPN-*-linux-amd64.AppImage; do
+          for f in LieNetwork-*-linux-amd64.AppImage; do
             if [ -f "$f" ]; then
-              cp "$f" LieVPN.AppImage
+              cp "$f" LieNetwork.AppImage
             fi
           done
           ls -la
@@ -136,7 +136,7 @@ jobs:
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LieVPN-Linux
+          name: LieNetwork-Linux
           path: ./dist/*
           overwrite: true
 

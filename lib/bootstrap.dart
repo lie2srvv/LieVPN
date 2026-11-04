@@ -132,7 +132,7 @@ class Bootstrap {
       final cleanLabel =
           keep.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
       final clean =
-          keep.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+          keep.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieNetwork');
       profiles = [clean];
       for (final p in rawProfiles) {
         if (p.id != keep.id) {
@@ -145,7 +145,7 @@ class Bootstrap {
       final cleanLabel =
           p.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
       final clean =
-          p.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN');
+          p.copyWith(label: cleanLabel.isNotEmpty ? cleanLabel : 'LieNetwork');
       profiles = [clean];
       if (clean.label != p.label) {
         unawaited(database.profiles.put(clean.toCompanion()));

@@ -106,22 +106,22 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog>
       if (Platform.isAndroid) {
         savePath = p.join(
           downloadDirPath,
-          'LieVPN-update-${widget.updateInfo.version}.apk',
+          'LieNetwork-update-${widget.updateInfo.version}.apk',
         );
       } else if (Platform.isWindows) {
         savePath = p.join(
           downloadDirPath,
-          'LieVPN-update-${widget.updateInfo.version}.exe',
+          'LieNetwork-update-${widget.updateInfo.version}.exe',
         );
       } else if (Platform.isLinux) {
         savePath = p.join(
           downloadDirPath,
-          'LieVPN-update-${widget.updateInfo.version}.AppImage',
+          'LieNetwork-update-${widget.updateInfo.version}.AppImage',
         );
       } else {
         savePath = p.join(
           downloadDirPath,
-          'LieVPN-update-${widget.updateInfo.version}.bin',
+          'LieNetwork-update-${widget.updateInfo.version}.bin',
         );
       }
 
@@ -310,7 +310,7 @@ class _InAppUpdateDialogState extends State<InAppUpdateDialog>
                         ),
                       ),
                       Text(
-                        'LieVPN ${widget.updateInfo.version}',
+                        'LieNetwork ${widget.updateInfo.version}',
                         style: TextStyle(
                           fontFamily: 'monospace',
                           fontSize: 12,

@@ -422,7 +422,7 @@ class _SubscriptionLockViewState extends ConsumerState<SubscriptionLockView>
                                 },
                           icon: const Icon(Icons.bolt_rounded),
                           label: Text(
-                            isExpired ? 'Продлить подписку LieVPN' : 'Купить подписку LieVPN',
+                            isExpired ? 'Продлить подписку LieSub' : 'Купить подписку LieSub',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,

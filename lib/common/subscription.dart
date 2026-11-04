@@ -14,7 +14,7 @@ bool isLieVpnHost(String? host) {
   return h == 'lie2srvv.com' || h.endsWith('.lie2srvv.com');
 }
 
-/// Validates whether the given URL string points to a valid LieVPN subscription endpoint.
+/// Validates whether the given URL string points to a valid LieSub subscription endpoint.
 bool isValidLieVpnSubscriptionUrl(String url) {
   var target = url.trim();
   if (target.isEmpty) return false;
@@ -32,13 +32,13 @@ bool isValidLieVpnSubscriptionUrl(String url) {
   return true;
 }
 
-/// Checks if the given profile has a valid LieVPN subscription URL.
+/// Checks if the given profile has a valid LieSub subscription URL.
 bool isLieVpnSubscription(Profile? profile) {
   if (profile == null) return false;
   return isValidLieVpnSubscriptionUrl(profile.url);
 }
 
-/// Extracts a LieVPN subscription URL from raw input or clipboard text.
+/// Extracts a LieSub subscription URL from raw input or clipboard text.
 String? extractLieVpnUrl(String text) {
   final trimmed = text.trim();
   if (trimmed.isEmpty) return null;
@@ -188,7 +188,7 @@ bool profileFileHasProxies(File file) {
   }
 }
 
-/// Checks whether a profile has an active, valid, non-expired LieVPN subscription.
+/// Checks whether a profile has an active, valid, non-expired LieSub subscription.
 bool hasActiveLieVpnSubscription(Profile? profile) {
   if (profile == null) return false;
   if (!isLieVpnSubscription(profile)) return false;

@@ -3,7 +3,7 @@ package com.follow.clash.common
 import android.content.ComponentName
 
 object Components {
-    const val PACKAGE_NAME = "com.lie2srvv.vpn"
+    const val PACKAGE_NAME = "com.lie2srvv.network"
     private const val CLASS_PREFIX = "com.follow.clash"
 
     val mainActivity =

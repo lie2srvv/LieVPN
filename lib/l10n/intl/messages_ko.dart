@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ko';
 
   static String m0(code) =>
-      "Windows refused to run LieVPNCore.exe (error ${code}). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieVPN in that policy or turn it off, then try again.";
+      "Windows refused to run LieNetworkCore.exe (error ${code}). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieNetwork in that policy or turn it off, then try again.";
 
   static String m1(name) =>
       "The app failed to finish launching twice in a row. To break the loop, the profile ${name} has been deselected and automatic setup was skipped. You can select it again at any time.";
@@ -103,7 +103,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m33(count) => "축하합니다! ${count}일 연속 스트릭 달성!";
 
   static String m34(count) =>
-      "오늘 아직 LieVPN에 연결하지 않았습니다. ${count}일 연속 스트릭을 유지하려면 00:00 MSK 전에 연결하세요!";
+      "오늘 아직 LieNetwork에 연결하지 않았습니다. ${count}일 연속 스트릭을 유지하려면 00:00 MSK 전에 연결하세요!";
 
   static String m35(count) => "이번 달 남은 복구 횟수: ${count}/3";
 
@@ -361,7 +361,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Core"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Windows Smart App Control blocked LieVPNCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieVPN again. Smart App Control cannot be turned back on without reinstalling Windows.",
+      "Windows Smart App Control blocked LieNetworkCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieNetwork again. Smart App Control cannot be turned back on without reinstalling Windows.",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Core status"),
     "country": MessageLookupByLibrary.simpleMessage("Region"),
@@ -380,7 +380,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Cut"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "dashboard": MessageLookupByLibrary.simpleMessage("대시보드"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN Dashboard"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage(
+      "LieNetwork Dashboard",
+    ),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Data changes detected. Save them?",
     ),
@@ -455,7 +457,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("English"),
     "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
-      "Enter LieVPN subscription URL",
+      "Enter LieNetwork subscription URL",
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" entries"),
     "entriesCount": m8,
@@ -547,7 +549,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Cache the changes?",
     ),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Helper service unavailable; TUN mode cannot be enabled. Reinstall LieVPN to restore it.",
+      "Helper service unavailable; TUN mode cannot be enabled. Reinstall LieNetwork to restore it.",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("Hide password"),
@@ -660,7 +662,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "The app exited unexpectedly while it was starting up last time. Automatic setup was skipped for this launch; you can start it manually to retry.",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Layout"),
-    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN 설정"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieNetwork 설정"),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
       "Notification and personalization options",
     ),
@@ -811,7 +813,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "none": MessageLookupByLibrary.simpleMessage("None"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "This is not a LieVPN subscription",
+      "This is not a LieNetwork subscription",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "The current proxy group cannot be selected",
@@ -1355,7 +1357,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Activating subscription from clipboard...",
     ),
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
-      "Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.",
+      "Your LieNetwork subscription has expired. Renew it in the Telegram bot or activate a new key.",
     ),
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "구독이 만료되었습니다",
@@ -1383,15 +1385,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Subscription Required",
     ),
     "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
-      "An active LieVPN subscription is required to use the application. Activate access via URL or QR code.",
+      "An active LieNetwork subscription is required to use the application. Activate access via URL or QR code.",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Subscription updated",
     ),
     "supportEmail": MessageLookupByLibrary.simpleMessage("Email Support"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN Support"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieNetwork Support"),
     "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
-      "LieVPN Customer Support",
+      "LieNetwork Customer Support",
     ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
       "MAX Messenger",

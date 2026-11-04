@@ -162,7 +162,7 @@ class ProfilesAction extends _$ProfilesAction {
       final cleanLabel =
           profile.label.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
       final cleanProfile = profile.copyWith(
-        label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
+        label: cleanLabel.isNotEmpty ? cleanLabel : 'LieNetwork',
       );
       setProfileAndAutoApply(cleanProfile);
       ref.read(currentProfileIdProvider.notifier).value = cleanProfile.id;

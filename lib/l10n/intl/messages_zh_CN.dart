@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_CN';
 
   static String m0(code) =>
-      "Windows 拒绝运行 LieVPNCore.exe（错误 ${code}）。智能应用控制、AppLocker 等应用控制策略会拦截未签名程序，请在该策略中放行 LieVPN 或关闭策略后重试。";
+      "Windows 拒绝运行 LieNetworkCore.exe（错误 ${code}）。智能应用控制、AppLocker 等应用控制策略会拦截未签名程序，请在该策略中放行 LieNetwork 或关闭策略后重试。";
 
   static String m1(name) =>
       "应用连续两次未能完成启动。为打断崩溃循环，已取消选中配置 ${name}，并跳过本次自动配置，你可以随时重新选中它。";
@@ -92,7 +92,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m33(count) => "太棒了！已达成连续 ${count} 天连胜里程碑！";
 
   static String m34(count) =>
-      "您今天尚未连接 LieVPN。请在 00:00 MSK 之前连接以保持您的 ${count} 天连胜！";
+      "您今天尚未连接 LieNetwork。请在 00:00 MSK 之前连接以保持您的 ${count} 天连胜！";
 
   static String m35(count) => "本月剩余恢复次数: ${count} / 3";
 
@@ -265,7 +265,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("内核"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Windows 智能应用控制拦截了未签名的 LieVPNCore.exe。请打开 Windows 安全中心 → 应用和浏览器控制 → 智能应用控制设置，选择「关闭」后重新启动 LieVPN。智能应用控制关闭后无法再开启，除非重装 Windows。",
+      "Windows 智能应用控制拦截了未签名的 LieNetworkCore.exe。请打开 Windows 安全中心 → 应用和浏览器控制 → 智能应用控制设置，选择「关闭」后重新启动 LieNetwork。智能应用控制关闭后无法再开启，除非重装 Windows。",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("核心状态"),
     "country": MessageLookupByLibrary.simpleMessage("区域"),
@@ -284,7 +284,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("剪切"),
     "dark": MessageLookupByLibrary.simpleMessage("深色"),
     "dashboard": MessageLookupByLibrary.simpleMessage("仪表盘"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN 仪表盘"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("LieNetwork 仪表盘"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage("检测到数据有更改，是否保存"),
     "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
       "本应用使用 Firebase Crashlytics 收集崩溃信息以改进应用稳定性。\n收集的数据包括设备信息和崩溃详情，不包含个人敏感数据。\n您可以在设置中关闭此功能。",
@@ -337,7 +337,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("英语"),
     "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
-      "输入 LieVPN 订阅链接",
+      "输入 LieNetwork 订阅链接",
     ),
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m8,
@@ -401,7 +401,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hallOfFameHeader": MessageLookupByLibrary.simpleMessage("// 名人堂 — 总赞助"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Helper 服务不可用，无法启用 TUN 模式，请重新安装 LieVPN。",
+      "Helper 服务不可用，无法启用 TUN 模式，请重新安装 LieNetwork。",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("隐藏密码"),
@@ -478,7 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "应用上次在启动过程中意外退出。已跳过本次自动配置，你可以手动启动重试。",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("布局"),
-    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN 设置"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieNetwork 设置"),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage("通知与个性化设置"),
     "light": MessageLookupByLibrary.simpleMessage("浅色"),
     "list": MessageLookupByLibrary.simpleMessage("列表"),
@@ -587,7 +587,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noSubscriptionFound": MessageLookupByLibrary.simpleMessage("未添加订阅"),
     "none": MessageLookupByLibrary.simpleMessage("无"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "这不是 LieVPN 订阅",
+      "这不是 LieNetwork 订阅",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage("当前代理组无法选中"),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage("没有配置文件,请先添加配置文件"),
@@ -863,7 +863,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("服务器状态"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
-      "LieVPN 服务器状态与正常运行时间",
+      "LieNetwork 服务器状态与正常运行时间",
     ),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
@@ -997,7 +997,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "正在激活剪贴板中的订阅...",
     ),
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
-      "您的 LieVPN 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
+      "您的 LieNetwork 订阅已过期。请在 Telegram 机器人中续订或激活新订阅。",
     ),
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage("订阅已过期"),
     "subscriptionExpiringIn": m36,
@@ -1015,12 +1015,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionNoChanges": MessageLookupByLibrary.simpleMessage("订阅无变化"),
     "subscriptionRequired": MessageLookupByLibrary.simpleMessage("需要订阅"),
     "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
-      "使用 LieVPN 应用需要有效订阅。通过链接或二维码激活访问。",
+      "使用 LieNetwork 应用需要有效订阅。通过链接或二维码激活访问。",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage("订阅已更新"),
     "supportEmail": MessageLookupByLibrary.simpleMessage("电子邮件"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN 支持"),
-    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage("LieVPN 客户支持"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieNetwork 支持"),
+    "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
+      "LieNetwork 客户支持",
+    ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage("MAX 消息"),
     "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(
       "在 MAX 上联系",

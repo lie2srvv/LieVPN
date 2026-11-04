@@ -1070,20 +1070,20 @@ class AppLocalizations {
     return Intl.message('Search', name: 'search', desc: '', args: []);
   }
 
-  /// `Allow apps to bypass VPN`
+  /// `Allow apps to bypass the tunnel`
   String get allowBypass {
     return Intl.message(
-      'Allow apps to bypass VPN',
+      'Allow apps to bypass the tunnel',
       name: 'allowBypass',
       desc: '',
       args: [],
     );
   }
 
-  /// `When enabled, some apps can bypass the VPN`
+  /// `When enabled, some apps can bypass the secure tunnel`
   String get allowBypassDesc {
     return Intl.message(
-      'When enabled, some apps can bypass the VPN',
+      'When enabled, some apps can bypass the secure tunnel',
       name: 'allowBypassDesc',
       desc: '',
       args: [],
@@ -3740,30 +3740,30 @@ class AppLocalizations {
     );
   }
 
-  /// `Helper service unavailable; TUN mode cannot be enabled. Reinstall LieVPN to restore it.`
+  /// `Helper service unavailable; TUN mode cannot be enabled. Reinstall LieNetwork to restore it.`
   String get helperCorruptTip {
     return Intl.message(
-      'Helper service unavailable; TUN mode cannot be enabled. Reinstall LieVPN to restore it.',
+      'Helper service unavailable; TUN mode cannot be enabled. Reinstall LieNetwork to restore it.',
       name: 'helperCorruptTip',
       desc: '',
       args: [],
     );
   }
 
-  /// `Windows refused to run LieVPNCore.exe (error {code}). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieVPN in that policy or turn it off, then try again.`
+  /// `Windows refused to run LieNetworkCore.exe (error {code}). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieNetwork in that policy or turn it off, then try again.`
   String coreBlockedByPolicyTip(Object code) {
     return Intl.message(
-      'Windows refused to run LieVPNCore.exe (error $code). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieVPN in that policy or turn it off, then try again.',
+      'Windows refused to run LieNetworkCore.exe (error $code). An app control policy such as Smart App Control or AppLocker blocks unsigned programs; allow LieNetwork in that policy or turn it off, then try again.',
       name: 'coreBlockedByPolicyTip',
       desc: '',
       args: [code],
     );
   }
 
-  /// `Windows Smart App Control blocked LieVPNCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieVPN again. Smart App Control cannot be turned back on without reinstalling Windows.`
+  /// `Windows Smart App Control blocked LieNetworkCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieNetwork again. Smart App Control cannot be turned back on without reinstalling Windows.`
   String get coreBlockedBySmartAppControlTip {
     return Intl.message(
-      'Windows Smart App Control blocked LieVPNCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieVPN again. Smart App Control cannot be turned back on without reinstalling Windows.',
+      'Windows Smart App Control blocked LieNetworkCore.exe because it is not signed. Open Windows Security → App & browser control → Smart App Control settings, choose Off, then start LieNetwork again. Smart App Control cannot be turned back on without reinstalling Windows.',
       name: 'coreBlockedBySmartAppControlTip',
       desc: '',
       args: [],
@@ -5115,10 +5115,10 @@ class AppLocalizations {
     );
   }
 
-  /// `LieVPN Dashboard`
+  /// `LieNetwork Dashboard`
   String get dashboardLieVpn {
     return Intl.message(
-      'LieVPN Dashboard',
+      'LieNetwork Dashboard',
       name: 'dashboardLieVpn',
       desc: '',
       args: [],
@@ -5225,10 +5225,10 @@ class AppLocalizations {
     );
   }
 
-  /// `This is not a LieVPN subscription`
+  /// `This is not a LieSub subscription`
   String get notLieVpnSubscription {
     return Intl.message(
-      'This is not a LieVPN subscription',
+      'This is not a LieSub subscription',
       name: 'notLieVpnSubscription',
       desc: '',
       args: [],
@@ -5415,20 +5415,20 @@ class AppLocalizations {
     );
   }
 
-  /// `An active LieVPN subscription is required to use the application. Activate access via URL or QR code.`
+  /// `An active LieSub subscription is required to use the application. Activate access via URL or QR code.`
   String get subscriptionRequiredDesc {
     return Intl.message(
-      'An active LieVPN subscription is required to use the application. Activate access via URL or QR code.',
+      'An active LieSub subscription is required to use the application. Activate access via URL or QR code.',
       name: 'subscriptionRequiredDesc',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.`
+  /// `Your LieSub subscription has expired. Renew it in the Telegram bot or activate a new key.`
   String get subscriptionExpiredDesc {
     return Intl.message(
-      'Your LieVPN subscription has expired. Renew it in the Telegram bot or activate a new key.',
+      'Your LieSub subscription has expired. Renew it in the Telegram bot or activate a new key.',
       name: 'subscriptionExpiredDesc',
       desc: '',
       args: [],
@@ -5490,10 +5490,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Enter LieVPN subscription URL`
+  /// `Enter LieSub subscription URL`
   String get enterSubscriptionUrl {
     return Intl.message(
-      'Enter LieVPN subscription URL',
+      'Enter LieSub subscription URL',
       name: 'enterSubscriptionUrl',
       desc: '',
       args: [],
@@ -5525,10 +5525,10 @@ class AppLocalizations {
     );
   }
 
-  /// `LieVPN servers state and uptime`
+  /// `LieNetwork servers state and uptime`
   String get serverStatusDesc {
     return Intl.message(
-      'LieVPN servers state and uptime',
+      'LieNetwork servers state and uptime',
       name: 'serverStatusDesc',
       desc: '',
       args: [],
@@ -6005,20 +6005,20 @@ class AppLocalizations {
     );
   }
 
-  /// `LieVPN Support`
+  /// `LieNetwork Support`
   String get supportLieVpn {
     return Intl.message(
-      'LieVPN Support',
+      'LieNetwork Support',
       name: 'supportLieVpn',
       desc: '',
       args: [],
     );
   }
 
-  /// `LieVPN Customer Support`
+  /// `LieNetwork Customer Support`
   String get supportLieVpnTitle {
     return Intl.message(
-      'LieVPN Customer Support',
+      'LieNetwork Customer Support',
       name: 'supportLieVpnTitle',
       desc: '',
       args: [],
@@ -6055,10 +6055,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.`
+  /// `Secure network infrastructure and high-speed tunnels for personal traffic encryption with TLS 1.3 standard.`
   String get aboutAppDesc {
     return Intl.message(
-      'Private VPN for data security and internet anonymity based on VLESS and Hysteria2 protocols.',
+      'Secure network infrastructure and high-speed tunnels for personal traffic encryption with TLS 1.3 standard.',
       name: 'aboutAppDesc',
       desc: '',
       args: [],
@@ -6100,10 +6100,10 @@ class AppLocalizations {
     );
   }
 
-  /// `LieVPN Settings`
+  /// `LieNetwork Settings`
   String get lieVpnSettings {
     return Intl.message(
-      'LieVPN Settings',
+      'LieNetwork Settings',
       name: 'lieVpnSettings',
       desc: '',
       args: [],
@@ -6492,10 +6492,10 @@ class AppLocalizations {
     );
   }
 
-  /// `You haven't connected to LieVPN today. Connect before 00:00 MSK to keep your {count}-day streak!`
+  /// `You haven't connected to LieNetwork today. Connect before 00:00 MSK to keep your {count}-day streak!`
   String streakNotificationBody(Object count) {
     return Intl.message(
-      'You haven\'t connected to LieVPN today. Connect before 00:00 MSK to keep your $count-day streak!',
+      'You haven\'t connected to LieNetwork today. Connect before 00:00 MSK to keep your $count-day streak!',
       name: 'streakNotificationBody',
       desc: 'streakNotificationBody',
       args: [count],

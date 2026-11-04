@@ -1,4 +1,4 @@
-display_name: LieVPN
+display_name: LieNetwork
 
 icon: ./assets/images/icon.png
 
@@ -8,12 +8,12 @@ supported_mime_type:
   - x-scheme-handler/flclash
 
 keywords:
-  - LieVPN
+  - LieNetwork
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: LieVPN
+generic_name: LieNetwork
 
 categories:
   - Network

@@ -1,4 +1,4 @@
-# LieVPN Versioning Policy & Release Guidelines
+# LieNetwork Versioning Policy & Release Guidelines
 
 > **IMPORTANT FOR ALL AI AGENTS & DEVELOPERS:**
 > Always read this document before updating versions or building releases.
@@ -22,9 +22,9 @@
      ```json
      {
        "version": "X.Y.Z",
-       "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-       "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-       "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage"
+       "apkUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk",
+       "windowsUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.exe",
+       "linuxUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.AppImage"
      }
      ```
    - Commit and push to GitHub `main` branch.

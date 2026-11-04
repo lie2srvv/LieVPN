@@ -164,7 +164,7 @@ Future<void> _sanitizeLinuxElfBinaries(String rootDir) async {
   for (final entity in bundleDir.listSync(recursive: true)) {
     if (entity is File) {
       final name = p.basename(entity.path);
-      if (name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
+      if (name == 'LieNetwork' || name == 'LieVPN' || name.startsWith('FlClash') || name.endsWith('.so')) {
         elfPaths.add(entity.path);
       }
     }

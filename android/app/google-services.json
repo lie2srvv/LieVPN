@@ -8,7 +8,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
         "android_client_info": {
-          "package_name": "com.lie2srvv.vpn"
+          "package_name": "com.lie2srvv.network"
         }
       },
       "oauth_client": [],
@@ -27,7 +27,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
         "android_client_info": {
-          "package_name": "com.lie2srvv.vpn.dev"
+          "package_name": "com.lie2srvv.network.dev"
         }
       },
       "oauth_client": [],

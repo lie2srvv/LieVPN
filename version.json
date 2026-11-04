@@ -1,25 +1,45 @@
 {
-  "version": "1.2.0",
-  "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-  "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-  "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-  "releaseNotes": "LieVPN 1.2.0:\n• Полное удаление вкладки Спидтест и ускорение работы интерфейса\n• Автоматическое определение привязанного Telegram-аккаунта в окне продления подписки\n• Fallback на имя подписки из базы для старых аккаунтов\n• Проверка и подтверждение Telegram-аккаунта перед оплатой через @liesubbot\n• Поддержка промокодов и реферальных скидок в приложении\n• Защита от флуда и повышенная безопасность API",
+  "version": "1.2.1",
+  "apkUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk",
+  "windowsUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.exe",
+  "linuxUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.AppImage",
+  "releaseNotes": "LieNetwork 1.2.1 (Ребрендинг):
+• Полный переход на LieNetwork и подписку LieSub
+• Обновление терминологии: защищённые сетевые туннели и TLS 1.3 шифрование
+• Официальная платёжная страница LiePay (https://pay.lie2srvv.com)
+• Интеграция промокодов и реферальной программы
+• Повышенная стабильность соединений и защита данных",
   "android": {
-    "version": "1.2.0",
-    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "apkUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk",
-    "releaseNotes": "LieVPN 1.2.0 для Android:\n• Удалена вкладка Спидтест для облегчения интерфейса\n• Автоопределение Telegram-аккаунта при продлении подписки\n• Подтверждение аккаунта в @liesubbot перед оплатой\n• Промокоды и реферальные скидки в приложении"
+    "version": "1.2.1",
+    "url": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk",
+    "apkUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk",
+    "releaseNotes": "LieNetwork 1.2.1 (Ребрендинг):
+• Полный переход на LieNetwork и подписку LieSub
+• Обновление терминологии: защищённые сетевые туннели и TLS 1.3 шифрование
+• Официальная платёжная страница LiePay (https://pay.lie2srvv.com)
+• Интеграция промокодов и реферальной программы
+• Повышенная стабильность соединений и защита данных"
   },
   "windows": {
-    "version": "1.2.0",
-    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "windowsUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe",
-    "releaseNotes": "LieVPN 1.2.0 для Windows:\n• Удалена вкладка Спидтест для облегчения интерфейса\n• Автоопределение Telegram-аккаунта при продлении подписки\n• Подтверждение аккаунта в @liesubbot перед оплатой\n• Промокоды и реферальные скидки в приложении"
+    "version": "1.2.1",
+    "url": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.exe",
+    "windowsUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.exe",
+    "releaseNotes": "LieNetwork 1.2.1 (Ребрендинг):
+• Полный переход на LieNetwork и подписку LieSub
+• Обновление терминологии: защищённые сетевые туннели и TLS 1.3 шифрование
+• Официальная платёжная страница LiePay (https://pay.lie2srvv.com)
+• Интеграция промокодов и реферальной программы
+• Повышенная стабильность соединений и защита данных"
   },
   "linux": {
-    "version": "1.2.0",
-    "url": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "linuxUrl": "https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage",
-    "releaseNotes": "LieVPN 1.2.0 для Linux:\n• Удалена вкладка Спидтест для облегчения интерфейса\n• Автоопределение Telegram-аккаунта при продлении подписки\n• Подтверждение аккаунта в @liesubbot перед оплатой\n• Промокоды и реферальные скидки в приложении"
+    "version": "1.2.1",
+    "url": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.AppImage",
+    "linuxUrl": "https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.AppImage",
+    "releaseNotes": "LieNetwork 1.2.1 (Ребрендинг):
+• Полный переход на LieNetwork и подписку LieSub
+• Обновление терминологии: защищённые сетевые туннели и TLS 1.3 шифрование
+• Официальная платёжная страница LiePay (https://pay.lie2srvv.com)
+• Интеграция промокодов и реферальной программы
+• Повышенная стабильность соединений и защита данных"
   }
 }

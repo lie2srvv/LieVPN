@@ -123,7 +123,7 @@ extension ProfilesExt on List<Profile> {
   String _getLabel(String label, int id) {
     final realLabel = label.takeFirstValid([id.toString()]);
     final clean = realLabel.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
-    return clean.isNotEmpty ? clean : 'LieVPN';
+    return clean.isNotEmpty ? clean : 'LieNetwork';
   }
 
   Profile optimizeLabel(Profile profile) {
@@ -202,7 +202,7 @@ extension ProfileExtension on Profile {
     final cleanLabel = rawLabel.replaceAll(RegExp(r'\s*\(\d+\)$'), '').trim();
 
     final updated = await copyWith(
-      label: cleanLabel.isNotEmpty ? cleanLabel : 'LieVPN',
+      label: cleanLabel.isNotEmpty ? cleanLabel : 'LieNetwork',
       subscriptionInfo: newSubscriptionInfo,
     ).saveFile(bytes, validate: validate);
     return (updated, true);

@@ -25,18 +25,18 @@ var
   InstallerName: String;
   ResultCode: Integer;
 begin
-  AppPath := ExpandConstant('{app}\\LieVPN.exe');
+  AppPath := ExpandConstant('{app}\\LieNetwork.exe');
   InstallerName := LowerCase(ExtractFileName(ExpandConstant('{srcexe}')));
 
-  // If the installer itself is NOT named LieVPN.exe, standard taskkill is safe.
+  // If the installer itself is NOT named LieNetwork.exe, standard taskkill is safe.
   // Otherwise, only terminate the installed app from {app} to prevent self-termination.
   if InstallerName <> 'lievpn.exe' then
   begin
-    Exec('taskkill', '/f /im LieVPN.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('taskkill', '/f /im LieNetwork.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end
   else if FileExists(AppPath) then
   begin
-    Exec('powershell', '-NoProfile -NonInteractive -Command "Get-Process -Name LieVPN -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq ''' + AppPath + ''' } | Stop-Process -Force"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('powershell', '-NoProfile -NonInteractive -Command "Get-Process -Name LieNetwork -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq ''' + AppPath + ''' } | Stop-Process -Force"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
 
   Exec('taskkill', '/f /im FlClash.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);

@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
   static String m0(code) =>
-      "Windows отказалась запускать LieVPNCore.exe (ошибка ${code}). Политики контроля приложений, такие как Smart App Control или AppLocker, блокируют неподписанные программы; разрешите LieVPN в этой политике или отключите её и повторите попытку.";
+      "Windows отказалась запускать LieNetworkCore.exe (ошибка ${code}). Политики контроля приложений, такие как Smart App Control или AppLocker, блокируют неподписанные программы; разрешите LieNetwork в этой политике или отключите её и повторите попытку.";
 
   static String m1(name) =>
       "Приложение два раза подряд не смогло завершить запуск. Чтобы разорвать цикл, профиль ${name} снят с выбора, а автоматическая настройка пропущена. Вы можете выбрать его снова в любой момент.";
@@ -104,7 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m33(count) => "Ура! ${count} дней стрика подряд!";
 
   static String m34(count) =>
-      "Вы ещё не заходили в LieVPN сегодня. Подключитесь до 00:00 МСК, чтобы сохранить стрик в ${count} дн.!";
+      "Вы ещё не заходили в LieNetwork сегодня. Подключитесь до 00:00 МСК, чтобы сохранить стрик в ${count} дн.!";
 
   static String m35(count) =>
       "Осталось восстановлений в этом месяце: ${count} из 3";
@@ -120,7 +120,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "about": MessageLookupByLibrary.simpleMessage("О программе"),
     "aboutAppDesc": MessageLookupByLibrary.simpleMessage(
-      "Приватный VPN для защиты данных и анонимности в сети на протоколе VLESS и Hysteria2.",
+      "Защищённая сетевая инфраструктура и скоростные туннели для шифрования персонального трафика по стандарту TLS 1.3.",
     ),
     "aboutFork": MessageLookupByLibrary.simpleMessage("Форк FlClash"),
     "aboutForkDesc": MessageLookupByLibrary.simpleMessage(
@@ -128,7 +128,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "accessControl": MessageLookupByLibrary.simpleMessage("Контроль доступа"),
     "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
-      "Через VPN проходят только выбранные приложения",
+      "Через защищённый туннель проходят только выбранные приложения",
     ),
     "accessControlDesc": MessageLookupByLibrary.simpleMessage(
       "Выбор приложений, использующих прокси",
@@ -137,7 +137,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Контроль доступа приложений отключён",
     ),
     "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
-      "Выбранные приложения исключаются из VPN",
+      "Выбранные приложения исключаются из туннеля",
     ),
     "accessControlSettings": MessageLookupByLibrary.simpleMessage(
       "Настройки контроля доступа",
@@ -187,10 +187,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Согласен"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
-      "Разрешить приложениям обходить VPN",
+      "Исключить приложения из туннеля",
     ),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
-      "При включении некоторые приложения смогут обходить VPN",
+      "При включении некоторые приложения направляют трафик напрямую",
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("Разрешить LAN"),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
@@ -383,7 +383,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Ядро"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Smart App Control в Windows заблокировал неподписанный LieVPNCore.exe. Откройте Безопасность Windows → Управление приложениями и браузером → Параметры Smart App Control, выберите «Выкл.» и снова запустите LieVPN. Повторно включить Smart App Control без переустановки Windows нельзя.",
+      "Smart App Control в Windows заблокировал неподписанный LieNetworkCore.exe. Откройте Безопасность Windows → Управление приложениями и браузером → Параметры Smart App Control, выберите «Выкл.» и снова запустите LieNetwork. Повторно включить Smart App Control без переустановки Windows нельзя.",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Статус ядра"),
     "country": MessageLookupByLibrary.simpleMessage("Регион"),
@@ -402,7 +402,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Вырезать"),
     "dark": MessageLookupByLibrary.simpleMessage("Тёмная"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Панель"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("Панель LieVPN"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage(
+      "Панель LieNetwork",
+    ),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Обнаружены изменения данных. Сохранить их?",
     ),
@@ -481,7 +483,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("Английский"),
     "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
-      "Введите ссылку на подписку LieVPN",
+      "Введите ссылку на подписку LieSub",
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" записей"),
     "entriesCount": m8,
@@ -575,7 +577,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Кэшировать изменения?",
     ),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Служба Helper недоступна, поэтому TUN-режим включить нельзя. Переустановите LieVPN.",
+      "Служба Helper недоступна, поэтому TUN-режим включить нельзя. Переустановите LieNetwork.",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Скрыть из списка"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("Скрыть пароль"),
@@ -688,7 +690,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "В прошлый раз приложение неожиданно завершилось во время запуска. Автоматическая настройка для этого запуска пропущена; вы можете запустить её вручную.",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("Макет"),
-    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("Настройки LieVPN"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage(
+      "Настройки LieNetwork",
+    ),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage(
       "Параметры уведомлений и персонализации",
     ),
@@ -855,7 +859,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "none": MessageLookupByLibrary.simpleMessage("Нет"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "Это не подписка LieVPN",
+      "Это не подписка LieSub",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "Текущую группу прокси нельзя выбрать",
@@ -1267,7 +1271,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("Статус серверов"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
-      "Состояние и аптайм серверов LieVPN",
+      "Состояние и аптайм серверов LieNetwork",
     ),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
@@ -1342,7 +1346,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Стандартный режим: переопределяет базовую конфигурацию и позволяет просто добавлять правила",
     ),
     "start": MessageLookupByLibrary.simpleMessage("Старт"),
-    "startVpn": MessageLookupByLibrary.simpleMessage("Запуск VPN..."),
+    "startVpn": MessageLookupByLibrary.simpleMessage("Подключение к сети..."),
     "status": MessageLookupByLibrary.simpleMessage("Статус"),
     "statusActive": MessageLookupByLibrary.simpleMessage("Активен"),
     "statusAllAvailable": m30,
@@ -1378,7 +1382,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusPartialOutagesDesc": m31,
     "statusUpdated": MessageLookupByLibrary.simpleMessage("Обновлено"),
     "stop": MessageLookupByLibrary.simpleMessage("Стоп"),
-    "stopVpn": MessageLookupByLibrary.simpleMessage("Остановка VPN..."),
+    "stopVpn": MessageLookupByLibrary.simpleMessage("Отключение защиты..."),
     "streakActiveToday": MessageLookupByLibrary.simpleMessage(
       "Огонёк горит! Подключение сегодня выполнено.",
     ),
@@ -1443,7 +1447,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Активация подписки из буфера обмена...",
     ),
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
-      "Срок действия вашей подписки LieVPN истёк. Продлите её в Telegram-боте или активируйте новую.",
+      "Срок действия вашей подписки LieSub истёк. Продлите её в Telegram-боте или активируйте новую.",
     ),
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "Срок действия подписки истек",
@@ -1471,15 +1475,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Требуется подписка",
     ),
     "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
-      "Для использования приложения необходима активная подписка LieVPN. Активируйте доступ по ссылке или QR-коду.",
+      "Для использования приложения необходима активная подписка LieSub. Активируйте доступ по ссылке или QR-коду.",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "Подписка обновлена",
     ),
     "supportEmail": MessageLookupByLibrary.simpleMessage("Электронная почта"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("Поддержка LieVPN"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage(
+      "Поддержка LieNetwork",
+    ),
     "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
-      "Служба поддержки LieVPN",
+      "Служба поддержки LieNetwork",
     ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage(
       "Мессенджер MAX",
@@ -1587,15 +1593,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Яркая"),
     "view": MessageLookupByLibrary.simpleMessage("Просмотр"),
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(
-      "Обнаружено изменение настроек VPN",
+      "Обнаружено изменение настроек сетевого туннеля",
     ),
-    "vpnConnected": MessageLookupByLibrary.simpleMessage("VPN подключён"),
-    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("VPN отключён"),
+    "vpnConnected": MessageLookupByLibrary.simpleMessage("Защита активна"),
+    "vpnDisconnected": MessageLookupByLibrary.simpleMessage("Защита отключена"),
     "vpnEnableDesc": MessageLookupByLibrary.simpleMessage(
-      "Автоматически направляет весь системный трафик через VpnService",
+      "Автоматически направляет трафик системы в защищённый сетевой туннель",
     ),
     "vpnTip": MessageLookupByLibrary.simpleMessage(
-      "Изменения вступят в силу после перезапуска VPN",
+      "Изменения вступят в силу после перезапуска соединения",
     ),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage(
       "Настройка WebDAV",

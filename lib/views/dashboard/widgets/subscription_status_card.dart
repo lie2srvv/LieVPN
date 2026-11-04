@@ -117,7 +117,7 @@ class SubscriptionStatusCard extends ConsumerWidget {
         ? (hasExpire
               ? '${currentProfile!.label} • $expireText'
               : currentProfile!.label)
-        : (hasExpire ? expireText : 'LieVPN');
+        : (hasExpire ? expireText : 'LieNetwork');
 
     return CommonCard(
       radius: AppCorner.lg,

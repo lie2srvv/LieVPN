@@ -84,7 +84,7 @@ if [ -f "\$TARGET_FILE" ]; then
 fi
 
 if [ -z "\$APP_PATH" ] || [ ! -f "\$APP_PATH" ]; then
-    echo "LieVPN executable not found at \$APP_PATH" >&2
+    echo "LieNetwork executable not found at \$APP_PATH" >&2
     exit 1
 fi
 

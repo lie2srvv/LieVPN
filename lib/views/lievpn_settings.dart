@@ -74,7 +74,7 @@ class LieVpnSettingsView extends ConsumerWidget {
               title: Text(context.appLocalizations.liveNotificationCustomText),
               subtitle: Text(
                 liveNotificationCustomText.isEmpty
-                    ? 'LieVPN'
+                    ? 'LieNetwork'
                     : liveNotificationCustomText,
               ),
               dialogTitle: context.appLocalizations.liveNotificationCustomText,

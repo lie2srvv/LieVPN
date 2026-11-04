@@ -58,7 +58,7 @@ class LinuxProtocolRegistrationPlan {
   String get desktopEntry => '''
 [Desktop Entry]
 Type=Application
-Name=LieVPN URL Handler
+Name=LieNetwork URL Handler
 Exec=$exec
 Terminal=false
 NoDisplay=true

@@ -26,13 +26,13 @@ class AppUpdateInfo {
   /// Default GitHub release assets per platform
   static String get defaultDownloadUrl {
     if (Platform.isAndroid) {
-      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk';
+      return 'https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk';
     } else if (Platform.isWindows) {
-      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.exe';
+      return 'https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.exe';
     } else if (Platform.isLinux) {
-      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.AppImage';
+      return 'https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.AppImage';
     } else {
-      return 'https://github.com/lie2srvv/LieVPN/releases/latest/download/LieVPN.apk';
+      return 'https://github.com/lie2srvv/LieNetwork/releases/latest/download/LieNetwork.apk';
     }
   }
 
@@ -122,7 +122,7 @@ class AppUpdateInfo {
 class AppUpdateManager {
   // Primary update manifest in GitHub main branch
   static const String _primaryGitHubVersionUrl =
-      'https://raw.githubusercontent.com/lie2srvv/LieVPN/main/version.json';
+      'https://raw.githubusercontent.com/lie2srvv/LieNetwork/main/version.json';
 
   // Fallbacks on personal server
   static const String _fallbackServerVersionUrl =
@@ -141,7 +141,7 @@ class AppUpdateManager {
 
   // Fallback update check via GitHub Releases API
   static const String _gitHubReleasesApiUrl =
-      'https://api.github.com/repos/lie2srvv/LieVPN/releases/latest';
+      'https://api.github.com/repos/lie2srvv/LieNetwork/releases/latest';
 
   static bool isNewerVersion(String latest, String current) {
     final l = latest
@@ -335,7 +335,7 @@ class AppUpdateManager {
       if (system.isAndroid) {
         try {
           await App().showNotification(
-            title: 'LieVPN',
+            title: 'LieNetwork',
             message: loc.newVersionAvailable(update.version),
             id: 1003,
           );

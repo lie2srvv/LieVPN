@@ -495,7 +495,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
     if (mounted) {
       Navigator.of(context).pop();
       dialogs.showNotifier(
-        'Подписка LieVPN успешно активирована!',
+        'Подписка LieSub успешно активирована!',
         level: MessageLevel.info,
       );
     }
@@ -543,7 +543,7 @@ class _LiePaymentSheetState extends ConsumerState<LiePaymentSheet> {
                         Text(
                           widget.isRenewal
                               ? 'Продление подписки'
-                              : 'Оплата подписки LieVPN',
+                              : 'Оплата подписки LieSub',
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -1743,7 +1743,7 @@ class _LieBotVerificationDialogState extends State<_LieBotVerificationDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Если вы не можете подтвердить через Telegram, напишите на почту vpn@lie2srvv.com — мы подключим подписку вручную.',
+                        'Если вы не можете подтвердить через Telegram, напишите на почту work@lie2srvv.com — мы подключим подписку вручную.',
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant.withValues(
                             alpha: 0.7,

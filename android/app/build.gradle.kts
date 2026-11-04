@@ -35,7 +35,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.lie2srvv.vpn"
+        applicationId = "com.lie2srvv.network"
         minSdk = flutter.minSdkVersion
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 2008

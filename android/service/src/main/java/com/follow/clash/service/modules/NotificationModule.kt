@@ -64,7 +64,7 @@ internal class NotificationModule(
         val initialTraffic = Core.getTrafficData(initialParams.onlyStatisticsProxy)
         val initialSpeed = initialTraffic?.fullSpeedText ?: "↓ 0 B/s  ↑ 0 B/s"
         val serverDisplay = CountryHelper.getDisplayServerText(initialParams.currentServerName)
-        val userTitle = initialParams.title.ifEmpty { "LieVPN" }
+        val userTitle = initialParams.title.ifEmpty { "LieNetwork" }
         val content = "$initialSpeed · $serverDisplay"
         val big = """
             |👤 $userTitle
@@ -112,7 +112,7 @@ internal class NotificationModule(
                 }
                 val speedDisplay = traffic?.fullSpeedText ?: "↓ 0 B/s  ↑ 0 B/s"
                 val usedTrafficText = sessionTotalBytes.formatBytes
-                val userTitle = params.title.ifEmpty { "LieVPN" }
+                val userTitle = params.title.ifEmpty { "LieNetwork" }
                 val serverDisplay = CountryHelper.getDisplayServerText(params.currentServerName)
 
                 // liveNotificationType:
@@ -131,7 +131,7 @@ internal class NotificationModule(
                     4 -> traffic?.uploadChipSpeedText ?: "↑0B"
                     5 -> CountryHelper.getChipServerText(params.currentServerName)
                     6 -> CountryHelper.getChipPingText(params.currentServerName, params.currentServerPing)
-                    7 -> params.liveNotificationCustomText.ifEmpty { "LieVPN" }.take(8)
+                    7 -> params.liveNotificationCustomText.ifEmpty { "LieNetwork" }.take(8)
                     8 -> "🔥 ${params.streakCount}".take(8)
                     else -> userTitle.take(8)
                 }
@@ -166,7 +166,7 @@ internal class NotificationModule(
         val channelId = if (displayData.isLive) "lievpn_live_channel" else GlobalState.NOTIFICATION_CHANNEL
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = service.getSystemService(NotificationManager::class.java)
-            val channelName = if (displayData.isLive) "LieVPN Live" else "LieVPN Service"
+            val channelName = if (displayData.isLive) "LieNetwork Live" else "LieNetwork Service"
             val importance = if (displayData.isLive) NotificationManager.IMPORTANCE_DEFAULT else NotificationManager.IMPORTANCE_LOW
             var channel = manager?.getNotificationChannel(channelId)
             if (channel == null) {

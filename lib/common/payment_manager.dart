@@ -68,7 +68,7 @@ class LiePaymentManager {
           }
 
           dialogs.showNotifier(
-            'Оплата подтверждена! Подписка LieVPN успешно активирована.',
+            'Оплата подтверждена! Подписка LieSub успешно активирована.',
             level: MessageLevel.success,
           );
         }

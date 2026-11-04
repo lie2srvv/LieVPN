@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ja';
 
   static String m0(code) =>
-      "Windows が LieVPNCore.exe の実行を拒否しました（エラー ${code}）。スマート アプリ コントロールや AppLocker などのアプリ制御ポリシーは未署名のプログラムをブロックします。ポリシーで LieVPN を許可するか、ポリシーを無効にしてから再試行してください。";
+      "Windows が LieNetworkCore.exe の実行を拒否しました（エラー ${code}）。スマート アプリ コントロールや AppLocker などのアプリ制御ポリシーは未署名のプログラムをブロックします。ポリシーで LieNetwork を許可するか、ポリシーを無効にしてから再試行してください。";
 
   static String m1(name) =>
       "アプリの起動が2回連続で完了しませんでした。クラッシュループを断ち切るため、プロファイル ${name} の選択を解除し、今回の自動セットアップをスキップしました。いつでも選択し直せます。";
@@ -92,7 +92,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m33(count) => "おめでとうございます！${count}日連続ストリーク達成！";
 
   static String m34(count) =>
-      "本日まだLieVPNに接続していません。${count}日連続記録を維持するため、00:00 MSKまでに接続してください！";
+      "本日まだLieNetworkに接続していません。${count}日連続記録を維持するため、00:00 MSKまでに接続してください！";
 
   static String m35(count) => "今月の残り復元回数: ${count} / 3";
 
@@ -299,7 +299,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("コア"),
     "coreBlockedByPolicyTip": m0,
     "coreBlockedBySmartAppControlTip": MessageLookupByLibrary.simpleMessage(
-      "Windows のスマート アプリ コントロールが、署名されていない LieVPNCore.exe をブロックしました。Windows セキュリティ → アプリとブラウザーの制御 → スマート アプリ コントロールの設定で「オフ」を選び、LieVPN を再起動してください。一度オフにすると、Windows を再インストールしない限り再度オンにはできません。",
+      "Windows のスマート アプリ コントロールが、署名されていない LieNetworkCore.exe をブロックしました。Windows セキュリティ → アプリとブラウザーの制御 → スマート アプリ コントロールの設定で「オフ」を選び、LieNetwork を再起動してください。一度オフにすると、Windows を再インストールしない限り再度オンにはできません。",
     ),
     "coreStatus": MessageLookupByLibrary.simpleMessage("コアの状態"),
     "country": MessageLookupByLibrary.simpleMessage("地域"),
@@ -318,7 +318,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("切り取り"),
     "dark": MessageLookupByLibrary.simpleMessage("ダーク"),
     "dashboard": MessageLookupByLibrary.simpleMessage("ダッシュボード"),
-    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN ダッシュボード"),
+    "dashboardLieVpn": MessageLookupByLibrary.simpleMessage(
+      "LieNetwork ダッシュボード",
+    ),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "データの変更を検出しました。保存しますか？",
     ),
@@ -381,7 +383,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyTip": m7,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
     "enterSubscriptionUrl": MessageLookupByLibrary.simpleMessage(
-      "LieVPN サブスクリプション URL を入力",
+      "LieNetwork サブスクリプション URL を入力",
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" 件"),
     "entriesCount": m8,
@@ -455,7 +457,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hallOfFameHeader": MessageLookupByLibrary.simpleMessage("// 殿堂 — 総寄付"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
-      "Helper サービスが利用できないため、TUN モードを有効にできません。LieVPN を再インストールしてください。",
+      "Helper サービスが利用できないため、TUN モードを有効にできません。LieNetwork を再インストールしてください。",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("パスワードを隠す"),
@@ -552,7 +554,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "前回、アプリは起動中に予期せず終了しました。今回の自動セットアップはスキップしました。手動で起動して再試行できます。",
     ),
     "layout": MessageLookupByLibrary.simpleMessage("レイアウト"),
-    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieVPN 設定"),
+    "lieVpnSettings": MessageLookupByLibrary.simpleMessage("LieNetwork 設定"),
     "lieVpnSettingsDesc": MessageLookupByLibrary.simpleMessage("通知とカスタマイズの設定"),
     "light": MessageLookupByLibrary.simpleMessage("ライト"),
     "list": MessageLookupByLibrary.simpleMessage("リスト"),
@@ -687,7 +689,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "none": MessageLookupByLibrary.simpleMessage("なし"),
     "notLieVpnSubscription": MessageLookupByLibrary.simpleMessage(
-      "LieVPNのサブスクリプションではありません",
+      "LieNetworkのサブスクリプションではありません",
     ),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "現在のプロキシグループは選択できません",
@@ -1017,7 +1019,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "serverStatus": MessageLookupByLibrary.simpleMessage("サーバー状況"),
     "serverStatusDesc": MessageLookupByLibrary.simpleMessage(
-      "LieVPN サーバー状況と稼働時間",
+      "LieNetwork サーバー状況と稼働時間",
     ),
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
@@ -1163,7 +1165,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "クリップボードからサブスクリプションを有効化しています...",
     ),
     "subscriptionExpiredDesc": MessageLookupByLibrary.simpleMessage(
-      "LieVPN サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
+      "LieNetwork サブスクリプションの有効期限が切れました。Telegram ボットで更新するか、新しいものを有効化してください。",
     ),
     "subscriptionExpiredWarning": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションの有効期限が切れました",
@@ -1187,15 +1189,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "サブスクリプションが必要です",
     ),
     "subscriptionRequiredDesc": MessageLookupByLibrary.simpleMessage(
-      "LieVPN を使用するには有効なサブスクリプションが必要です。リンクまたはQRコードからアクセスを有効化してください。",
+      "LieNetwork を使用するには有効なサブスクリプションが必要です。リンクまたはQRコードからアクセスを有効化してください。",
     ),
     "subscriptionUpdated": MessageLookupByLibrary.simpleMessage(
       "サブスクリプションを更新しました",
     ),
     "supportEmail": MessageLookupByLibrary.simpleMessage("メールサポート"),
-    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieVPN サポート"),
+    "supportLieVpn": MessageLookupByLibrary.simpleMessage("LieNetwork サポート"),
     "supportLieVpnTitle": MessageLookupByLibrary.simpleMessage(
-      "LieVPN カスタマーサポート",
+      "LieNetwork カスタマーサポート",
     ),
     "supportMessengerMax": MessageLookupByLibrary.simpleMessage("MAX メッセンジャー"),
     "supportMessengerMaxSubtitle": MessageLookupByLibrary.simpleMessage(

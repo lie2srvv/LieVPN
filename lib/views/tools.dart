@@ -370,11 +370,11 @@ class _SupportItem extends StatelessWidget {
                   ListItem(
                     leading: const Icon(Icons.email_outlined, color: Color(0xFFEA4335)),
                     title: Text(loc.supportEmail),
-                    subtitle: const Text('vpn@lie2srvv.com'),
+                    subtitle: const Text('work@lie2srvv.com'),
                     trailing: const Icon(Icons.launch),
                     onTap: () {
                       Navigator.pop(sheetContext);
-                      dialogs.openUrl('mailto:vpn@lie2srvv.com');
+                      dialogs.openUrl('mailto:work@lie2srvv.com');
                     },
                   ),
                   const SizedBox(height: 16),
